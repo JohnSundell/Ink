@@ -41,3 +41,15 @@ final class ImageTests: XCTestCase {
         XCTAssertEqual(html, #"<p>Text <img src="url"/> text</p>"#)
     }
 }
+
+extension ImageTests {
+    static var allTests: [(String, TestClosure<ImageTests>)] {
+        return [
+            ("testImageWithURL", testImageWithURL),
+            ("testImageWithReference", testImageWithReference),
+            ("testImageWithURLAndAltText", testImageWithURLAndAltText),
+            ("testImageWithReferenceAndAltText", testImageWithReferenceAndAltText),
+            ("testImageWithinParagraph", testImageWithinParagraph)
+        ]
+    }
+}
