@@ -67,3 +67,14 @@ final class MetadataTests: XCTestCase {
         XCTAssertEqual(markdown.html, "<h1>Title</h1>")
     }
 }
+
+extension MetadataTests {
+    static var allTests: [(String, TestClosure<MetadataTests>)] {
+        return [
+            ("testParsingMetadata", testParsingMetadata),
+            ("testDiscardingEmptyMetadataValues", testDiscardingEmptyMetadataValues),
+            ("testMergingOrphanMetadataValueIntoPreviousOne", testMergingOrphanMetadataValueIntoPreviousOne),
+            ("testMissingMetadata", testMissingMetadata)
+        ]
+    }
+}

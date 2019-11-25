@@ -77,3 +77,14 @@ final class ModifierTests: XCTestCase {
         XCTAssertEqual(html, "<p>Code is cool:</p><pre><code>Code</code></pre>")
     }
 }
+
+extension ModifierTests {
+    static var allTests: [(String, TestClosure<ModifierTests>)] {
+        return [
+            ("testModifierInput", testModifierInput),
+            ("testInitializingParserWithModifiers", testInitializingParserWithModifiers),
+            ("testAddingModifiers", testAddingModifiers),
+            ("testMultipleModifiersForSameTarget", testMultipleModifiersForSameTarget)
+        ]
+    }
+}

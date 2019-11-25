@@ -62,3 +62,15 @@ final class CodeTests: XCTestCase {
         """)
     }
 }
+
+extension CodeTests {
+    static var allTests: [(String, TestClosure<CodeTests>)] {
+        return [
+            ("testInlineCode", testInlineCode),
+            ("testCodeBlockWithJustBackticks", testCodeBlockWithJustBackticks),
+            ("testCodeBlockWithBackticksAndLabel", testCodeBlockWithBackticksAndLabel),
+            ("testEncodingSpecialCharactersWithinCodeBlock", testEncodingSpecialCharactersWithinCodeBlock),
+            ("testIgnoringFormattingWithinCodeBlock", testIgnoringFormattingWithinCodeBlock)
+        ]
+    }
+}

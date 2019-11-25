@@ -47,3 +47,16 @@ final class HeadingTests: XCTestCase {
         XCTAssertEqual(html, "<p>\(markdown)</p>")
     }
 }
+
+extension HeadingTests {
+    static var allTests: [(String, TestClosure<HeadingTests>)] {
+        return [
+            ("testHeading", testHeading),
+            ("testHeadingsSeparatedBySingleNewline", testHeadingsSeparatedBySingleNewline),
+            ("testHeadingsWithLeadingNumbers", testHeadingsWithLeadingNumbers),
+            ("testHeadingWithPreviousWhitespace", testHeadingWithPreviousWhitespace),
+            ("testHeadingWithPreviousNewlineAndWhitespace", testHeadingWithPreviousNewlineAndWhitespace),
+            ("testInvalidHeaderLevel", testInvalidHeaderLevel)
+        ]
+    }
+}

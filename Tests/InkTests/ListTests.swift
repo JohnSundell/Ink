@@ -95,3 +95,17 @@ final class ListTests: XCTestCase {
         XCTAssertEqual(html, "<ul><li>One -Two</li><li>Three</li></ul>")
     }
 }
+
+extension ListTests {
+    static var allTests: [(String, TestClosure<ListTests>)] {
+        return [
+            ("testOrderedList", testOrderedList),
+            ("testOrderedListWithoutIncrementedNumbers", testOrderedListWithoutIncrementedNumbers),
+            ("testOrderedListWithInvalidNumbers", testOrderedListWithInvalidNumbers),
+            ("testUnorderedList", testUnorderedList),
+            ("testUnorderedListWithMultiLineItem", testUnorderedListWithMultiLineItem),
+            ("testUnorderedListWithNestedList", testUnorderedListWithNestedList),
+            ("testUnorderedListWithInvalidMarker", testUnorderedListWithInvalidMarker)
+        ]
+    }
+}

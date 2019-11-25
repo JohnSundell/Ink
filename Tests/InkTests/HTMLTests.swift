@@ -94,3 +94,20 @@ final class HTMLTests: XCTestCase {
         XCTAssertEqual(html, "<p>Hello</p><br/><p>World</p>")
     }
 }
+
+extension HTMLTests {
+    static var allTests: [(String, TestClosure<HTMLTests>)] {
+        return [
+            ("testTopLevelHTML", testTopLevelHTML),
+            ("testNestedTopLevelHTML", testNestedTopLevelHTML),
+            ("testTopLevelHTMLWithPreviousNewline", testTopLevelHTMLWithPreviousNewline),
+            ("testIgnoringFormattingWithinTopLevelHTML", testIgnoringFormattingWithinTopLevelHTML),
+            ("testIgnoringTextFormattingWithinInlineHTML", testIgnoringTextFormattingWithinInlineHTML),
+            ("testIgnoringListsWithinInlineHTML", testIgnoringListsWithinInlineHTML),
+            ("testInlineParagraphTagEndingCurrentParagraph", testInlineParagraphTagEndingCurrentParagraph),
+            ("testTopLevelSelfClosingHTMLElement", testTopLevelSelfClosingHTMLElement),
+            ("testInlineSelfClosingHTMLElement", testInlineSelfClosingHTMLElement),
+            ("testTopLevelHTMLLineBreak", testTopLevelHTMLLineBreak)
+        ]
+    }
+}

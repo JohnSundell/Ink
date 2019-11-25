@@ -48,3 +48,16 @@ final class LinkTests: XCTestCase {
         XCTAssertEqual(html, "<p><a href=\"/he_llo\">He_llo</a></p>")
     }
 }
+
+extension LinkTests {
+    static var allTests: [(String, TestClosure<LinkTests>)] {
+        return [
+            ("testLinkWithURL", testLinkWithURL),
+            ("testLinkWithReference", testLinkWithReference),
+            ("testNumericLinkWithReference", testNumericLinkWithReference),
+            ("testBoldLinkWithInternalMarkers", testBoldLinkWithInternalMarkers),
+            ("testBoldLinkWithExternalMarkers", testBoldLinkWithExternalMarkers),
+            ("testLinkWithUnderscores", testLinkWithUnderscores)
+        ]
+    }
+}
