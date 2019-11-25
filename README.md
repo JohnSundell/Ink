@@ -109,6 +109,26 @@ import Ink
 
 For more information on how to use the Swift Package Manager, check out [this article](https://www.swiftbysundell.com/articles/managing-dependencies-using-the-swift-package-manager), or [its official documentation](https://github.com/apple/swift-package-manager/tree/master/Documentation).
 
+## Command line tool
+
+Ink also ships with a simple but useful command line tool that enables you to use it to convert Markdown to HTML directly from the command line.
+
+To install it, clone the project and run `make`:
+
+```
+$ git clone https://github.com/johnsundell/Ink.git
+$ cd Ink
+$ make
+```
+
+The command line tool will be installed as `ink`, and can be called with any Markdown string to convert it into HTML:
+
+```
+$ ink "$(cat README.md)"
+```
+
+You can of course also build your own command line tools that utilizes Ink in more advanced ways by importing it as a package.
+
 ## Markdown syntax supported
 
 Ink supports the following Markdown features:
