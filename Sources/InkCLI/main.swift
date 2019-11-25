@@ -7,16 +7,6 @@
 import Foundation
 import Ink
 
-func m() {
-    var parser = MarkdownParser()
-
-    let modifier = Modifier(target: .codeBlocks) { html, markdown in
-        return "<h3>This is a code block:</h3>" + html
-    }
-
-    parser.addModifier(modifier)
-}
-
 guard CommandLine.arguments.count > 1 else {
     print("""
     Ink: Markdown -> HTML converter
