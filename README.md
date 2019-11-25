@@ -128,6 +128,16 @@ Ink supports the following Markdown features:
 - HTML can be inlined both at the root level, and within text paragraphs.
 - Blockquotes can be created by placing a greater-than arrow at the start of a line, like this: `> This is a blockquote`.
 
+## Internal architecture
+
+Ink uses a highly modular [rule-based](https://www.swiftbysundell.com/articles/rule-based-logic-in-swift) internal architecture, to enable new rules and formatting options to be added without impacting the system as a whole.
+
+Each Markdown fragment is individually parsed and rendered by a type conforming to the internal `Readable` and `HTMLConvertible` protocols — such as `FormattedText`, `List`, and `Image`.
+
+To parse a part of a Markdown document, each fragment type uses a `Reader` instance to read the Markdown string, and to make assertions about its structure. Errors are [used as control flow](https://www.swiftbysundell.com/articles/using-errors-as-control-flow-in-swift) to signal whether a parsing operation was successful or not, which in turn enables the parent context to decide whether to advance the current `Reader` instance, or whether to rewind it.
+
+A good place to start exploring Ink’s implementation is to look at the main `MarkdownParser` type’s `parse` method, and to then dive deeper into the various `Fragment` implementations, and the `Reader` type.
+
 ## Credits
 
 Ink was originally written by [John Sundell](https://twitter.com/johnsundell) as part of the Publish suite of static site generation tools, which is used to build and generate [Swift by Sundell](https://swiftbysundell.com). The other tools that make up the Publish suite will also be open sourced soon.
