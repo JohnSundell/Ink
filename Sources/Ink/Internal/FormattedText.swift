@@ -232,7 +232,7 @@ private extension FormattedText {
             var boldMarker: TextStyleMarker?
             var italicMarker: TextStyleMarker?
 
-            if activeStyles.contains(.bold) && activeStyles.contains(.italic) {
+            if activeStyles.isSuperset(of: [.bold, .italic]) {
                 markerIteration: for marker in activeStyleMarkers {
                     switch marker.style {
                     case .bold:
