@@ -13,7 +13,7 @@
     </a>
 </p>
 
-Welcome to **Ink**, a fast and flexible Markdown parser written in Swift. It can be used to convert Markdown-formatted strings into HTML, and also supports metadata parsing, as well as powerful customization options for fine-grained post-processing.
+Welcome to **Ink**, a fast and flexible Markdown parser written in Swift. It can be used to convert Markdown-formatted strings into HTML, and also supports metadata parsing, as well as powerful customization options for fine-grained post-processing. It was built with a focus on Swift-based web development and other HTML-centered workflows.
 
 Ink is used to render all articles on [swiftbysundell.com](https://swiftbysundell.com).
 
