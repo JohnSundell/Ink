@@ -1,3 +1,18 @@
+<p align="center">
+    <img src="Logo.png" width="278" max-width="90%" alt=“Ink” />
+</p>
+
+<p align="center">
+    <img src="https://img.shields.io/badge/Swift-5.1-orange.svg" />
+    <a href="https://swift.org/package-manager">
+        <img src="https://img.shields.io/badge/swiftpm-compatible-brightgreen.svg?style=flat" alt="Swift Package Manager" />
+    </a>
+     <img src="https://img.shields.io/badge/platforms-mac+linux-brightgreen.svg?style=flat" alt="Mac + Linux" />
+    <a href="https://twitter.com/johnsundell">
+        <img src="https://img.shields.io/badge/twitter-@johnsundell-blue.svg?style=flat" alt="Twitter: @johnsundell" />
+    </a>
+</p>
+
 Welcome to **Ink**, a fast and flexible Markdown parser written in Swift. It can be used to convert Markdown-formatted strings into HTML, and also supports metadata parsing, as well as powerful customization options for fine-grained post-processing.
 
 Ink is used to render all articles on [swiftbysundell.com](https://swiftbysundell.com).
@@ -6,7 +21,7 @@ Ink is used to render all articles on [swiftbysundell.com](https://swiftbysundel
 
 To get started with Ink, all you have to do is to import it, and use its `MarkdownParser` type to convert any Markdown string into efficiently rendered HTML:
 
-```
+```swift
 import Ink
 
 let markdown: String = ...
@@ -22,7 +37,7 @@ Ink also comes with metadata support built-in, meaning that you can define key/v
 
 To take advantage of that feature, call the `parse` method on `MarkdownParser`, which gives you a `Markdown` value that both contains any metadata found within the parsed Markdown string, as well as its HTML representation:
 
-```
+```swift
 let markdown: String = ...
 let parser = MarkdownParser()
 let result = parser.parse(markdown)
@@ -50,7 +65,7 @@ Besides its [built-in parsing rules](#markdown-syntax-supported), which aims to 
 
 A modifier is defined using the `Modifier` type, and is associated with a given `Target`, which determines the kind of Markdown fragments that it will be used for. For example, here’s how an H3 tag could be added before each code block:
 
-```
+```swift
 var parser = MarkdownParser()
 
 let modifier = Modifier(target: .codeBlocks) { html, markdown in
@@ -76,7 +91,7 @@ Ink was designed to be as fast and efficient as possible, to enable hundreds of 
 
 Ink is distributed using the [Swift Package Manager](https://swift.org/package-manager). To install it into a project, simply add it as a dependency within your `Package.swift` manifest:
 
-```
+```swift
 let package = Package(
     ...
     dependencies: [
@@ -88,7 +103,7 @@ let package = Package(
 
 Then import Ink wherever you’d like to use it:
 
-```
+```swift
 import Ink
 ```
 
@@ -102,8 +117,8 @@ Ink supports the following Markdown features:
 - Italic text, by surrounding a piece of text with either an asterisk (`*`), or an underscore (`_`). For example `*Italic text*`.
 - Bold text, by surrounding a piece of text with either two asterisks (`**`), or two underscores (`__`). For example `**Bold text**`.
 - Text strikethrough, by surrounding a piece of text with two tildes (`~~`), for example `~~Strikethrough text~~`.
-- Inline code, marked with backticks ( `\``), for example `\`inline.code()\``.
-- Code blocks, marked with three backticks (`\`\`\``) both above and below the block.
+- Inline code, marked with a backtick on either site of the code.
+- Code blocks, marked with three backticks both above and below the block.
 - Links, using the following syntax: `[Title](url)`.
 - Images, using the following syntax: `![Alt text](image-url)`.
 - Both images and links can also use reference URLs, which can be defined anywhere in a Markdown document using this syntax: `[referenceName]: url`.
