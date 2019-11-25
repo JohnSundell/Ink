@@ -1,0 +1,132 @@
+Welcome to **Ink**, a fast and flexible Markdown parser written in Swift. It can be used to convert Markdown-formatted strings into HTML, and also supports metadata parsing, as well as powerful customization options for fine-grained post-processing.
+
+Ink is used to render all articles on [swiftbysundell.com](https://swiftbysundell.com).
+
+## Converting Markdown into HTML
+
+To get started with Ink, all you have to do is to import it, and use its `MarkdownParser` type to convert any Markdown string into efficiently rendered HTML:
+
+```
+import Ink
+
+let markdown: String = ...
+let parser = MarkdownParser()
+let html = parser.html(from: markdown)
+```
+
+That’s it! The resulting HTML can then be displayed as-is, or embedded into some other context — and if that’s all you need Ink for, then no more code is required.
+
+## Automatic metadata parsing
+
+Ink also comes with metadata support built-in, meaning that you can define key/value pairs at the top of any Markdown document, which will then be automatically parsed into a Swift dictionary.
+
+To take advantage of that feature, call the `parse` method on `MarkdownParser`, which gives you a `Markdown` value that both contains any metadata found within the parsed Markdown string, as well as its HTML representation:
+
+```
+let markdown: String = ...
+let parser = MarkdownParser()
+let result = parser.parse(markdown)
+
+let dateString = result.metadata["date"]
+let html = result.html
+```
+
+To define metadata values within a Markdown document, use the following syntax:
+
+```
+---
+keyA: valueA
+keyB: valueB
+---
+
+Markdown text...
+```
+
+The above format is also supported by many different Markdown editors and other tools, even though it’s not part of the [original Markdown spec](https://daringfireball.net/projects/markdown).
+
+## Powerful customization
+
+Besides its [built-in parsing rules](#markdown-syntax-supported), which aims to cover the most common features found in the various flavors of Markdown, you can also customize how Ink performs its parsing through the use of *modifiers*.
+
+A modifier is defined using the `Modifier` type, and is associated with a given `Target`, which determines the kind of Markdown fragments that it will be used for. For example, here’s how an H3 tag could be added before each code block:
+
+```
+var parser = MarkdownParser()
+
+let modifier = Modifier(target: .codeBlocks) { html, markdown in
+    return "<h3>This is a code block:</h3>" + html
+}
+
+parser.addModifier(modifier)
+
+let markdown: String = ...
+let html = parser.html(from: markdown)
+```
+
+Modifiers are passed both the HTML that Ink generated for the given fragment, and its raw Markdown representation as well — both of which can be used to determine how each fragment should be customized.
+
+## Performance built-in
+
+Ink was designed to be as fast and efficient as possible, to enable hundreds of full-length Markdown articles to be parsed in a matter of seconds, while still offering a fully customizable API as well. Two key characteristics make this possible:
+
+1. Ink aims to get as close to `O(N)` complexity as possible, by minimizing the amount of times it needs to read the Markdown strings that are passed to it, and by optimizing its HTML rendering to be completely linear. While *true* `O(N)` complexity is impossible to achieve when it comes to Markdown parsing, because of its very flexible syntax, the goal is to come as close to that target as possible.
+2. A high degree of memory efficiency is achieved thanks to Swift’s powerful `String` API, which Ink makes full use of — by using string indexes, ranges and substrings, rather than performing unnecessary string copying between its various operations.
+
+## Installation
+
+Ink is distributed using the [Swift Package Manager](https://swift.org/package-manager). To install it into a project, simply add it as a dependency within your `Package.swift` manifest:
+
+```
+let package = Package(
+    ...
+    dependencies: [
+        .package(url: "https://github.com/johnsundell/ink.git", from: "0.1.0")
+    ],
+    ...
+)
+```
+
+Then import Ink wherever you’d like to use it:
+
+```
+import Ink
+```
+
+For more information on how to use the Swift Package Manager, check out [this article](https://www.swiftbysundell.com/articles/managing-dependencies-using-the-swift-package-manager), or [its official documentation](https://github.com/apple/swift-package-manager/tree/master/Documentation).
+
+## Markdown syntax supported
+
+Ink supports the following Markdown features:
+
+- Headings (H1 - H6), using leading pound signs, for example `## H2`.
+- Italic text, by surrounding a piece of text with either an asterisk (`*`), or an underscore (`_`). For example `*Italic text*`.
+- Bold text, by surrounding a piece of text with either two asterisks (`**`), or two underscores (`__`). For example `**Bold text**`.
+- Text strikethrough, by surrounding a piece of text with two tildes (`~~`), for example `~~Strikethrough text~~`.
+- Inline code, marked with backticks ( `\``), for example `\`inline.code()\``.
+- Code blocks, marked with three backticks (`\`\`\``) both above and below the block.
+- Links, using the following syntax: `[Title](url)`.
+- Images, using the following syntax: `![Alt text](image-url)`.
+- Both images and links can also use reference URLs, which can be defined anywhere in a Markdown document using this syntax: `[referenceName]: url`.
+- Both ordered lists (using numbers) and unordered lists (using either a dash (`-`), or an asterisk (`*`) as bullets) are supported.
+- Nested lists are supported as well, by indenting any part of a list that should be nested within its parent.
+- Horizontal lines can be placed using either three asterisks (`***`) or three dashes (`---`) on a new line.
+- HTML can be inlined both at the root level, and within text paragraphs.
+- Blockquotes can be created by placing a greater-than arrow at the start of a line, like this: `> This is a blockquote`.
+
+## Credits
+
+Ink was originally written by [John Sundell](https://twitter.com/johnsundell) as part of the Publish suite of static site generation tools, which is used to build and generate [Swift by Sundell](https://swiftbysundell.com). The other tools that make up the Publish suite will also be open sourced soon.
+
+The Markdown format was created by [John Gruber](https://twitter.com/gruber). You can find [more information about it here](https://daringfireball.net/projects/markdown).
+
+## Contributions and support
+
+Ink is developed completely in the open, and your contributions are more than welcome.
+
+Before you start using Ink in any of your projects, it’s highly recommended that you spend a few minutes familiarizing yourself with its documentation and internal implementation, so that you’ll be ready to tackle any issues or edge cases that you might encounter.
+
+This project does not come with GitHub Issues-based support, and users are instead encouraged to become active participants in its continued development — by fixing any bugs that they encounter, or by improving the documentation wherever it’s found to be lacking.
+
+If you wish to make a change, [open a Pull Request](https://github.com/JohnSundell/Ink/pull/new) — even if it just contains a draft of the changes you’re planning, or a test that reproduces an issue — and we can discuss it further from there.
+
+Hope you’ll enjoy using **Ink**!
