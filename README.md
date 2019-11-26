@@ -148,6 +148,8 @@ Ink supports the following Markdown features:
 - HTML can be inlined both at the root level, and within text paragraphs.
 - Blockquotes can be created by placing a greater-than arrow at the start of a line, like this: `> This is a blockquote`.
 
+Please note that, being a very young implementation, Ink does not fully support all Markdown specs, such as [CommonMark](https://commonmark.org). Ink definitely aims to cover as much ground as possible, and to include support for the most commonly used Markdown features, but if complete CommonMark compatibility is what you’re looking for — then you might want to check out tools like [CMark](https://github.com/commonmark/cmark).
+
 ## Internal architecture
 
 Ink uses a highly modular [rule-based](https://www.swiftbysundell.com/articles/rule-based-logic-in-swift) internal architecture, to enable new rules and formatting options to be added without impacting the system as a whole.
@@ -169,6 +171,8 @@ The Markdown format was created by [John Gruber](https://twitter.com/gruber). Yo
 Ink is developed completely in the open, and your contributions are more than welcome.
 
 Before you start using Ink in any of your projects, it’s highly recommended that you spend a few minutes familiarizing yourself with its documentation and internal implementation, so that you’ll be ready to tackle any issues or edge cases that you might encounter.
+
+Since this is a very young project, it’s likely to have many limitations and missing features, which is something that can really only be discovered and addressed as more people start using it. While Ink is used in production to render all of [Swift by Sundell](https://swiftbysundell.com), it’s recommended that you first try it out for your specific use case, to make sure it supports the features that you need.
 
 This project does not come with GitHub Issues-based support, and users are instead encouraged to become active participants in its continued development — by fixing any bugs that they encounter, or by improving the documentation wherever it’s found to be lacking.
 
