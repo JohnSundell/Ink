@@ -63,7 +63,7 @@ extension LinkTests {
             ("testBoldLinkWithInternalMarkers", testBoldLinkWithInternalMarkers),
             ("testBoldLinkWithExternalMarkers", testBoldLinkWithExternalMarkers),
             ("testLinkWithUnderscores", testLinkWithUnderscores),
-            ("testFakeLink", testUnterminatedLink)
+            ("testUnterminatedLink", testUnterminatedLink)
         ]
     }
 }
