@@ -15,6 +15,8 @@ internal struct Link: Fragment {
         let text = FormattedText.read(using: &reader, terminator: "]")
         try reader.read("]")
 
+        guard !reader.didReachEnd else { throw Reader.Error() }
+
         if reader.currentCharacter == "(" {
             reader.advanceIndex()
             let url = try reader.read(until: ")")
