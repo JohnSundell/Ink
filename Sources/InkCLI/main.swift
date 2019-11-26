@@ -17,6 +17,9 @@ guard CommandLine.arguments.count > 1 else {
     exit(0)
 }
 
-let markdown = CommandLine.arguments[1]
+var markdown = CommandLine.arguments[1]
+if markdown == "-" {
+    markdown = AnyIterator { readLine() }.joined(separator: "\n")
+}
 let parser = MarkdownParser()
 print(parser.html(from: markdown))
