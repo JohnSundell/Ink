@@ -126,7 +126,7 @@ internal struct List: Fragment {
         let tagName = isOrdered ? "ol" : "ul"
         
         let startAttr: String
-        if let startingIndex = startingIndex, startingIndex > 1 {
+        if let startingIndex = startingIndex, startingIndex != 1 {
             startAttr = #" start="\#(startingIndex)""#
         } else {
             startAttr = ""
