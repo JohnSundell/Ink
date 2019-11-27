@@ -5,9 +5,13 @@
 */
 
 internal struct List: Fragment {
+    private static let orderedListMarkers: Set<Character> = [".", ")"]
+    
     var modifierTarget: Modifier.Target { .lists }
 
+    private var listMarker: Character
     private var isOrdered: Bool
+    private var startingIndex: Int?
     private var items = [Item]()
 
     static func read(using reader: inout Reader) throws -> List {
@@ -16,7 +20,24 @@ internal struct List: Fragment {
 
     private static func read(using reader: inout Reader,
                              indentationLength: Int) throws -> List {
-        var list = List(isOrdered: reader.currentCharacter.isNumber)
+        let isOrdered = reader.currentCharacter.isNumber
+    
+        let listMarker: Character
+        let startingIndex: Int?
+        if isOrdered {
+            let startIndex = reader.currentIndex
+            defer { reader.moveToIndex(startIndex) }
+            
+            let startingIndexString = try reader.readCharacters(matching: \.isNumber, limit: 9)
+            startingIndex = Int(startingIndexString)
+            
+            listMarker = try reader.readCharacter(in: List.orderedListMarkers)
+        } else {
+            listMarker = reader.currentCharacter
+            startingIndex = nil
+        }
+    
+        var list = List(listMarker: listMarker, isOrdered: isOrdered, startingIndex: startingIndex)
 
         func addTextToLastItem() throws {
             try require(!list.items.isEmpty)
@@ -63,8 +84,14 @@ internal struct List: Fragment {
                 let startIndex = reader.currentIndex
 
                 do {
-                    try reader.readCharacters(matching: \.isNumber)
-                    try reader.read(".")
+                    try reader.readCharacters(matching: \.isNumber, limit: 9)
+                    let foundMarker = try reader.readCharacter(in: List.orderedListMarkers)
+
+                    guard foundMarker == listMarker else {
+                        reader.moveToIndex(startIndex)
+                        return list
+                    }
+
                     try reader.readWhitespaces()
 
                     list.items.append(Item(text: .readLine(using: &reader)))
@@ -72,11 +99,15 @@ internal struct List: Fragment {
                     reader.moveToIndex(startIndex)
                     try addTextToLastItem()
                 }
-            case "-", "*":
+            case "-", "*", "+":
                 guard let nextCharacter = reader.nextCharacter,
                       nextCharacter.isSameLineWhitespace else {
                     try addTextToLastItem()
                     continue
+                }
+
+                guard reader.currentCharacter == list.listMarker else {
+                    return list
                 }
 
                 reader.advanceIndex()
@@ -93,12 +124,19 @@ internal struct List: Fragment {
     func html(usingURLs urls: NamedURLCollection,
               modifiers: ModifierCollection) -> String {
         let tagName = isOrdered ? "ol" : "ul"
+        
+        let startAttr: String
+        if let startingIndex = startingIndex, startingIndex > 1 {
+            startAttr = #" start="\#(startingIndex)""#
+        } else {
+            startAttr = ""
+        }
 
         let body = items.reduce(into: "") { html, item in
             html.append(item.html(usingURLs: urls, modifiers: modifiers))
         }
 
-        return "<\(tagName)>\(body)</\(tagName)>"
+        return "<\(tagName)\(startAttr)>\(body)</\(tagName)>"
     }
 }
 

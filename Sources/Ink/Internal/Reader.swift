@@ -70,15 +70,17 @@ extension Reader {
     }
 
     @discardableResult
-    mutating func readCharacters(matching keyPath: KeyPath<Character, Bool>) throws -> Substring {
+    mutating func readCharacters(matching keyPath: KeyPath<Character, Bool>, limit: Int = Int.max) throws -> Substring {
         let startIndex = currentIndex
-
-        while !didReachEnd {
+        var readCount = 0
+        
+        while !didReachEnd && readCount < limit {
             guard currentCharacter[keyPath: keyPath] else {
                 break
             }
 
             advanceIndex()
+            readCount += 1
         }
 
         guard startIndex != currentIndex else {
@@ -86,6 +88,15 @@ extension Reader {
         }
 
         return string[startIndex..<currentIndex]
+    }
+    
+    @discardableResult
+    mutating func readCharacter(in set: Set<Character>) throws -> Character {
+        guard !didReachEnd else { throw Error() }
+        guard set.contains(currentCharacter) else { throw Error() }
+        defer { advanceIndex() }
+
+        return currentCharacter
     }
 
     @discardableResult
