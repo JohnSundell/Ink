@@ -35,14 +35,15 @@ final class CodeTests: XCTestCase {
     }
     
     func testCodeBlockWithBackticksAndLabelNeedingTrimming() {
-           let html = MarkdownParser().html(from: """
-           ``` swift
-           code()
-           ```
-           """)
+       // there are 2 spaces after the swift label that need trimming too
+       let html = MarkdownParser().html(from: """
+       ``` swift  
+       code()
+       ```
+       """)
 
-           XCTAssertEqual(html, "<pre><code class=\"swift\">code()</code></pre>")
-       }
+       XCTAssertEqual(html, "<pre><code class=\"swift\">code()</code></pre>")
+   }
         
     func testEncodingSpecialCharactersWithinCodeBlock() {
         let html = MarkdownParser().html(from: """
