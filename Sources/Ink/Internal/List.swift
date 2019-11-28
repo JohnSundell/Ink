@@ -26,7 +26,7 @@ internal struct List: Fragment {
             let startIndex = reader.currentIndex
             defer { reader.moveToIndex(startIndex) }
             
-            let startingIndexString = try reader.readCharacters(matching: \.isNumber, limit: 9)
+            let startingIndexString = try reader.readCharacters(matching: \.isNumber, max: 9)
             let startingIndex = Int(startingIndexString) ?? 1
             
             let listMarker = try reader.readCharacter(in: List.orderedListMarkers)
@@ -86,7 +86,7 @@ internal struct List: Fragment {
                 let startIndex = reader.currentIndex
 
                 do {
-                    try reader.readCharacters(matching: \.isNumber, limit: 9)
+                    try reader.readCharacters(matching: \.isNumber, max: 9)
                     let foundMarker = try reader.readCharacter(in: List.orderedListMarkers)
 
                     guard foundMarker == list.listMarker else {
