@@ -33,7 +33,17 @@ final class CodeTests: XCTestCase {
 
         XCTAssertEqual(html, "<pre><code class=\"swift\">code()</code></pre>")
     }
+    
+    func testCodeBlockWithBackticksAndLabelNeedingTrimming() {
+           let html = MarkdownParser().html(from: """
+           ``` swift
+           code()
+           ```
+           """)
 
+           XCTAssertEqual(html, "<pre><code class=\"swift\">code()</code></pre>")
+       }
+        
     func testEncodingSpecialCharactersWithinCodeBlock() {
         let html = MarkdownParser().html(from: """
         ```swift
@@ -69,6 +79,7 @@ extension CodeTests {
             ("testInlineCode", testInlineCode),
             ("testCodeBlockWithJustBackticks", testCodeBlockWithJustBackticks),
             ("testCodeBlockWithBackticksAndLabel", testCodeBlockWithBackticksAndLabel),
+            ("testCodeBlockWithBackticksAndLabelNeedingTrimming", testCodeBlockWithBackticksAndLabelNeedingTrimming),
             ("testEncodingSpecialCharactersWithinCodeBlock", testEncodingSpecialCharactersWithinCodeBlock),
             ("testIgnoringFormattingWithinCodeBlock", testIgnoringFormattingWithinCodeBlock)
         ]
