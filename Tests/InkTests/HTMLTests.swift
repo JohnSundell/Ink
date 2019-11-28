@@ -93,6 +93,16 @@ final class HTMLTests: XCTestCase {
 
         XCTAssertEqual(html, "<p>Hello</p><br/><p>World</p>")
     }
+
+    func testHTMLComment() {
+        let html = MarkdownParser().html(from: """
+        Hello
+        <!-- Comment -->
+        World
+        """)
+
+        XCTAssertEqual(html, "<p>Hello</p><!-- Comment --><p>World</p>")
+    }
 }
 
 extension HTMLTests {
@@ -107,7 +117,8 @@ extension HTMLTests {
             ("testInlineParagraphTagEndingCurrentParagraph", testInlineParagraphTagEndingCurrentParagraph),
             ("testTopLevelSelfClosingHTMLElement", testTopLevelSelfClosingHTMLElement),
             ("testInlineSelfClosingHTMLElement", testInlineSelfClosingHTMLElement),
-            ("testTopLevelHTMLLineBreak", testTopLevelHTMLLineBreak)
+            ("testTopLevelHTMLLineBreak", testTopLevelHTMLLineBreak),
+            ("testHTMLComment", testHTMLComment)
         ]
     }
 }
