@@ -21,8 +21,7 @@ internal struct List: Fragment {
                              indentationLength: Int) throws -> List {
         let isOrdered = reader.currentCharacter.isNumber
 
-        var kind: Kind
-        let listMarker: Character
+        var list: List
         if isOrdered {
             let startIndex = reader.currentIndex
             defer { reader.moveToIndex(startIndex) }
@@ -30,14 +29,12 @@ internal struct List: Fragment {
             let startingIndexString = try reader.readCharacters(matching: \.isNumber, limit: 9)
             let startingIndex = Int(startingIndexString) ?? 1
             
-            listMarker = try reader.readCharacter(in: List.orderedListMarkers)
-            kind = .ordered(startingIndex: startingIndex)
+            let listMarker = try reader.readCharacter(in: List.orderedListMarkers)
+            list = List(listMarker: listMarker, kind: .ordered(startingIndex: startingIndex))
         } else {
-            listMarker = reader.currentCharacter
-            kind = .unordered
+            let listMarker = reader.currentCharacter
+            list = List(listMarker: listMarker, kind: .unordered)
         }
-    
-        var list = List(listMarker: listMarker, kind: kind)
 
         func addTextToLastItem() throws {
             try require(!list.items.isEmpty)
@@ -81,7 +78,7 @@ internal struct List: Fragment {
                     try addTextToLastItem()
                 }
             case \.isNumber:
-                guard case .ordered(_) = kind else {
+                guard case .ordered(_) = list.kind else {
                     try addTextToLastItem()
                     continue
                 }
@@ -92,7 +89,7 @@ internal struct List: Fragment {
                     try reader.readCharacters(matching: \.isNumber, limit: 9)
                     let foundMarker = try reader.readCharacter(in: List.orderedListMarkers)
 
-                    guard foundMarker == listMarker else {
+                    guard foundMarker == list.listMarker else {
                         reader.moveToIndex(startIndex)
                         return list
                     }
