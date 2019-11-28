@@ -79,7 +79,7 @@ final class ModifierTests: XCTestCase {
 }
 
 extension ModifierTests {
-    static var allTests: [(String, TestClosure<ModifierTests>)] {
+    static var allTests: Linux.TestList<ModifierTests> {
         return [
             ("testModifierInput", testModifierInput),
             ("testInitializingParserWithModifiers", testInitializingParserWithModifiers),
