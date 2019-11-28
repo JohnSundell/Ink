@@ -6,19 +6,17 @@
 
 import XCTest
 
-#if !canImport(ObjectiveC)
-public func allTests() -> [XCTestCaseEntry] {
+public func allTests() -> [Linux.TestCase] {
     return [
-        testCase(CodeTests.allTests),
-        testCase(HeadingTests.allTests),
-        testCase(HorizontalLineTests.allTests),
-        testCase(HTMLTests.allTests),
-        testCase(ImageTests.allTests),
-        testCase(LinkTests.allTests),
-        testCase(ListTests.allTests),
-        testCase(MetadataTests.allTests),
-        testCase(ModifierTests.allTests),
-        testCase(TextFormattingTests.allTests)
+        Linux.makeTestCase(using: CodeTests.allTests),
+        Linux.makeTestCase(using: HeadingTests.allTests),
+        Linux.makeTestCase(using: HorizontalLineTests.allTests),
+        Linux.makeTestCase(using: HTMLTests.allTests),
+        Linux.makeTestCase(using: ImageTests.allTests),
+        Linux.makeTestCase(using: LinkTests.allTests),
+        Linux.makeTestCase(using: ListTests.allTests),
+        Linux.makeTestCase(using: MetadataTests.allTests),
+        Linux.makeTestCase(using: ModifierTests.allTests),
+        Linux.makeTestCase(using: TextFormattingTests.allTests)
     ]
 }
-#endif

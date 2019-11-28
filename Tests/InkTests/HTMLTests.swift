@@ -96,7 +96,7 @@ final class HTMLTests: XCTestCase {
 }
 
 extension HTMLTests {
-    static var allTests: [(String, TestClosure<HTMLTests>)] {
+    static var allTests: Linux.TestList<HTMLTests> {
         return [
             ("testTopLevelHTML", testTopLevelHTML),
             ("testNestedTopLevelHTML", testNestedTopLevelHTML),

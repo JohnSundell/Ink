@@ -139,7 +139,7 @@ final class TextFormattingTests: XCTestCase {
 }
 
 extension TextFormattingTests {
-    static var allTests: [(String, TestClosure<TextFormattingTests>)] {
+    static var allTests: Linux.TestList<TextFormattingTests> {
         return [
             ("testParagraph", testParagraph),
             ("testItalicText", testItalicText),

@@ -49,7 +49,7 @@ final class HeadingTests: XCTestCase {
 }
 
 extension HeadingTests {
-    static var allTests: [(String, TestClosure<HeadingTests>)] {
+    static var allTests: Linux.TestList<HeadingTests> {
         return [
             ("testHeading", testHeading),
             ("testHeadingsSeparatedBySingleNewline", testHeadingsSeparatedBySingleNewline),
