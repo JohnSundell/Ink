@@ -19,10 +19,10 @@ final class ListTests: XCTestCase {
     
     func test10DigitOrderedList() {
         let html = MarkdownParser().html(from: """
-        1234567890. not a list
+        1234567890. Not a list
         """)
 
-        XCTAssertEqual(html, "<p>1234567890. not a list</p>")
+        XCTAssertEqual(html, "<p>1234567890. Not a list</p>")
     }
     
     func testOrderedListParentheses() {
