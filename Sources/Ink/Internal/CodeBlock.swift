@@ -13,7 +13,8 @@ internal struct CodeBlock: Fragment {
     private var code: String
 
     static func read(using reader: inout Reader) throws -> CodeBlock {
-        try require(reader.readCount(of: marker) == 3)
+        let startingMarkerCount = reader.readCount(of: marker)
+        try require(startingMarkerCount >= 3)
 
         var language = reader.readUntilEndOfLine().drop(while: {char in char.isWhitespace})
         while let l = language.last, l.isWhitespace {
@@ -25,7 +26,7 @@ internal struct CodeBlock: Fragment {
             if code.last == "\n", reader.currentCharacter == marker {
                 let markerCount = reader.readCount(of: marker)
 
-                if markerCount == 3 {
+                if markerCount == startingMarkerCount {
                     code.removeLast()
                     break
                 } else {

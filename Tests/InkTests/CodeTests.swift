@@ -44,7 +44,19 @@ final class CodeTests: XCTestCase {
 
        XCTAssertEqual(html, "<pre><code class=\"swift\">code()</code></pre>")
    }
+    
+    func testCodeBlockManyBackticks() {
+        // there are 2 spaces after the swift label that need trimming too
+        let html = MarkdownParser().html(from: """
         
+        ```````````````````````````````` foo
+        bar
+        ````````````````````````````````
+        """)
+
+        XCTAssertEqual(html, "<pre><code class=\"foo\">bar</code></pre>")
+    }
+    
     func testEncodingSpecialCharactersWithinCodeBlock() {
         let html = MarkdownParser().html(from: """
         ```swift
