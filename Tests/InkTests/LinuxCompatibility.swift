@@ -9,10 +9,10 @@ import XCTest
 public enum Linux {}
 
 public extension Linux {
-    typealias TestCase = (type: XCTestCase.Type, manifest: TestManifest)
-    typealias TestManifest = [(name: String, runner: TestRunner)]
+    typealias TestCase = (testCaseClass: XCTestCase.Type, allTests: TestManifest)
+    typealias TestManifest = [(String, TestRunner)]
     typealias TestRunner = (XCTestCase) throws -> Void
-    typealias TestList<T: XCTestCase> = [(name: String, test: Test<T>)]
+    typealias TestList<T: XCTestCase> = [(String, Test<T>)]
     typealias Test<T: XCTestCase> = (T) -> () throws -> Void
 }
 
@@ -32,20 +32,20 @@ internal extension Linux {
 internal final class LinuxVerificationTests: XCTestCase {
     func testAllTestsRunOnLinux() {
         for testCase in allTests() {
-            let suite = testCase.type.defaultTestSuite
+            let type = testCase.testCaseClass
 
-            let testNames: [String] = suite.tests.map { test in
+            let testNames: [String] = type.defaultTestSuite.tests.map { test in
                 let components = test.name.components(separatedBy: .whitespaces)
                 return components[1].replacingOccurrences(of: "]", with: "")
             }
 
-            let linuxTestNames = Set(testCase.manifest.map { $0.name })
+            let linuxTestNames = Set(testCase.allTests.map { $0.0 })
 
             for name in testNames {
                 if !linuxTestNames.contains(name) {
                     XCTFail("""
-                    \(testCase.type).\(name) does not run on Linux.
-                    Please add it to \(testCase.type).allTests.
+                    \(type).\(name) does not run on Linux.
+                    Please add it to \(type).allTests.
                     """)
                 }
             }
