@@ -55,7 +55,7 @@ final class LinkTests: XCTestCase {
 }
 
 extension LinkTests {
-    static var allTests: [(String, TestClosure<LinkTests>)] {
+    static var allTests: Linux.TestList<LinkTests> {
         return [
             ("testLinkWithURL", testLinkWithURL),
             ("testLinkWithReference", testLinkWithReference),

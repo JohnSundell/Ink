@@ -74,7 +74,7 @@ private extension Reader {
                     return (name.dropLast(), true)
                 }
 
-                return (name, suffix.last == "/")
+                return (name, suffix.last == "/" || name == "!--")
             }
 
             advanceIndex()

@@ -136,7 +136,7 @@ final class ListTests: XCTestCase {
 }
 
 extension ListTests {
-    static var allTests: [(String, TestClosure<ListTests>)] {
+    static var allTests: Linux.TestList<ListTests> {
         return [
             ("testOrderedList", testOrderedList),
             ("testOrderedListWithoutIncrementedNumbers", testOrderedListWithoutIncrementedNumbers),

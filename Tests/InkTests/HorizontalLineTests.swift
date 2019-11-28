@@ -39,7 +39,7 @@ final class HorizontalLineTests: XCTestCase {
 }
 
 extension HorizontalLineTests {
-    static var allTests: [(String, TestClosure<HorizontalLineTests>)] {
+    static var allTests: Linux.TestList<HorizontalLineTests> {
         return [
             ("testHorizonalLineWithDashes", testHorizonalLineWithDashes),
             ("testHorizontalLineWithDashesAtTheStartOfString", testHorizontalLineWithDashesAtTheStartOfString),

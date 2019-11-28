@@ -43,7 +43,7 @@ final class ImageTests: XCTestCase {
 }
 
 extension ImageTests {
-    static var allTests: [(String, TestClosure<ImageTests>)] {
+    static var allTests: Linux.TestList<ImageTests> {
         return [
             ("testImageWithURL", testImageWithURL),
             ("testImageWithReference", testImageWithReference),

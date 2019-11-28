@@ -69,7 +69,7 @@ final class MetadataTests: XCTestCase {
 }
 
 extension MetadataTests {
-    static var allTests: [(String, TestClosure<MetadataTests>)] {
+    static var allTests: Linux.TestList<MetadataTests> {
         return [
             ("testParsingMetadata", testParsingMetadata),
             ("testDiscardingEmptyMetadataValues", testDiscardingEmptyMetadataValues),
