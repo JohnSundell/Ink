@@ -10,8 +10,7 @@ internal struct List: Fragment {
     var modifierTarget: Modifier.Target { .lists }
 
     private var listMarker: Character
-    private var isOrdered: Bool
-    private var startingIndex: Int?
+    private var kind: Kind
     private var items = [Item]()
 
     static func read(using reader: inout Reader) throws -> List {
@@ -21,23 +20,24 @@ internal struct List: Fragment {
     private static func read(using reader: inout Reader,
                              indentationLength: Int) throws -> List {
         let isOrdered = reader.currentCharacter.isNumber
-    
+
+        var kind: Kind
         let listMarker: Character
-        let startingIndex: Int?
         if isOrdered {
             let startIndex = reader.currentIndex
             defer { reader.moveToIndex(startIndex) }
             
             let startingIndexString = try reader.readCharacters(matching: \.isNumber, limit: 9)
-            startingIndex = Int(startingIndexString)
+            let startingIndex = Int(startingIndexString) ?? 1
             
             listMarker = try reader.readCharacter(in: List.orderedListMarkers)
+            kind = .ordered(startingIndex: startingIndex)
         } else {
             listMarker = reader.currentCharacter
-            startingIndex = nil
+            kind = .unordered
         }
     
-        var list = List(listMarker: listMarker, isOrdered: isOrdered, startingIndex: startingIndex)
+        var list = List(listMarker: listMarker, kind: kind)
 
         func addTextToLastItem() throws {
             try require(!list.items.isEmpty)
@@ -80,7 +80,12 @@ internal struct List: Fragment {
                     reader.moveToIndex(fallbackIndex)
                     try addTextToLastItem()
                 }
-            case \.isNumber where list.isOrdered:
+            case \.isNumber:
+                guard case .ordered(_) = kind else {
+                    try addTextToLastItem()
+                    continue
+                }
+
                 let startIndex = reader.currentIndex
 
                 do {
@@ -123,13 +128,19 @@ internal struct List: Fragment {
 
     func html(usingURLs urls: NamedURLCollection,
               modifiers: ModifierCollection) -> String {
-        let tagName = isOrdered ? "ol" : "ul"
-        
+        let tagName: String
         let startAttr: String
-        if let startingIndex = startingIndex, startingIndex != 1 {
-            startAttr = #" start="\#(startingIndex)""#
-        } else {
+        switch kind {
+        case .unordered:
+            tagName = "ul"
             startAttr = ""
+        case let .ordered(startingIndex):
+            tagName = "ol"
+            if startingIndex != 1 {
+                startAttr = #" start="\#(startingIndex)""#
+            } else {
+                startAttr = ""
+            }
         }
 
         let body = items.reduce(into: "") { html, item in
@@ -151,5 +162,12 @@ extension List {
             let listHTML = nestedList?.html(usingURLs: urls, modifiers: modifiers)
             return "<li>\(textHTML)\(listHTML ?? "")</li>"
         }
+    }
+}
+
+extension List {
+    enum Kind {
+        case unordered
+        case ordered(startingIndex: Int)
     }
 }
