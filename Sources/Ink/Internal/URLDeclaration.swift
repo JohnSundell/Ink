@@ -5,12 +5,12 @@
 */
 
 internal struct URLDeclaration: Readable {
-    var name: Substring
+    var name: String
     var url: URL
 
     static func read(using reader: inout Reader) throws -> Self {
         try reader.read("[")
-        let name = try reader.read(until: "]")
+        let name = try reader.read(until: "]").lowercased()
         try reader.read(":")
         try reader.readWhitespaces()
         let url = reader.readUntilEndOfLine()

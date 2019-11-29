@@ -42,7 +42,7 @@ public struct MarkdownParser {
     public func parse(_ markdown: String) -> Markdown {
         var reader = Reader(string: markdown)
         var fragments = [ParsedFragment]()
-        var urlsByName = [Substring : URL]()
+        var urlsByName = [String : URL]()
         var metadata: Metadata?
 
         while !reader.didReachEnd {
