@@ -4,6 +4,7 @@
 *  MIT license, see LICENSE file for details
 */
 
+///
 /// A parser used to convert Markdown text into HTML
 ///
 /// You can use an instance of this type to either convert
