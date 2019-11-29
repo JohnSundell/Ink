@@ -18,8 +18,9 @@ internal struct FormattedText: Readable, HTMLConvertible {
     }
 
     static func read(using reader: inout Reader,
-                     terminator: Character?) -> Self {
-        var parser = Parser(reader: reader, terminator: terminator)
+                     terminator: Character?,
+                     context: Context = .unspecified) -> Self {
+        var parser = Parser(reader: reader, terminator: terminator, context: context)
         parser.parse()
         reader = parser.reader
         return parser.text
@@ -62,14 +63,16 @@ private extension FormattedText {
     struct Parser {
         var reader: Reader
         let terminator: Character?
+        let context: Context
         var text = FormattedText()
         var pendingTextRange: Range<String.Index>
         var activeStyles = Set<TextStyle>()
         var activeStyleMarkers = [TextStyleMarker]()
 
-        init(reader: Reader, terminator: Character?) {
+        init(reader: Reader, terminator: Character?, context: Context) {
             self.reader = reader
             self.terminator = terminator
+            self.context = context
             self.pendingTextRange = reader.currentIndex..<reader.endIndex
         }
 
@@ -169,7 +172,7 @@ private extension FormattedText {
         }
 
         private mutating func parseNonTriggeringCharacter() {
-            guard reader.currentCharacter != "\\" else {
+            if reader.currentCharacter == "\\" && context != .withinBlock {
                 addPendingTextIfNeeded()
                 skipCharacter()
                 return
@@ -297,5 +300,12 @@ private extension FormattedText {
             default: return nil
             }
         }
+    }
+}
+
+extension FormattedText {
+    enum Context {
+        case unspecified
+        case withinBlock
     }
 }

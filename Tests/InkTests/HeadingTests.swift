@@ -58,6 +58,14 @@ final class HeadingTests: XCTestCase {
         let html = MarkdownParser().html(from: markdown)
         XCTAssertEqual(html, "<h1></h1>")
     }
+
+    func testHeadingWithHardLineBreak() {
+        let markdown = """
+        ### foo\\
+        """
+        let html = MarkdownParser().html(from: markdown)
+        XCTAssertEqual(html, "<h3>foo\\</h3>")
+    }
 }
 
 extension HeadingTests {
@@ -70,7 +78,8 @@ extension HeadingTests {
             ("testHeadingWithPreviousNewlineAndWhitespace", testHeadingWithPreviousNewlineAndWhitespace),
             ("testInvalidHeaderLevel", testInvalidHeaderLevel),
             ("testRemovingTrailingMarkersFromHeading", testRemovingTrailingMarkersFromHeading),
-            ("testHeadingWithOnlyTrailingMarkers", testHeadingWithOnlyTrailingMarkers)
+            ("testHeadingWithOnlyTrailingMarkers", testHeadingWithOnlyTrailingMarkers),
+            ("testHeadingWithHardLineBreak", testHeadingWithHardLineBreak)
         ]
     }
 }
