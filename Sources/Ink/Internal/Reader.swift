@@ -85,7 +85,6 @@ extension Reader {
         while !didReachEnd
               && count < maxCount
               && currentCharacter[keyPath: keyPath] {
-
             advanceIndex()
             count += 1
         }
