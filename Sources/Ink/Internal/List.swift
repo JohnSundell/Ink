@@ -19,22 +19,22 @@ internal struct List: Fragment {
 
     private static func read(using reader: inout Reader,
                              indentationLength: Int) throws -> List {
+        let startIndex = reader.currentIndex
         let isOrdered = reader.currentCharacter.isNumber
 
         var list: List
         if isOrdered {
-            let startIndex = reader.currentIndex
-            defer { reader.moveToIndex(startIndex) }
-            
-            let startingIndexString = try reader.readCharacters(matching: \.isNumber, max: 9)
-            let startingIndex = Int(startingIndexString) ?? 1
+            let firstNumberString = try reader.readCharacters(matching: \.isNumber, max: 9)
+            let firstNumber = Int(firstNumberString) ?? 1
             
             let listMarker = try reader.readCharacter(in: List.orderedListMarkers)
-            list = List(listMarker: listMarker, kind: .ordered(startingIndex: startingIndex))
+            list = List(listMarker: listMarker, kind: .ordered(firstNumber: firstNumber))
         } else {
             let listMarker = reader.currentCharacter
             list = List(listMarker: listMarker, kind: .unordered)
         }
+
+        reader.moveToIndex(startIndex)
 
         func addTextToLastItem() throws {
             try require(!list.items.isEmpty)
@@ -165,6 +165,6 @@ extension List {
 extension List {
     enum Kind {
         case unordered
-        case ordered(startingIndex: Int)
+        case ordered(firstNumber: Int)
     }
 }
