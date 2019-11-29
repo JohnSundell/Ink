@@ -1,0 +1,39 @@
+name: run_tests
+
+on: [push, pull_request]
+
+jobs:
+  test-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Install Swift
+      uses: YOCKOW/Action-setup-swift@master
+    - name: Install xcbeautify
+      uses: Cyberbeni/install-swift-tool@print-commit-hash
+      with:
+        url: https://github.com/Cyberbeni/xcbeautify
+        branch: linux-fixes
+    - name: Test
+      run: |
+        set -o pipefail
+        swift test --enable-code-coverage | xcbeautify
+  #  - name: Codecov
+  #    run: |
+  #      llvm-cov export -format="lcov" .build/debug/InkPackageTests.xctest -instr-profile .build/debug/codecov/default.profdata > info.lcov
+  #      bash <(curl -s https://codecov.io/bash) -J 'Ink' -n 'linux' -F 'linux'
+  #    env:
+  #      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      
+  test-macos:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Test
+      run: fastlane scan --scheme "InkTests"
+#    - name: Codecov
+#      run: bash <(curl -s https://codecov.io/bash) -J 'Ink' -n 'macos' -F 'macos'
+#      env:
+#        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
