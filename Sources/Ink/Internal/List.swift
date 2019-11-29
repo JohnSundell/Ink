@@ -126,17 +126,17 @@ internal struct List: Fragment {
     func html(usingURLs urls: NamedURLCollection,
               modifiers: ModifierCollection) -> String {
         let tagName: String
-        let startAttr: String
+        let startAttribute: String
         switch kind {
         case .unordered:
             tagName = "ul"
-            startAttr = ""
+            startAttribute = ""
         case let .ordered(startingIndex):
             tagName = "ol"
             if startingIndex != 1 {
-                startAttr = #" start="\#(startingIndex)""#
+                startAttribute = #" start="\#(startingIndex)""#
             } else {
-                startAttr = ""
+                startAttribute = ""
             }
         }
 
@@ -144,11 +144,11 @@ internal struct List: Fragment {
             html.append(item.html(usingURLs: urls, modifiers: modifiers))
         }
 
-        return "<\(tagName)\(startAttr)>\(body)</\(tagName)>"
+        return "<\(tagName)\(startAttribute)>\(body)</\(tagName)>"
     }
 }
 
-extension List {
+private extension List {
     struct Item: HTMLConvertible {
         var text: FormattedText
         var nestedList: List? = nil
@@ -160,9 +160,7 @@ extension List {
             return "<li>\(textHTML)\(listHTML ?? "")</li>"
         }
     }
-}
 
-extension List {
     enum Kind {
         case unordered
         case ordered(firstNumber: Int)
