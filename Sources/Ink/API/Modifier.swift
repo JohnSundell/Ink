@@ -4,6 +4,7 @@
 *  MIT license, see LICENSE file for details
 */
 
+///
 /// Modifiers can be attached to a `MarkdownParser` and are used
 /// to customize Ink's parsing process. Each modifier is associated
 /// with a given `Target`, which determines which type of Markdown
