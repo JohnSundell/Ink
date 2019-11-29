@@ -46,6 +46,18 @@ final class HeadingTests: XCTestCase {
         let html = MarkdownParser().html(from: markdown)
         XCTAssertEqual(html, "<p>\(markdown)</p>")
     }
+
+    func testRemovingTrailingMarkersFromHeading() {
+        let markdown = "# Heading #######"
+        let html = MarkdownParser().html(from: markdown)
+        XCTAssertEqual(html, "<h1>Heading</h1>")
+    }
+
+    func testHeadingWithOnlyTrailingMarkers() {
+        let markdown = "# #######"
+        let html = MarkdownParser().html(from: markdown)
+        XCTAssertEqual(html, "<h1></h1>")
+    }
 }
 
 extension HeadingTests {
@@ -56,7 +68,9 @@ extension HeadingTests {
             ("testHeadingsWithLeadingNumbers", testHeadingsWithLeadingNumbers),
             ("testHeadingWithPreviousWhitespace", testHeadingWithPreviousWhitespace),
             ("testHeadingWithPreviousNewlineAndWhitespace", testHeadingWithPreviousNewlineAndWhitespace),
-            ("testInvalidHeaderLevel", testInvalidHeaderLevel)
+            ("testInvalidHeaderLevel", testInvalidHeaderLevel),
+            ("testRemovingTrailingMarkersFromHeading", testRemovingTrailingMarkersFromHeading),
+            ("testHeadingWithOnlyTrailingMarkers", testHeadingWithOnlyTrailingMarkers)
         ]
     }
 }

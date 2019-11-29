@@ -21,7 +21,21 @@ internal struct Heading: Fragment {
 
     func html(usingURLs urls: NamedURLCollection,
               modifiers: ModifierCollection) -> String {
-        let body = text.html(usingURLs: urls, modifiers: modifiers)
+        var body = text.html(usingURLs: urls, modifiers: modifiers)
+
+        if !body.isEmpty {
+            let lastCharacterIndex = body.index(before: body.endIndex)
+            var trimIndex = lastCharacterIndex
+
+            while body[trimIndex] == "#", trimIndex != body.startIndex {
+                trimIndex = body.index(before: trimIndex)
+            }
+
+            if trimIndex != lastCharacterIndex {
+                body = String(body[..<trimIndex])
+            }
+        }
+
         let tagName = "h\(level)"
         return "<\(tagName)>\(body)</\(tagName)>"
     }
