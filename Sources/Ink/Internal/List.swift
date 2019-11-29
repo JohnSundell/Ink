@@ -5,8 +5,6 @@
 */
 
 internal struct List: Fragment {
-    private static let orderedListMarkers: Set<Character> = [".", ")"]
-    
     var modifierTarget: Modifier.Target { .lists }
 
     private var listMarker: Character
@@ -23,6 +21,7 @@ internal struct List: Fragment {
         let isOrdered = reader.currentCharacter.isNumber
 
         var list: List
+
         if isOrdered {
             let firstNumberString = try reader.readCharacters(matching: \.isNumber, max: 9)
             let firstNumber = Int(firstNumberString) ?? 1
@@ -78,7 +77,7 @@ internal struct List: Fragment {
                     try addTextToLastItem()
                 }
             case \.isNumber:
-                guard case .ordered(_) = list.kind else {
+                guard case .ordered = list.kind else {
                     try addTextToLastItem()
                     continue
                 }
@@ -127,12 +126,14 @@ internal struct List: Fragment {
               modifiers: ModifierCollection) -> String {
         let tagName: String
         let startAttribute: String
+
         switch kind {
         case .unordered:
             tagName = "ul"
             startAttribute = ""
         case let .ordered(startingIndex):
             tagName = "ol"
+
             if startingIndex != 1 {
                 startAttribute = #" start="\#(startingIndex)""#
             } else {
@@ -165,4 +166,6 @@ private extension List {
         case unordered
         case ordered(firstNumber: Int)
     }
+
+    static let orderedListMarkers: Set<Character> = [".", ")"]
 }
