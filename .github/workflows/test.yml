@@ -1,4 +1,4 @@
-name: run_tests
+name: Test latest macOS/Linux
 
 on: [push, pull_request]
 
@@ -32,7 +32,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v1
     - name: Test
-      run: fastlane scan --scheme "InkTests"
+      run: |
+        set -o pipefail
+        swift test 2>&1 | xcpretty
 #    - name: Codecov
 #      run: bash <(curl -s https://codecov.io/bash) -J 'Ink' -n 'macos' -F 'macos'
 #      env:
