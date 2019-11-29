@@ -15,8 +15,8 @@ internal struct CodeBlock: Fragment {
     static func read(using reader: inout Reader) throws -> CodeBlock {
         let startingMarkerCount = reader.readCount(of: marker)
         try require(startingMarkerCount >= 3)
-
-        var language = reader.readUntilEndOfLine().drop(while: {char in char.isWhitespace})
+        reader.discardWhitespaces()
+        var language = reader.readUntilEndOfLine()
         while let l = language.last, l.isWhitespace {
             language = language.dropLast()
         }
