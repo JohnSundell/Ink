@@ -93,6 +93,7 @@ extension CodeTests {
             ("testCodeBlockWithJustBackticks", testCodeBlockWithJustBackticks),
             ("testCodeBlockWithBackticksAndLabel", testCodeBlockWithBackticksAndLabel),
             ("testCodeBlockWithBackticksAndLabelNeedingTrimming", testCodeBlockWithBackticksAndLabelNeedingTrimming),
+            ("testCodeBlockManyBackticks", testCodeBlockManyBackticks),
             ("testEncodingSpecialCharactersWithinCodeBlock", testEncodingSpecialCharactersWithinCodeBlock),
             ("testIgnoringFormattingWithinCodeBlock", testIgnoringFormattingWithinCodeBlock)
         ]
