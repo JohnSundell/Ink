@@ -34,8 +34,9 @@ jobs:
     - name: Test
       run: |
         set -o pipefail
-        swift test 2>&1 | xcpretty
+        swift test 2>&1 --enable-code-coverage | xcpretty
 #    - name: Codecov
+#      llvm-cov export -format="lcov" .build/debug/InkPackageTests.xctest -instr-profile .build/debug/codecov/default.profdata > info.lcov
 #      run: bash <(curl -s https://codecov.io/bash) -J 'Ink' -n 'macos' -F 'macos'
 #      env:
 #        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
