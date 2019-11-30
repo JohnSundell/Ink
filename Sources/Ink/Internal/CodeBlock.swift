@@ -31,6 +31,7 @@ internal struct CodeBlock: Fragment {
                     break
                 } else {
                     code.append(String(repeating: marker, count: markerCount))
+                    if reader.didReachEnd { break } //maybe are at end of file? break for now?
                 }
             }
 
