@@ -4,6 +4,7 @@
 *  MIT license, see LICENSE file for details
 */
 
+///
 /// A parser used to convert Markdown text into HTML
 ///
 /// You can use an instance of this type to either convert
@@ -41,7 +42,7 @@ public struct MarkdownParser {
     public func parse(_ markdown: String) -> Markdown {
         var reader = Reader(string: markdown)
         var fragments = [ParsedFragment]()
-        var urlsByName = [Substring : URL]()
+        var urlsByName = [String : URL]()
         var metadata: Metadata?
 
         while !reader.didReachEnd {
@@ -117,7 +118,7 @@ private extension MarkdownParser {
         case "-" where character == nextCharacter,
              "*" where character == nextCharacter:
             return HorizontalLine.self
-        case "-", "*", \.isNumber: return List.self
+        case "-", "*", "+", \.isNumber: return List.self
         default: return Paragraph.self
         }
     }

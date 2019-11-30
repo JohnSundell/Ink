@@ -7,7 +7,8 @@
 internal struct List: Fragment {
     var modifierTarget: Modifier.Target { .lists }
 
-    private var isOrdered: Bool
+    private var listMarker: Character
+    private var kind: Kind
     private var items = [Item]()
 
     static func read(using reader: inout Reader) throws -> List {
@@ -16,7 +17,23 @@ internal struct List: Fragment {
 
     private static func read(using reader: inout Reader,
                              indentationLength: Int) throws -> List {
-        var list = List(isOrdered: reader.currentCharacter.isNumber)
+        let startIndex = reader.currentIndex
+        let isOrdered = reader.currentCharacter.isNumber
+
+        var list: List
+
+        if isOrdered {
+            let firstNumberString = try reader.readCharacters(matching: \.isNumber, max: 9)
+            let firstNumber = Int(firstNumberString) ?? 1
+            
+            let listMarker = try reader.readCharacter(in: List.orderedListMarkers)
+            list = List(listMarker: listMarker, kind: .ordered(firstNumber: firstNumber))
+        } else {
+            let listMarker = reader.currentCharacter
+            list = List(listMarker: listMarker, kind: .unordered)
+        }
+
+        reader.moveToIndex(startIndex)
 
         func addTextToLastItem() throws {
             try require(!list.items.isEmpty)
@@ -59,12 +76,23 @@ internal struct List: Fragment {
                     reader.moveToIndex(fallbackIndex)
                     try addTextToLastItem()
                 }
-            case \.isNumber where list.isOrdered:
+            case \.isNumber:
+                guard case .ordered = list.kind else {
+                    try addTextToLastItem()
+                    continue
+                }
+
                 let startIndex = reader.currentIndex
 
                 do {
-                    try reader.readCharacters(matching: \.isNumber)
-                    try reader.read(".")
+                    try reader.readCharacters(matching: \.isNumber, max: 9)
+                    let foundMarker = try reader.readCharacter(in: List.orderedListMarkers)
+
+                    guard foundMarker == list.listMarker else {
+                        reader.moveToIndex(startIndex)
+                        return list
+                    }
+
                     try reader.readWhitespaces()
 
                     list.items.append(Item(text: .readLine(using: &reader)))
@@ -72,11 +100,15 @@ internal struct List: Fragment {
                     reader.moveToIndex(startIndex)
                     try addTextToLastItem()
                 }
-            case "-", "*":
+            case "-", "*", "+":
                 guard let nextCharacter = reader.nextCharacter,
                       nextCharacter.isSameLineWhitespace else {
                     try addTextToLastItem()
                     continue
+                }
+
+                guard reader.currentCharacter == list.listMarker else {
+                    return list
                 }
 
                 reader.advanceIndex()
@@ -92,17 +124,32 @@ internal struct List: Fragment {
 
     func html(usingURLs urls: NamedURLCollection,
               modifiers: ModifierCollection) -> String {
-        let tagName = isOrdered ? "ol" : "ul"
+        let tagName: String
+        let startAttribute: String
+
+        switch kind {
+        case .unordered:
+            tagName = "ul"
+            startAttribute = ""
+        case let .ordered(startingIndex):
+            tagName = "ol"
+
+            if startingIndex != 1 {
+                startAttribute = #" start="\#(startingIndex)""#
+            } else {
+                startAttribute = ""
+            }
+        }
 
         let body = items.reduce(into: "") { html, item in
             html.append(item.html(usingURLs: urls, modifiers: modifiers))
         }
 
-        return "<\(tagName)>\(body)</\(tagName)>"
+        return "<\(tagName)\(startAttribute)>\(body)</\(tagName)>"
     }
 }
 
-extension List {
+private extension List {
     struct Item: HTMLConvertible {
         var text: FormattedText
         var nestedList: List? = nil
@@ -114,4 +161,11 @@ extension List {
             return "<li>\(textHTML)\(listHTML ?? "")</li>"
         }
     }
+
+    enum Kind {
+        case unordered
+        case ordered(firstNumber: Int)
+    }
+
+    static let orderedListMarkers: Set<Character> = [".", ")"]
 }

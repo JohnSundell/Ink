@@ -4,6 +4,7 @@
 *  MIT license, see LICENSE file for details
 */
 
+///
 /// A parsed Markdown value, which contains its rendered
 /// HTML representation, as well as any metadata found at
 /// the top of the Markdown document.
