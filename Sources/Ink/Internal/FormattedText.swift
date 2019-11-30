@@ -29,6 +29,8 @@ internal struct FormattedText: Readable, HTMLConvertible {
               modifiers: ModifierCollection) -> String {
         return components.reduce(into: "") { string, component in
             switch component {
+            case .linebreak:
+                string.append("<br />")
             case .text(let text):
                 string.append(String(text))
             case .styleMarker(let marker):
@@ -54,6 +56,7 @@ internal struct FormattedText: Readable, HTMLConvertible {
 
 private extension FormattedText {
     enum Component {
+        case linebreak
         case text(Substring)
         case styleMarker(TextStyleMarker)
         case fragment(Fragment, rawString: Substring)
@@ -74,6 +77,9 @@ private extension FormattedText {
         }
 
         mutating func parse() {
+            /// For the purpose of hard line break parsing, indicates
+            /// whether the previous two characters were spaces.
+            var twoSpaceSequence = false
             while !reader.didReachEnd {
                 do {
                     if let terminator = terminator {
@@ -89,6 +95,12 @@ private extension FormattedText {
                             break
                         }
 
+                        guard reader.previousCharacter != "\\" && !twoSpaceSequence else {
+                            text.components.append(.linebreak)
+                            skipCharacter()
+                            continue
+                        }
+
                         guard !nextCharacter.isAny(of: ["\n", "#", "<", "`"]) else {
                             break
                         }
@@ -100,6 +112,9 @@ private extension FormattedText {
                         skipCharacter()
                         continue
                     }
+
+                    twoSpaceSequence = reader.previousCharacter == " "
+                        && reader.currentCharacter == " "
 
                     if reader.currentCharacter.isSameLineWhitespace {
                         guard let nextCharacter = reader.nextCharacter else {
