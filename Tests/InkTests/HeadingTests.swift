@@ -61,7 +61,7 @@ final class HeadingTests: XCTestCase {
 
     func testHeadingWithHardLineBreak() {
         let markdown = """
-        ### Heading\\
+        ### \\Heading\\
         """
         let html = MarkdownParser().html(from: markdown)
         XCTAssertEqual(html, "<h3>Heading\\</h3>")

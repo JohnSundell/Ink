@@ -172,7 +172,12 @@ private extension FormattedText {
         }
 
         private mutating func parseNonTriggeringCharacter() {
-            if reader.currentCharacter == "\\" && context != .withinBlock {
+            // If the current character is a `\`, then
+            // we have special handling for it. However,
+            // this does *not* apply at the end of the line
+            // within block contexts.
+            let isEndOfLine = reader.nextCharacter?.isNewline ?? true
+            if reader.currentCharacter == "\\" && !(context == .withinBlock && isEndOfLine) {
                 addPendingTextIfNeeded()
                 skipCharacter()
                 return
