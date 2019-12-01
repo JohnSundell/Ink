@@ -5,7 +5,7 @@
 */
 
 internal struct URLDeclaration: Readable {
-    var name: Substring
+    var name: String
     var url: URL
 
     static func read(using reader: inout Reader) throws -> Self {
@@ -15,6 +15,6 @@ internal struct URLDeclaration: Readable {
         try reader.readWhitespaces()
         let url = reader.readUntilEndOfLine()
 
-        return URLDeclaration(name: name, url: url)
+        return URLDeclaration(name: name.lowercased(), url: url)
     }
 }

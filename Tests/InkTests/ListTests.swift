@@ -16,6 +16,23 @@ final class ListTests: XCTestCase {
 
         XCTAssertEqual(html, #"<ol><li>One</li><li>Two</li></ol>"#)
     }
+    
+    func test10DigitOrderedList() {
+        let html = MarkdownParser().html(from: """
+        1234567890. Not a list
+        """)
+
+        XCTAssertEqual(html, "<p>1234567890. Not a list</p>")
+    }
+    
+    func testOrderedListParentheses() {
+        let html = MarkdownParser().html(from: """
+        1) One
+        2) Two
+        """)
+
+        XCTAssertEqual(html, #"<ol><li>One</li><li>Two</li></ol>"#)
+    }
 
     func testOrderedListWithoutIncrementedNumbers() {
         let html = MarkdownParser().html(from: """
@@ -40,11 +57,33 @@ final class ListTests: XCTestCase {
     func testUnorderedList() {
         let html = MarkdownParser().html(from: """
         - One
-        * Two
+        - Two
         - Three
         """)
 
         XCTAssertEqual(html, "<ul><li>One</li><li>Two</li><li>Three</li></ul>")
+    }
+    
+    func testMixedUnorderedList() {
+        let html = MarkdownParser().html(from: """
+        - One
+        * Two
+        * Three
+        - Four
+        """)
+
+        XCTAssertEqual(html, "<ul><li>One</li></ul><ul><li>Two</li><li>Three</li></ul><ul><li>Four</li></ul>")
+    }
+    
+    func testMixedList() {
+        let html = MarkdownParser().html(from: """
+        1. One
+        2. Two
+        3) Three
+        * Four
+        """)
+        
+        XCTAssertEqual(html, #"<ol><li>One</li><li>Two</li></ol><ol start="3"><li>Three</li></ol><ul><li>Four</li></ul>"#)
     }
 
     func testUnorderedListWithMultiLineItem() {
@@ -100,9 +139,13 @@ extension ListTests {
     static var allTests: Linux.TestList<ListTests> {
         return [
             ("testOrderedList", testOrderedList),
+            ("test10DigitOrderedList", test10DigitOrderedList),
+            ("testOrderedListParentheses", testOrderedListParentheses),
             ("testOrderedListWithoutIncrementedNumbers", testOrderedListWithoutIncrementedNumbers),
             ("testOrderedListWithInvalidNumbers", testOrderedListWithInvalidNumbers),
             ("testUnorderedList", testUnorderedList),
+            ("testMixedUnorderedList", testMixedUnorderedList),
+            ("testMixedList", testMixedList),
             ("testUnorderedListWithMultiLineItem", testUnorderedListWithMultiLineItem),
             ("testUnorderedListWithNestedList", testUnorderedListWithNestedList),
             ("testUnorderedListWithInvalidMarker", testUnorderedListWithInvalidMarker)

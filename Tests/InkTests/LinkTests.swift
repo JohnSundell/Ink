@@ -23,6 +23,18 @@ final class LinkTests: XCTestCase {
         XCTAssertEqual(html, #"<p><a href="swiftbysundell.com">Title</a></p>"#)
     }
 
+    func testCaseMismatchedLinkWithReference() {
+        let html = MarkdownParser().html(from: """
+        [Title][Foo]
+        [Title][αγω]
+
+        [FOO]: /url
+        [ΑΓΩ]: /φου
+        """)
+
+        XCTAssertEqual(html, #"<p><a href="/url">Title</a> <a href="/φου">Title</a></p>"#)
+    }
+
     func testNumericLinkWithReference() {
         let html = MarkdownParser().html(from: """
         [1][1]
@@ -59,6 +71,7 @@ extension LinkTests {
         return [
             ("testLinkWithURL", testLinkWithURL),
             ("testLinkWithReference", testLinkWithReference),
+            ("testCaseMismatchedLinkWithReference", testCaseMismatchedLinkWithReference),
             ("testNumericLinkWithReference", testNumericLinkWithReference),
             ("testBoldLinkWithInternalMarkers", testBoldLinkWithInternalMarkers),
             ("testBoldLinkWithExternalMarkers", testBoldLinkWithExternalMarkers),
