@@ -27,7 +27,6 @@ internal struct CodeBlock: Fragment {
                 let markerCount = reader.readCount(of: marker)
 
                 if markerCount == startingMarkerCount {
-                    code.removeLast()
                     break
                 } else {
                     code.append(String(repeating: marker, count: markerCount))

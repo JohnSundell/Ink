@@ -21,7 +21,7 @@ final class CodeTests: XCTestCase {
         ```
         """)
 
-        XCTAssertEqual(html, "<pre><code>code()\nblock()</code></pre>")
+        XCTAssertEqual(html, "<pre><code>code()\nblock()\n</code></pre>")
     }
 
     func testCodeBlockWithBackticksAndLabel() {
@@ -31,7 +31,7 @@ final class CodeTests: XCTestCase {
         ```
         """)
 
-        XCTAssertEqual(html, "<pre><code class=\"swift\">code()</code></pre>")
+        XCTAssertEqual(html, "<pre><code class=\"swift\">code()\n</code></pre>")
     }
     
     func testCodeBlockWithBackticksAndLabelNeedingTrimming() {
@@ -42,7 +42,7 @@ final class CodeTests: XCTestCase {
        ```
        """)
 
-       XCTAssertEqual(html, "<pre><code class=\"swift\">code()</code></pre>")
+       XCTAssertEqual(html, "<pre><code class=\"swift\">code()\n</code></pre>")
    }
     
     func testCodeBlockManyBackticks() {
@@ -54,7 +54,7 @@ final class CodeTests: XCTestCase {
         ````````````````````````````````
         """)
 
-        XCTAssertEqual(html, "<pre><code class=\"foo\">bar</code></pre>")
+        XCTAssertEqual(html, "<pre><code class=\"foo\">bar\n</code></pre>")
     }
     
     func testEncodingSpecialCharactersWithinCodeBlock() {
@@ -65,7 +65,7 @@ final class CodeTests: XCTestCase {
         """)
 
         XCTAssertEqual(html, """
-        <pre><code class="swift">Generic&lt;T&gt;() &amp;&amp; expression()</code></pre>
+        <pre><code class="swift">Generic&lt;T&gt;() &amp;&amp; expression()\n</code></pre>
         """)
     }
 
@@ -81,7 +81,7 @@ final class CodeTests: XCTestCase {
         XCTAssertEqual(html, """
         <pre><code># Not A Header
         return View()
-        - Not a list</code></pre>
+        - Not a list\n</code></pre>
         """)
     }
 }
