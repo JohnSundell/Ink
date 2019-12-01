@@ -17,7 +17,7 @@ internal struct CodeBlock: Fragment {
         try require(startingMarkerCount >= 3)
         reader.discardWhitespaces()
         var language = reader.readUntilEndOfLine()
-        while let l = language.last, l.isWhitespace {
+        while language.last?.isWhitespace == true {
             language = language.dropLast()
         }
         var code = ""
