@@ -7,23 +7,60 @@
 import Foundation
 import Ink
 
-guard CommandLine.arguments.count > 1 else {
-    print("""
-    Ink: Markdown -> HTML converter
-    -------------------------------
-    Pass a Markdown string to convert as input,
-    and HTML will be returned as output. To use
-    STDIN as input, call ink with "-" as a single
-    argument, like this: '$ ink -'.
-    """)
+if CommandLine.arguments.contains(where: { $0 == "-h" || $0 == "--help" }) {
+    print(helpMessage, on: .standardOut)
     exit(0)
 }
 
-var markdown = CommandLine.arguments[1]
+if CommandLine.arguments.contains(where: { $0 == "--version" }) {
+    print(versionMessage, on: .standardOut)
+    exit(0)
+}
 
-if markdown == "-" {
+let markdown: String
+
+if CommandLine.arguments.count == 1 {
+    // no arguments, parse stdin
     markdown = AnyIterator { readLine() }.joined(separator: "\n")
+} else if CommandLine.arguments[1] == "-m" || CommandLine.arguments[1] == "--markdown" {
+    // first argument -m or --markdown, parse Markdown string
+    guard CommandLine.arguments.count == 3 else {
+        print("-m, --markdown flag takes a single following argument", on: .standardError)
+        print(usageMessage, on: .standardError)
+        exit(1)
+    }
+    markdown = CommandLine.arguments[2]
+} else if CommandLine.arguments.count == 2 {
+    // single argument, parse contents of file
+    let fileUrl: URL
+    if CommandLine.arguments[1].hasPrefix("/") {
+        fileUrl = URL(fileURLWithPath: CommandLine.arguments[1], isDirectory: false)
+    } else {
+        let dir = FileManager.default.currentDirectoryPath
+        let dirUrl = URL(fileURLWithPath: dir, isDirectory: true)
+        fileUrl = dirUrl.appendingPathComponent(CommandLine.arguments[1])
+    }
+
+    do {
+        // this is 5x more efficient than 'let data = try String(contentsOf: fileUrl)'
+        let data = try Data(contentsOf: fileUrl)
+        guard let string = String(data: data, encoding: .utf8) else {
+            throw StringReadingError()
+        }
+
+        markdown = string
+    } catch {
+        print(error.localizedDescription, on: .standardError)
+        print(usageMessage, on: .standardError)
+        exit(2)
+    }
+} else {
+    // incorrect number of arguments
+    print("Too many arguments", on: .standardError)
+    print(usageMessage, on: .standardError)
+    exit(3)
 }
 
 let parser = MarkdownParser()
-print(parser.html(from: markdown))
+print(parser.html(from: markdown), on: .standardOut)
+exit(0)
