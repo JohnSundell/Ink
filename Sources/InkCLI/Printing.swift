@@ -27,6 +27,6 @@ called with the -m option, the following
 argument will be parsed as a Markdown string.
 """
 
-internal func printError(_ error: String) {
+internal func printError(_ error: CustomStringConvertible) {
     fputs("\(error)\n", stderr)
 }
