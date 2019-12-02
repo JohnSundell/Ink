@@ -7,60 +7,56 @@
 import Foundation
 import Ink
 
-if CommandLine.arguments.contains(where: { $0 == "-h" || $0 == "--help" }) {
-    print(helpMessage, on: .standardOut)
-    exit(0)
-}
+let arguments = CommandLine.arguments
 
-if CommandLine.arguments.contains(where: { $0 == "--version" }) {
-    print(versionMessage, on: .standardOut)
+if arguments.contains(where: { $0 == "-h" || $0 == "--help" }) {
+    print(helpMessage)
     exit(0)
 }
 
 let markdown: String
 
-if CommandLine.arguments.count == 1 {
-    // no arguments, parse stdin
+switch arguments.count {
+case 1:
+    // No arguments, parse stdin
     markdown = AnyIterator { readLine() }.joined(separator: "\n")
-} else if CommandLine.arguments[1] == "-m" || CommandLine.arguments[1] == "--markdown" {
-    // first argument -m or --markdown, parse Markdown string
-    guard CommandLine.arguments.count == 3 else {
-        print("-m, --markdown flag takes a single following argument", on: .standardError)
-        print(usageMessage, on: .standardError)
+case let count where arguments[1] == "-m" || arguments[1] == "--markdown":
+    // First argument is -m or --markdown, parse Markdown string
+    guard count == 3 else {
+        printError("-m, --markdown flag takes a single following argument")
+        printUsageMessage()
         exit(1)
     }
-    markdown = CommandLine.arguments[2]
-} else if CommandLine.arguments.count == 2 {
-    // single argument, parse contents of file
-    let fileUrl: URL
-    if CommandLine.arguments[1].hasPrefix("/") {
-        fileUrl = URL(fileURLWithPath: CommandLine.arguments[1], isDirectory: false)
-    } else {
-        let dir = FileManager.default.currentDirectoryPath
-        let dirUrl = URL(fileURLWithPath: dir, isDirectory: true)
-        fileUrl = dirUrl.appendingPathComponent(CommandLine.arguments[1])
+    markdown = arguments[2]
+case 2:
+    // Single argument, parse contents of file
+    let fileURL: URL
+
+    switch arguments[1] {
+    case let argument where argument.hasPrefix("/"):
+        fileURL = URL(fileURLWithPath: argument, isDirectory: false)
+    case let argument where argument.hasPrefix("~"):
+        let absoluteString = NSString(string: argument).expandingTildeInPath
+        fileURL = URL(fileURLWithPath: absoluteString, isDirectory: false)
+    default:
+        let directory = FileManager.default.currentDirectoryPath
+        let directoryURL = URL(fileURLWithPath: directory, isDirectory: true)
+        fileURL = directoryURL.appendingPathComponent(arguments[1])
     }
 
     do {
-        // this is 5x more efficient than 'let data = try String(contentsOf: fileUrl)'
-        let data = try Data(contentsOf: fileUrl)
-        guard let string = String(data: data, encoding: .utf8) else {
-            throw StringReadingError()
-        }
-
-        markdown = string
+        let data = try Data(contentsOf: fileURL)
+        markdown = String(decoding: data, as: UTF8.self)
     } catch {
-        print(error.localizedDescription, on: .standardError)
-        print(usageMessage, on: .standardError)
-        exit(2)
+        printError(error.localizedDescription)
+        printUsageMessage()
+        exit(1)
     }
-} else {
-    // incorrect number of arguments
-    print("Too many arguments", on: .standardError)
-    print(usageMessage, on: .standardError)
-    exit(3)
+default:
+    printError("Too many arguments")
+    printUsageMessage()
+    exit(1)
 }
 
 let parser = MarkdownParser()
-print(parser.html(from: markdown), on: .standardOut)
-exit(0)
+print(parser.html(from: markdown))

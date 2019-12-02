@@ -12,12 +12,11 @@ There are several advantages of using these benchmarks in addition to the XCTest
 
 ## Preparation
 
-First, you should have downloaded and installed the CLI tool. These tests rely on an improved CLI tool which can parse markdown from a filename (PR #19). For now, you can get it at:
+First, you should have downloaded and installed the CLI tool. These tests rely on the improved CLI tool introduced in #19.
 
 ```
-git clone https://github.com/john-mueller/Ink.git
+git clone https://github.com/JohnSundell/Ink.git
 cd Ink
-git checkout cli-improvements
 make
 ```
 
@@ -96,7 +95,7 @@ The next step might be to integrate these into CI so that we catch performance/c
 
 Presumably we'd want to have it run the benchmark against master and against the PR branch, to compare and identify regressions.
 
-Here's an example script that I've been using. This could probably be cleaned up, and will need to be modified if #19 is merged, but serves as a proof of concept.
+Here's an example script that I've been using. This could probably be cleaned up, but serves as a proof of concept.
 
 ```
 #!/bin/bash
@@ -105,13 +104,13 @@ baseversion="$1"
 newversion="$2"
 
 rm -rf Ink commonmark-spec
-git clone https://github.com/john-mueller/Ink.git
+git clone https://github.com/JohnSundell/Ink.git
 git clone https://github.com/commonmark/commonmark-spec.git
 
 cd Ink
-git checkout cli-improvements
 git checkout "$baseversion"
-git checkout cli-improvements Sources/InkCLI
+# pull in new CLI on old commits
+git checkout master Sources/InkCLI
 swift build -c release
 
 cd ../commonmark-spec
@@ -121,7 +120,8 @@ baseresults="$(echo "$baseoutput" | tail -1)"
 
 cd ../Ink
 git checkout "$newversion"
-git checkout cli-improvements Sources/InkCLI
+# pull in new CLI on old commits
+git checkout master Sources/InkCLI
 swift build -c release
 
 cd ../commonmark-spec
