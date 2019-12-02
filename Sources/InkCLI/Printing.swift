@@ -6,14 +6,22 @@
 
 import Foundation
 
-internal var usageMessage: String = """
+internal func printError(_ error: CustomStringConvertible) {
+    fputs("\(error)\n", stderr)
+}
+
+internal func printUsageMessage() {
+    printError(usageMessage)
+}
+
+private let usageMessage = """
 Usage:  ink [file | -m markdown]
 Options:
   --markdown, -m    Parse a markdown string directly
   --help, -h        Print usage information
 """
 
-internal var helpMessage: String = """
+internal let helpMessage = """
 Ink: Markdown -> HTML converter
 -------------------------------
 \(usageMessage)
@@ -26,7 +34,3 @@ specified path will be used as input. If
 called with the -m option, the following
 argument will be parsed as a Markdown string.
 """
-
-internal func printError(_ error: CustomStringConvertible) {
-    fputs("\(error)\n", stderr)
-}
