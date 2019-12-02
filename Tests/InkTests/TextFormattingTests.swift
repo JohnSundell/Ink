@@ -140,7 +140,13 @@ final class TextFormattingTests: XCTestCase {
     func testDoubleSpacedHardLinebreak() {
         let html = MarkdownParser().html(from: "Line 1  \nLine 2")
 
-        XCTAssertEqual(html, "<p>Line 1<br />Line 2</p>")
+        XCTAssertEqual(html, "<p>Line 1<br/>Line 2</p>")
+    }
+
+    func testEscapedHardLinebreak() {
+        let html = MarkdownParser().html(from: "Line 1\\\nLine 2")
+
+        XCTAssertEqual(html, "<p>Line 1<br/>Line 2</p>")
     }
 }
 
@@ -171,7 +177,8 @@ extension TextFormattingTests {
             ("testSingleLineBlockquote", testSingleLineBlockquote),
             ("testMultiLineBlockquote", testMultiLineBlockquote),
             ("testEscapingSymbolsWithBackslash", testEscapingSymbolsWithBackslash),
-            ("testDoubleSpacedHardLinebreak", testDoubleSpacedHardLinebreak)
+            ("testDoubleSpacedHardLinebreak", testDoubleSpacedHardLinebreak),
+            ("testEscapedHardLinebreak", testEscapedHardLinebreak)
         ]
     }
 }

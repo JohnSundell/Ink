@@ -30,7 +30,7 @@ internal struct FormattedText: Readable, HTMLConvertible {
         return components.reduce(into: "") { string, component in
             switch component {
             case .linebreak:
-                string.append("<br />")
+                string.append("<br/>")
             case .text(let text):
                 string.append(String(text))
             case .styleMarker(let marker):
@@ -77,9 +77,8 @@ private extension FormattedText {
         }
 
         mutating func parse() {
-            /// For the purpose of hard line break parsing, indicates
-            /// whether the previous two characters were spaces.
-            var twoSpaceSequence = false
+            var sequentialSpaceCount = 0
+
             while !reader.didReachEnd {
                 do {
                     if let terminator = terminator {
@@ -95,7 +94,7 @@ private extension FormattedText {
                             break
                         }
 
-                        guard reader.previousCharacter != "\\" && !twoSpaceSequence else {
+                        guard reader.previousCharacter != "\\" && !(sequentialSpaceCount >= 2) else {
                             text.components.append(.linebreak)
                             skipCharacter()
                             continue
@@ -113,8 +112,11 @@ private extension FormattedText {
                         continue
                     }
 
-                    twoSpaceSequence = reader.previousCharacter == " "
-                        && reader.currentCharacter == " "
+                    if reader.currentCharacter == " " {
+                        sequentialSpaceCount += 1
+                    } else {
+                        sequentialSpaceCount = 0
+                    }
 
                     if reader.currentCharacter.isSameLineWhitespace {
                         guard let nextCharacter = reader.nextCharacter else {
