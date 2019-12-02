@@ -11,7 +11,7 @@ let arguments = CommandLine.arguments
 
 if arguments.contains(where: { $0 == "-h" || $0 == "--help" }) {
     print(helpMessage)
-    exit(ExitCode.normal.rawValue)
+    exit(0)
 }
 
 let markdown: String
@@ -25,7 +25,7 @@ case let count where arguments[1] == "-m" || arguments[1] == "--markdown":
     guard count == 3 else {
         printError("-m, --markdown flag takes a single following argument")
         printError(usageMessage)
-        exit(ExitCode.badMarkdownFlagUsage.rawValue)
+        exit(1)
     }
     markdown = arguments[2]
 case 2:
@@ -51,13 +51,13 @@ case 2:
     } catch {
         printError(error.localizedDescription)
         printError(usageMessage)
-        exit(ExitCode.problemReadingFile.rawValue)
+        exit(1)
     }
 default:
     // incorrect number of arguments
     printError("Too many arguments")
     printError(usageMessage)
-    exit(ExitCode.tooManyArguments.rawValue)
+    exit(1)
 }
 
 let parser = MarkdownParser()
