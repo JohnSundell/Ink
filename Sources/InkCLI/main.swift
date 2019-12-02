@@ -7,22 +7,57 @@
 import Foundation
 import Ink
 
-guard CommandLine.arguments.count > 1 else {
-    print("""
-    Ink: Markdown -> HTML converter
-    -------------------------------
-    Pass a Markdown string to convert as input,
-    and HTML will be returned as output. To use
-    STDIN as input, call ink with "-" as a single
-    argument, like this: '$ ink -'.
-    """)
+let arguments = CommandLine.arguments
+
+if arguments.contains(where: { $0 == "-h" || $0 == "--help" }) {
+    print(helpMessage)
     exit(0)
 }
 
-var markdown = CommandLine.arguments[1]
+let markdown: String
 
-if markdown == "-" {
+switch arguments.count {
+case 1:
+    // no arguments, parse stdin
     markdown = AnyIterator { readLine() }.joined(separator: "\n")
+case let count where arguments[1] == "-m" || arguments[1] == "--markdown":
+    // first argument -m or --markdown, parse Markdown string
+    guard count == 3 else {
+        printError("-m, --markdown flag takes a single following argument")
+        printError(usageMessage)
+        exit(1)
+    }
+    markdown = arguments[2]
+case 2:
+    // single argument, parse contents of file
+    let fileUrl: URL
+
+    switch arguments[1] {
+    case let argument where argument.hasPrefix("/"):
+        fileUrl = URL(fileURLWithPath: argument, isDirectory: false)
+    case let argument where argument.hasPrefix("~"):
+        let absoluteString = NSString(string: argument).expandingTildeInPath
+        fileUrl = URL(fileURLWithPath: absoluteString, isDirectory: false)
+    default:
+        let dir = FileManager.default.currentDirectoryPath
+        let dirUrl = URL(fileURLWithPath: dir, isDirectory: true)
+        fileUrl = dirUrl.appendingPathComponent(arguments[1])
+    }
+
+    do {
+        // this is 5x faster than 'markdown = try String(contentsOf: fileUrl, encoding: .utf8)'
+        let data = try Data(contentsOf: fileUrl)
+        markdown = String(decoding: data, as: UTF8.self)
+    } catch {
+        printError(error.localizedDescription)
+        printError(usageMessage)
+        exit(1)
+    }
+default:
+    // incorrect number of arguments
+    printError("Too many arguments")
+    printError(usageMessage)
+    exit(1)
 }
 
 let parser = MarkdownParser()

@@ -121,10 +121,30 @@ $ cd Ink
 $ make
 ```
 
-The command line tool will be installed as `ink`, and can be called with any Markdown string to convert it into HTML:
+The command line tool will be installed as `ink`, and can be passed Markdown text for conversion into HTML several ways.
+
+Calling without arguments will start reading from stdin until terminated with Ctrl+D
 
 ```
-$ ink "$(cat README.md)"
+$ ink
+```
+
+Markdown text can be piped in when called without arguments:
+
+```
+$ echo "*Hello World*" | ink
+```
+
+A single argument is treated as a filename, whose contents are parsed:
+
+```
+$ ink file.md
+```
+
+A Markdown string can be passed directly using the -m flag:
+
+```
+$ ink -m "*Hello World*"
 ```
 
 You can of course also build your own command line tools that utilizes Ink in more advanced ways by importing it as a package.
