@@ -8,29 +8,26 @@ import Foundation
 import Ink
 
 if CommandLine.arguments.contains(where: { $0 == "-h" || $0 == "--help" }) {
-    print(helpMessage, on: .standardOut)
-    exit(0)
-}
-
-if CommandLine.arguments.contains(where: { $0 == "--version" }) {
-    print(versionMessage, on: .standardOut)
+    print(helpMessage)
     exit(0)
 }
 
 let markdown: String
+let arguments = CommandLine.arguments
 
-if CommandLine.arguments.count == 1 {
+switch arguments.count {
+case 1:
     // no arguments, parse stdin
     markdown = AnyIterator { readLine() }.joined(separator: "\n")
-} else if CommandLine.arguments[1] == "-m" || CommandLine.arguments[1] == "--markdown" {
+case let count where arguments[1] == "-m" || arguments[1] == "--markdown":
     // first argument -m or --markdown, parse Markdown string
-    guard CommandLine.arguments.count == 3 else {
-        print("-m, --markdown flag takes a single following argument", on: .standardError)
-        print(usageMessage, on: .standardError)
+    guard count == 3 else {
+        printError("-m, --markdown flag takes a single following argument")
+        printError(usageMessage)
         exit(1)
     }
     markdown = CommandLine.arguments[2]
-} else if CommandLine.arguments.count == 2 {
+case 2:
     // single argument, parse contents of file
     let fileUrl: URL
     if CommandLine.arguments[1].hasPrefix("/") {
@@ -42,25 +39,20 @@ if CommandLine.arguments.count == 1 {
     }
 
     do {
-        // this is 5x more efficient than 'let data = try String(contentsOf: fileUrl)'
+        // this is 5x faster than 'let string = try String(contentsOf: fileUrl)'
         let data = try Data(contentsOf: fileUrl)
-        guard let string = String(data: data, encoding: .utf8) else {
-            throw StringReadingError()
-        }
-
-        markdown = string
+        markdown = String(decoding: data, as: UTF8.self)
     } catch {
-        print(error.localizedDescription, on: .standardError)
-        print(usageMessage, on: .standardError)
+        printError(error.localizedDescription)
+        printError(usageMessage)
         exit(2)
     }
-} else {
+default:
     // incorrect number of arguments
-    print("Too many arguments", on: .standardError)
-    print(usageMessage, on: .standardError)
+    printError("Too many arguments")
+    printError(usageMessage)
     exit(3)
 }
 
 let parser = MarkdownParser()
-print(parser.html(from: markdown), on: .standardOut)
-exit(0)
+print(parser.html(from: markdown))
