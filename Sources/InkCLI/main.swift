@@ -7,22 +7,55 @@
 import Foundation
 import Ink
 
-guard CommandLine.arguments.count > 1 else {
-    print("""
-    Ink: Markdown -> HTML converter
-    -------------------------------
-    Pass a Markdown string to convert as input,
-    and HTML will be returned as output. To use
-    STDIN as input, call ink with "-" as a single
-    argument, like this: '$ ink -'.
-    """)
+let arguments = CommandLine.arguments
+
+if arguments.contains(where: { $0 == "-h" || $0 == "--help" }) {
+    print(helpMessage)
     exit(0)
 }
 
-var markdown = CommandLine.arguments[1]
+let markdown: String
 
-if markdown == "-" {
+switch arguments.count {
+case 1:
+    // No arguments, parse stdin
     markdown = AnyIterator { readLine() }.joined(separator: "\n")
+case let count where arguments[1] == "-m" || arguments[1] == "--markdown":
+    // First argument is -m or --markdown, parse Markdown string
+    guard count == 3 else {
+        printError("-m, --markdown flag takes a single following argument")
+        printUsageMessage()
+        exit(1)
+    }
+    markdown = arguments[2]
+case 2:
+    // Single argument, parse contents of file
+    let fileURL: URL
+
+    switch arguments[1] {
+    case let argument where argument.hasPrefix("/"):
+        fileURL = URL(fileURLWithPath: argument, isDirectory: false)
+    case let argument where argument.hasPrefix("~"):
+        let absoluteString = NSString(string: argument).expandingTildeInPath
+        fileURL = URL(fileURLWithPath: absoluteString, isDirectory: false)
+    default:
+        let directory = FileManager.default.currentDirectoryPath
+        let directoryURL = URL(fileURLWithPath: directory, isDirectory: true)
+        fileURL = directoryURL.appendingPathComponent(arguments[1])
+    }
+
+    do {
+        let data = try Data(contentsOf: fileURL)
+        markdown = String(decoding: data, as: UTF8.self)
+    } catch {
+        printError(error.localizedDescription)
+        printUsageMessage()
+        exit(1)
+    }
+default:
+    printError("Too many arguments")
+    printUsageMessage()
+    exit(1)
 }
 
 let parser = MarkdownParser()

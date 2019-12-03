@@ -29,6 +29,8 @@ internal struct FormattedText: Readable, HTMLConvertible {
               modifiers: ModifierCollection) -> String {
         return components.reduce(into: "") { string, component in
             switch component {
+            case .linebreak:
+                string.append("<br/>")
             case .text(let text):
                 string.append(String(text))
             case .styleMarker(let marker):
@@ -54,6 +56,7 @@ internal struct FormattedText: Readable, HTMLConvertible {
 
 private extension FormattedText {
     enum Component {
+        case linebreak
         case text(Substring)
         case styleMarker(TextStyleMarker)
         case fragment(Fragment, rawString: Substring)
@@ -74,6 +77,8 @@ private extension FormattedText {
         }
 
         mutating func parse() {
+            var sequentialSpaceCount = 0
+
             while !reader.didReachEnd {
                 do {
                     if let terminator = terminator {
@@ -89,6 +94,12 @@ private extension FormattedText {
                             break
                         }
 
+                        guard reader.previousCharacter != "\\" && !(sequentialSpaceCount >= 2) else {
+                            text.components.append(.linebreak)
+                            skipCharacter()
+                            continue
+                        }
+
                         guard !nextCharacter.isAny(of: ["\n", "#", "<", "`"]) else {
                             break
                         }
@@ -99,6 +110,12 @@ private extension FormattedText {
 
                         skipCharacter()
                         continue
+                    }
+
+                    if reader.currentCharacter == " " {
+                        sequentialSpaceCount += 1
+                    } else {
+                        sequentialSpaceCount = 0
                     }
 
                     if reader.currentCharacter.isSameLineWhitespace {

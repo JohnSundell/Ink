@@ -111,7 +111,7 @@ For more information on how to use the Swift Package Manager, check out [this ar
 
 ## Command line tool
 
-Ink also ships with a simple but useful command line tool that enables you to use it to convert Markdown to HTML directly from the command line.
+Ink also ships with a simple but useful command line tool that lets you convert Markdown to HTML directly from the command line.
 
 To install it, clone the project and run `make`:
 
@@ -121,10 +121,30 @@ $ cd Ink
 $ make
 ```
 
-The command line tool will be installed as `ink`, and can be called with any Markdown string to convert it into HTML:
+The command line tool will be installed as `ink`, and can be passed Markdown text for conversion into HTML in several ways.
+
+Calling it without arguments will start reading from `stdin` until terminated with `Ctrl+D`:
 
 ```
-$ ink "$(cat README.md)"
+$ ink
+```
+
+Markdown text can be piped in when `ink` is called without arguments:
+
+```
+$ echo "*Hello World*" | ink
+```
+
+A single argument is treated as a filename, and the corresponding file will be parsed:
+
+```
+$ ink file.md
+```
+
+A Markdown string can be passed directly using the `-m` or `--markdown` flag:
+
+```
+$ ink -m "*Hello World*"
 ```
 
 You can of course also build your own command line tools that utilizes Ink in more advanced ways by importing it as a package.
