@@ -10,10 +10,10 @@ internal protocol Readable {
 
 extension Readable {
     static func readOrRewind(using reader: inout Reader) throws -> Self {
-        guard reader.previousCharacter != "\\" else {
-            throw Reader.Error()
-        }
-
+//        guard reader.previousCharacter != "\\" else {
+//            throw Reader.Error()
+//        }
+// Not sure why this is here it is interfering with proper backslash handling
         let previousReader = reader
 
         do {

@@ -166,11 +166,11 @@ final class TextFormattingTests: XCTestCase {
     func testOtherCharactersNotEscaped() {
         // Derived from CommonMark spec lines 498-502
         // watch out as there are tab characters in this test \#####t
-        let allTheSpecialASCIIChars =
+        let inputString =
         #####"""
         \\#####t\A\a\ \3\φ\«
         """#####
-        let html = MarkdownParser().html(from: allTheSpecialASCIIChars)
+        let html = MarkdownParser().html(from: inputString)
         
         let properAnswer = #####"""
         <p>\\#####t\A\a\ \3\φ\«</p>
@@ -182,7 +182,7 @@ final class TextFormattingTests: XCTestCase {
         // Derived from CommonMark spec lines 508-528
         // Escaped characters are treated as regular characters and do
         // not have their usual Markdown meanings:
-        let allTheSpecialASCIIChars =
+        let inputString =
         #####"""
         \*not emphasized*
         \<br/> not a tag
@@ -194,10 +194,25 @@ final class TextFormattingTests: XCTestCase {
         \[foo]: /url "not a reference"
         \&ouml; not a character entity
         """#####
-        let html = MarkdownParser().html(from: allTheSpecialASCIIChars)
+        let html = MarkdownParser().html(from: inputString)
         
         let properAnswer = #####"""
         <p>*not emphasized* &lt;br/&gt; not a tag [not a link](/foo) `not code` 1. not a list * not a list # not a heading [foo]: /url &quot;not a reference&quot; &amp;ouml; not a character entity</p>
+        """#####
+        XCTAssertEqual(html, properAnswer)
+    }
+    
+    func testEscapeOfBackslash() {
+        // Derived from CommonMark spec lines 533-537
+        // If a backslash is itself escaped, the following character is not:
+        let inputString =
+        #####"""
+        \\*emphasis*
+        """#####
+        let html = MarkdownParser().html(from: inputString)
+        
+        let properAnswer = #####"""
+        <p>\<em>emphasis</em></p>
         """#####
         XCTAssertEqual(html, properAnswer)
     }
@@ -234,7 +249,8 @@ extension TextFormattingTests {
             ("testEscapedHardLinebreak", testEscapedHardLinebreak),
             ("testEscapedPunctuation", testEscapedPunctuation),
             ("testOtherCharactersNotEscaped", testOtherCharactersNotEscaped),
-            ("testEscapesThatOverrideMarkdown", testEscapesThatOverrideMarkdown)
+            ("testEscapesThatOverrideMarkdown", testEscapesThatOverrideMarkdown),
+            ("testEscapeOfBackslash", testEscapeOfBackslash)
         ]
     }
 }
