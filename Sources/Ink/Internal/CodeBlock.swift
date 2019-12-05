@@ -16,10 +16,11 @@ internal struct CodeBlock: Fragment {
         let startingMarkerCount = reader.readCount(of: marker)
         try require(startingMarkerCount >= 3)
         reader.discardWhitespaces()
-        var language = reader.readUntilEndOfLine()
-        while language.last?.isWhitespace == true {
-            language = language.dropLast()
-        }
+
+        let language = reader
+            .readUntilEndOfLine()
+            .trimmingTrailingWhitespaces()
+
         var code = ""
 
         while !reader.didReachEnd {
@@ -30,7 +31,7 @@ internal struct CodeBlock: Fragment {
                     break
                 } else {
                     code.append(String(repeating: marker, count: markerCount))
-                    if reader.didReachEnd { break } //maybe are at end of file? break for now?
+                    guard !reader.didReachEnd else { break }
                 }
             }
 
