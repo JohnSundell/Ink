@@ -216,6 +216,53 @@ final class TextFormattingTests: XCTestCase {
         """#####
         XCTAssertEqual(html, properAnswer)
     }
+    
+    func testCodeAreasPreserveBackslash() {
+        // Derived from CommonMark spec lines 569-576
+        // Backslash escapes do not work in code blocks
+        let inputString =
+        #####"""
+        ```
+        \[\]
+        ```
+        """#####
+        let html = MarkdownParser().html(from: inputString)
+        
+        let properAnswer = #####"""
+        <pre><code>\[\]</code></pre>
+        """#####
+        XCTAssertEqual(html, properAnswer)
+    }
+    
+    func testRawHTMLPreserveBackslash() {
+           // Derived from CommonMark spec lines 586-590
+           // Backslash escapes do not work in raw HTML
+           let inputString =
+           #####"""
+           <a href="/bar\/)">
+           """#####
+           let html = MarkdownParser().html(from: inputString)
+           
+           let properAnswer = #####"""
+           <a href="/bar\/)">
+           """#####
+           XCTAssertEqual(html, properAnswer)
+       }
+    
+    func testBackslashInURL() {
+        // Derived from CommonMark spec lines 596-600
+        // Backslash work in all other contexts, including URLs
+        let inputString =
+        #####"""
+        [foo](/bar\* "ti\*tle")
+        """#####
+        let html = MarkdownParser().html(from: inputString)
+        
+        let properAnswer = #####"""
+        <p><a href="/bar*" title="ti*tle">foo</a></p>
+        """#####
+        XCTAssertEqual(html, properAnswer)
+    }
 }
 
 extension TextFormattingTests {
@@ -250,7 +297,10 @@ extension TextFormattingTests {
             ("testEscapedPunctuation", testEscapedPunctuation),
             ("testOtherCharactersNotEscaped", testOtherCharactersNotEscaped),
             ("testEscapesThatOverrideMarkdown", testEscapesThatOverrideMarkdown),
-            ("testEscapeOfBackslash", testEscapeOfBackslash)
+            ("testEscapeOfBackslash", testEscapeOfBackslash),
+            ("testCodeAreasPreserveBackslash", testCodeAreasPreserveBackslash),
+            ("testRawHTMLPreserveBackslash", testRawHTMLPreserveBackslash),
+            ("testBackslashInURL", testBackslashInURL)
         ]
     }
 }
