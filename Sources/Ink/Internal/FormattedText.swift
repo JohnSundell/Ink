@@ -30,7 +30,7 @@ internal struct FormattedText: Readable, HTMLConvertible {
         return components.reduce(into: "") { string, component in
             switch component {
             case .linebreak:
-                string.append("<br/>")
+                string.append("<br>")
             case .text(let text):
                 string.append(String(text))
             case .styleMarker(let marker):
