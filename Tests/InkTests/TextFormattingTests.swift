@@ -148,6 +148,35 @@ final class TextFormattingTests: XCTestCase {
 
         XCTAssertEqual(html, "<p>Line 1<br/>Line 2</p>")
     }
+    
+    func testEscapedPunctuation() {
+        // Derived from CommonMark spec lines 488-492
+        let allTheSpecialASCIIChars =
+        #####"""
+        \!\"\#\$\%\&\'\(\)\*\+\,\-\.\/\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~
+        """#####
+        let html = MarkdownParser().html(from: allTheSpecialASCIIChars)
+        
+        let properAnswer = #####"""
+        <p>!&quot;#$%&amp;'()*+,-./:;&lt;=&gt;?@[\]^_`{|}~</p>
+        """#####
+        XCTAssertEqual(html, properAnswer)
+    }
+    
+    func testOtherCharactersNotEscaped() {
+        // Derived from CommonMark spec lines 498-502
+        // watch out as there are tab characters in this test \#####t
+        let allTheSpecialASCIIChars =
+        #####"""
+        \\#####t\A\a\ \3\φ\«
+        """#####
+        let html = MarkdownParser().html(from: allTheSpecialASCIIChars)
+        
+        let properAnswer = #####"""
+        <p>\\#####t\A\a\ \3\φ\«</p>
+        """#####
+        XCTAssertEqual(html, properAnswer)
+    }
 }
 
 extension TextFormattingTests {
@@ -178,7 +207,9 @@ extension TextFormattingTests {
             ("testMultiLineBlockquote", testMultiLineBlockquote),
             ("testEscapingSymbolsWithBackslash", testEscapingSymbolsWithBackslash),
             ("testDoubleSpacedHardLinebreak", testDoubleSpacedHardLinebreak),
-            ("testEscapedHardLinebreak", testEscapedHardLinebreak)
+            ("testEscapedHardLinebreak", testEscapedHardLinebreak),
+            ("testEscapedPunctuation", testEscapedPunctuation),
+            ("testOtherCharactersNotEscaped", testOtherCharactersNotEscaped)
         ]
     }
 }
