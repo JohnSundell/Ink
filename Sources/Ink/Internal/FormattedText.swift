@@ -4,7 +4,7 @@
 *  MIT license, see LICENSE file for details
 */
 
-internal struct FormattedText: Readable, HTMLConvertible {
+internal struct FormattedText: Readable, HTMLConvertible, PlainTextConvertible {
     private var components = [Component]()
 
     static func read(using reader: inout Reader) -> Self {
@@ -27,7 +27,7 @@ internal struct FormattedText: Readable, HTMLConvertible {
 
     func html(usingURLs urls: NamedURLCollection,
               modifiers: ModifierCollection) -> String {
-        return components.reduce(into: "") { string, component in
+        components.reduce(into: "") { string, component in
             switch component {
             case .linebreak:
                 string.append("<br/>")
@@ -44,6 +44,21 @@ internal struct FormattedText: Readable, HTMLConvertible {
                 )
 
                 string.append(html)
+            }
+        }
+    }
+
+    func plainText() -> String {
+        components.reduce(into: "") { string, component in
+            switch component {
+            case .linebreak:
+                string.append("\n")
+            case .text(let text):
+                string.append(String(text))
+            case .styleMarker:
+                break
+            case .fragment(let fragment, _):
+                string.append(fragment.plainText())
             }
         }
     }

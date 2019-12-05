@@ -34,6 +34,10 @@ internal struct Link: Fragment {
         let title = text.html(usingURLs: urls, modifiers: modifiers)
         return "<a href=\"\(url)\">\(title)</a>"
     }
+
+    func plainText() -> String {
+        text.plainText()
+    }
 }
 
 extension Link {

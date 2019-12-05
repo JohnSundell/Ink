@@ -7,7 +7,7 @@
 import XCTest
 import Ink
 
-final class MetadataTests: XCTestCase {
+final class MarkdownTests: XCTestCase {
     func testParsingMetadata() {
         let markdown = MarkdownParser().parse("""
         ---
@@ -66,15 +66,60 @@ final class MetadataTests: XCTestCase {
         XCTAssertEqual(markdown.metadata, [:])
         XCTAssertEqual(markdown.html, "<h1>Title</h1>")
     }
+
+    func testPlainTextTitle() {
+        let markdown = MarkdownParser().parse("""
+        # Hello, world!
+        """)
+
+        XCTAssertEqual(markdown.title, "Hello, world!")
+    }
+
+    func testRemovingTrailingMarkersFromTitle() {
+        let markdown = MarkdownParser().parse("""
+        # Hello, world! ####
+        """)
+
+        XCTAssertEqual(markdown.title, "Hello, world!")
+    }
+
+    func testConvertingFormattedTitleTextToPlainText() {
+        let markdown = MarkdownParser().parse("""
+        # *Italic* **Bold** [Link](url) ![Image](url) `Code`
+        """)
+
+        XCTAssertEqual(markdown.title, "Italic Bold Link Image Code")
+    }
+
+    func testTreatingFirstHeadingAsTitle() {
+        let markdown = MarkdownParser().parse("""
+        # Title 1
+        # Title 2
+        ## Title 3
+        """)
+
+        XCTAssertEqual(markdown.title, "Title 1")
+    }
+
+    func testOverridingTitle() {
+        var markdown = MarkdownParser().parse("# Title")
+        markdown.title = "Title 2"
+        XCTAssertEqual(markdown.title, "Title 2")
+    }
 }
 
-extension MetadataTests {
-    static var allTests: Linux.TestList<MetadataTests> {
+extension MarkdownTests {
+    static var allTests: Linux.TestList<MarkdownTests> {
         return [
             ("testParsingMetadata", testParsingMetadata),
             ("testDiscardingEmptyMetadataValues", testDiscardingEmptyMetadataValues),
             ("testMergingOrphanMetadataValueIntoPreviousOne", testMergingOrphanMetadataValueIntoPreviousOne),
-            ("testMissingMetadata", testMissingMetadata)
+            ("testMissingMetadata", testMissingMetadata),
+            ("testPlainTextTitle", testPlainTextTitle),
+            ("testRemovingTrailingMarkersFromTitle", testRemovingTrailingMarkersFromTitle),
+            ("testConvertingFormattedTitleTextToPlainText", testConvertingFormattedTitleTextToPlainText),
+            ("testTreatingFirstHeadingAsTitle", testTreatingFirstHeadingAsTitle),
+            ("testOverridingTitle", testOverridingTitle)
         ]
     }
 }
