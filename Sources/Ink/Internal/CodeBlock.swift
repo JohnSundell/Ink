@@ -13,20 +13,24 @@ internal struct CodeBlock: Fragment {
     private var code: String
 
     static func read(using reader: inout Reader) throws -> CodeBlock {
-        try require(reader.readCount(of: marker) == 3)
-
-        let language = reader.readUntilEndOfLine()
+        let startingMarkerCount = reader.readCount(of: marker)
+        try require(startingMarkerCount >= 3)
+        reader.discardWhitespaces()
+        var language = reader.readUntilEndOfLine()
+        while language.last?.isWhitespace == true {
+            language = language.dropLast()
+        }
         var code = ""
 
         while !reader.didReachEnd {
             if code.last == "\n", reader.currentCharacter == marker {
                 let markerCount = reader.readCount(of: marker)
 
-                if markerCount == 3 {
-                    code.removeLast()
+                if markerCount == startingMarkerCount {
                     break
                 } else {
                     code.append(String(repeating: marker, count: markerCount))
+                    if reader.didReachEnd { break } //maybe are at end of file? break for now?
                 }
             }
 
@@ -44,7 +48,7 @@ internal struct CodeBlock: Fragment {
 
     func html(usingURLs urls: NamedURLCollection,
               modifiers: ModifierCollection) -> String {
-        let languageClass = language.isEmpty ? "" : " class=\"\(language)\""
+        let languageClass = language.isEmpty ? "" : " class=\"language-\(language)\""
         return "<pre><code\(languageClass)>\(code)</code></pre>"
     }
 
