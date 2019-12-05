@@ -81,7 +81,7 @@ private extension FormattedText {
 
             while !reader.didReachEnd {
                 do {
-                    if let terminator = terminator {
+                    if let terminator = terminator, reader.previousCharacter != "\\" {
                         guard reader.currentCharacter != terminator else {
                             break
                         }

@@ -64,6 +64,11 @@ final class LinkTests: XCTestCase {
         let html = MarkdownParser().html(from: "[Hello]")
         XCTAssertEqual(html, "<p>[Hello]</p>")
     }
+    
+    func testLinkWithEscapedSquareBrackets() {
+        let html = MarkdownParser().html(from: "[\\[Hello\\]](hello)")
+        XCTAssertEqual(html, #"<p><a href="hello">[Hello]</a></p>"#)
+    }
 }
 
 extension LinkTests {
@@ -76,7 +81,8 @@ extension LinkTests {
             ("testBoldLinkWithInternalMarkers", testBoldLinkWithInternalMarkers),
             ("testBoldLinkWithExternalMarkers", testBoldLinkWithExternalMarkers),
             ("testLinkWithUnderscores", testLinkWithUnderscores),
-            ("testUnterminatedLink", testUnterminatedLink)
+            ("testUnterminatedLink", testUnterminatedLink),
+            ("testLinkWithEscapedSquareBrackets", testLinkWithEscapedSquareBrackets)
         ]
     }
 }
