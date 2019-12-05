@@ -46,16 +46,9 @@ internal struct Metadata: Readable {
 
 private extension Metadata {
     static func trim(_ string: Substring) -> String {
-        var string = string
-
-        while string.first?.isWhitespace == true {
-            string = string.dropFirst()
-        }
-
-        while string.last?.isWhitespace == true {
-            string = string.dropLast()
-        }
-
-        return String(string)
+        String(string
+            .trimmingLeadingWhitespaces()
+            .trimmingTrailingWhitespaces()
+        )
     }
 }

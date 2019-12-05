@@ -134,7 +134,7 @@ extension Reader {
     
     mutating func discardWhitespaces() {
         while !didReachEnd {
-            guard !currentCharacter.isNewline && currentCharacter.isWhitespace else { return }
+            guard currentCharacter.isSameLineWhitespace else { return }
             advanceIndex()
         }
     }

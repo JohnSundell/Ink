@@ -176,9 +176,7 @@ private extension FormattedText {
             var string = reader.characters(in: endingTextRange)
 
             if trimWhitespaces {
-                while string.last?.isWhitespace == true {
-                    string = string.dropLast()
-                }
+                string = string.trimmingTrailingWhitespaces()
             }
 
             text.components.append(.text(string))
