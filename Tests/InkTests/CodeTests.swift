@@ -21,7 +21,7 @@ final class CodeTests: XCTestCase {
         ```
         """)
 
-        XCTAssertEqual(html, "<pre><code>code()\nblock()</code></pre>")
+        XCTAssertEqual(html, "<pre><code>code()\nblock()\n</code></pre>")
     }
 
     func testCodeBlockWithBackticksAndLabel() {
@@ -31,9 +31,32 @@ final class CodeTests: XCTestCase {
         ```
         """)
 
-        XCTAssertEqual(html, "<pre><code class=\"swift\">code()</code></pre>")
+        XCTAssertEqual(html, "<pre><code class=\"swift\">code()\n</code></pre>")
     }
+    
+    func testCodeBlockWithBackticksAndLabelNeedingTrimming() {
+       // there are 2 spaces after the swift label that need trimming too
+       let html = MarkdownParser().html(from: """
+       ``` swift  
+       code()
+       ```
+       """)
 
+       XCTAssertEqual(html, "<pre><code class=\"swift\">code()\n</code></pre>")
+   }
+    
+    func testCodeBlockManyBackticks() {
+        // there are 2 spaces after the swift label that need trimming too
+        let html = MarkdownParser().html(from: """
+        
+        ```````````````````````````````` foo
+        bar
+        ````````````````````````````````
+        """)
+
+        XCTAssertEqual(html, "<pre><code class=\"foo\">bar\n</code></pre>")
+    }
+    
     func testEncodingSpecialCharactersWithinCodeBlock() {
         let html = MarkdownParser().html(from: """
         ```swift
@@ -42,7 +65,7 @@ final class CodeTests: XCTestCase {
         """)
 
         XCTAssertEqual(html, """
-        <pre><code class="swift">Generic&lt;T&gt;() &amp;&amp; expression()</code></pre>
+        <pre><code class="swift">Generic&lt;T&gt;() &amp;&amp; expression()\n</code></pre>
         """)
     }
 
@@ -58,7 +81,7 @@ final class CodeTests: XCTestCase {
         XCTAssertEqual(html, """
         <pre><code># Not A Header
         return View()
-        - Not a list</code></pre>
+        - Not a list\n</code></pre>
         """)
     }
 }
@@ -69,6 +92,8 @@ extension CodeTests {
             ("testInlineCode", testInlineCode),
             ("testCodeBlockWithJustBackticks", testCodeBlockWithJustBackticks),
             ("testCodeBlockWithBackticksAndLabel", testCodeBlockWithBackticksAndLabel),
+            ("testCodeBlockWithBackticksAndLabelNeedingTrimming", testCodeBlockWithBackticksAndLabelNeedingTrimming),
+            ("testCodeBlockManyBackticks", testCodeBlockManyBackticks),
             ("testEncodingSpecialCharactersWithinCodeBlock", testEncodingSpecialCharactersWithinCodeBlock),
             ("testIgnoringFormattingWithinCodeBlock", testIgnoringFormattingWithinCodeBlock)
         ]
