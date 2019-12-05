@@ -19,6 +19,6 @@ internal struct HorizontalLine: Fragment {
 
     func html(usingURLs urls: NamedURLCollection,
               modifiers: ModifierCollection) -> String {
-        return "<hr/>"
+        return "<hr>"
     }
 }
