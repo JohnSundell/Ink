@@ -1,18 +1,45 @@
 # Benchmarking
 
-This document is not necessarily intended to be merged as-is (although it may be good to include a cleaned up version as documentation in case others are interesting in benchmarking when contributing to the project). Instead, it is intended to start a conversation about two important benchmarks—the CommonMark spec compatibility suite and the cmark performance benchmark—and how they can be integrated into the Ink testing suite.
+There are several ways to test and benchmark Ink in addition to the tests implemented in the InkTests target. Generally, these can be divided into two categories:
 
-## Motivation
+1. Running the testing and benchmarking scripts included in the [commonmark-spec]() and [Cmark]() repositories.
+2. Using the [raw test data]() from the CommonMark spec to generate additional XCTest classes and methods.
 
-There are several advantages of using these benchmarks in addition to the XCTest suite:
+The primary motivation for using these additional tests is to find areas where Ink could incorporate common Markdown features that are currently unimplemented.
 
-* Easy to set up and run, without adding dependencies
-* Provides external validation and corner case testing, which would take a while to generate by ourselves
-* Gives some indication of CommonMark features that are not yet implemented in Ink, for those who are interested in improving conformance
+## Advantages & Disadvantages
+
+There are advantages and disadvantages to both methods.
+
+### External CommonMark/Cmark scripts
+
+#### Advantages
+
+* Easy to set up and run, without adding dependencies.
+* Provides external validation and corner case testing for many already-implemented features.
+* Gives a good broad level overview of which features Ink could improve or add.
+* Includes some HTML normalization, reducing the number of tests which fail despite equivalent HTML.
+
+#### Disadvantages
+
+* Requires shell scripting if results need to be transformed for better visualization.
+* Very little control over built-in HTML normalization, so some tests still fail on equivalent HTML.
+
+### Native XCTest classes
+
+#### Advantages
+
+* Integrated tests can be run easily with `swift test` or in Xcode.
+* When adding new features, newly passing tests can be easily copied to the InkTests target.
+
+#### Disadvantages
+
+* Requires writing a tool to generate XCTest classes from the CommonMark spec json.
+* Requires handling HTML normalization, either by dependency or by writing a normalizer.
 
 ## Preparation
 
-First, you should have downloaded and installed the CLI tool. These tests rely on the improved CLI tool introduced in #19.
+First, you should have downloaded and installed the CLI tool. These tests rely on the improved CLI tool introduced in PR #19.
 
 ```
 git clone https://github.com/JohnSundell/Ink.git
@@ -30,7 +57,7 @@ Note: I tried the default `apt` package on Ubuntu 18.04, and it appears to be ou
 
 ## Instructions
 
-### CommonMark spec conformance tests
+### CommonMark spec tests
 
 To test the currently installed Ink binary:
 
@@ -60,7 +87,6 @@ sections="$(python3 test/spec_tests.py --dump-tests | grep section | uniq | cut 
 
 echo "$sections" | while read section; do
   echo "Section: $section"
-  sectiontext="$section"
   python3 test/spec_tests.py -p "$(which ink)" -P "$section" | tail -1 | cut -d ' ' -f 1-6 | sed -e 's/^/   /' -e 's/,$//'
 done
 ```
@@ -89,87 +115,30 @@ To test cmark, use the following command:
 make bench PROG="$(which cmark) --unsafe"
 ```
 
-## Automation
+### XCTest generation
 
-The next step might be to integrate these into CI so that we catch performance/conformance regressions. I don't have experience in that area, but I'm willing to jump in and learn. It seems like the only thing we would need is python3 and git.
+There are at least two active community approaches to generating XCTest classes:
 
-Presumably we'd want to have it run the benchmark against master and against the PR branch, to compare and identify regressions.
+#### [commonmark-xctests](https://github.com/john-mueller/Ink/tree/commonmark-xctests) branch on the [john-mueller/Ink]() fork  
 
-Here's an example script that I've been using. This could probably be cleaned up, but serves as a proof of concept.
+Branch includes both a generator which creates static .swift files in the Tests directory, and the generated files themselves. You shouldn't need to regenerate the test files unless you've made changes or want to see how it works.
+
+To test:
 
 ```
-#!/bin/bash
-
-baseversion="$1"
-newversion="$2"
-
-rm -rf Ink commonmark-spec
-git clone https://github.com/JohnSundell/Ink.git
-git clone https://github.com/commonmark/commonmark-spec.git
-
+git clone https://github.com/john-mueller/Ink --branch commonmark-xctests
 cd Ink
-git checkout "$baseversion"
-# pull in new CLI on old commits
-git checkout master Sources/InkCLI
-swift build -c release
-
-cd ../commonmark-spec
-git checkout 0.29
-baseoutput="$(python3 test/spec_tests.py -p="../Ink/.build/release/ink-cli")"
-baseresults="$(echo "$baseoutput" | tail -1)"
-
-cd ../Ink
-git checkout "$newversion"
-# pull in new CLI on old commits
-git checkout master Sources/InkCLI
-swift build -c release
-
-cd ../commonmark-spec
-newoutput="$(python3 test/spec_tests.py -p="../Ink/.build/release/ink-cli")"
-newresults="$(echo "$newoutput" | tail -1)"
-
-echo $'\n'"$baseversion: $baseresults"$'\n'"$newversion: $newresults"
-
-difference="$(diff -u <(echo "$baseoutput" | grep Example | cut -f2 -d' ') <(echo "$newoutput" | grep Example | cut -f2 -d' '))"
-
-deletions="$(echo "$difference" | grep -E '^\-\d')"
-additions="$(echo "$difference" | grep -E '^\+\d')"
-newpassingcount="$(echo "$deletions" | grep -c '-')"
-newfailingcount="$(echo "$additions" | grep -c '+')"
-newpassingtests="$(echo "$deletions" | sed -E 's/^\-//' | tr '\n' ' ')"
-newfailingtests="$(echo "$additions" | sed -E 's/^\+//' | tr '\n' ' ')"
-
-echo "$newpassingcount newly passing tests: $newpassingtests"
-echo "$newfailingcount newly failing tests: $newfailingtests"
+swift test
 ```
 
-Calling `./commonmark-tests.bash 0.1.2 0.1.3` ends with the following output:
+To generate:
 
 ```
-> 0.1.2: 191 passed, 458 failed, 0 errored, 0 skipped
-> 0.1.3: 200 passed, 449 failed, 0 errored, 0 skipped
-> 11 newly passing tests: 41 42 43 235 236 237 238 266 271 272 536 
-> 2 newly failing tests: 45 46 
+swift run CMTestGenerator
 ```
 
-## XCTest
+This branch will stay up to date, but is not intended to be merged, as it adds a dependency on [SwiftSoup](https://github.com/scinfu/SwiftSoup) and adds a new executable target to `Package.swift`, which are outside the scope of Ink's design.
 
-There also exists the possibility that we could do performance/conformance testing using XCTest. In fact, I am aware of at least two experiments in this direction (and my own experiments):
+#### <https://github.com/steve-h/InkTesting>
 
-* <https://gist.github.com/ezfe/05ff86cb42ecdffcb9cc22f47664d4f7>
-* <https://github.com/steve-h/Ink/tree/commonmarktests>
-
-Upsides:
-
-* Integration with Xcode
-* Presumably simpler CI integration (as we're already running XCTests through Bitrise)
-
-Downsides:
-
-* Would require maintenance of a separate tool to generate the tests based on the CommonMark spec.json
-* HTML output would need to be normalized, otherwise you get errant failures.
-* This means either taking on a dependency or writing/testing our own HTML normalizer.
-* Increases test time by a significant margin
-* Would require leaving out/commenting out failing tests so that CI can continue to check for regressions until those features are implemented
-
-Basically, I think that it's too early to try and put CommonMark compatibility tests for *unimplemented* features in XCTest. Individual tests should continue to be added to the XCTest suite as improvements and bugfixes are made.
+See [README.md](https://github.com/steve-h/InkTesting/blob/master/README.md) for explanation.
