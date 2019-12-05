@@ -76,7 +76,7 @@ private extension FormattedText {
         mutating func parse() {
             while !reader.didReachEnd {
                 do {
-                    if let terminator = terminator {
+                    if let terminator = terminator, reader.previousCharacter != "\\" {
                         guard reader.currentCharacter != terminator else {
                             break
                         }
