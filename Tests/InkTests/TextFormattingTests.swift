@@ -249,21 +249,7 @@ final class TextFormattingTests: XCTestCase {
            """#####
            XCTAssertEqual(html, properAnswer)
        }
-    
-    func testBackslashInURL() {
-        // Derived from CommonMark spec lines 596-600
-        // Backslash work in all other contexts, including URLs
-        let inputString =
-        #####"""
-        [foo](/bar\* "ti\*tle")
-        """#####
-        let html = MarkdownParser().html(from: inputString)
-        
-        let properAnswer = #####"""
-        <p><a href="/bar*" title="ti*tle">foo</a></p>
-        """#####
-        XCTAssertEqual(html, properAnswer)
-    }
+
 }
 
 extension TextFormattingTests {
@@ -300,8 +286,7 @@ extension TextFormattingTests {
             ("testEscapesThatOverrideMarkdown", testEscapesThatOverrideMarkdown),
             ("testEscapeOfBackslash", testEscapeOfBackslash),
             ("testCodeAreasPreserveBackslash", testCodeAreasPreserveBackslash),
-            ("testRawHTMLPreserveBackslash", testRawHTMLPreserveBackslash),
-            ("testBackslashInURL", testBackslashInURL)
+            ("testRawHTMLPreserveBackslash", testRawHTMLPreserveBackslash)            
         ]
     }
 }

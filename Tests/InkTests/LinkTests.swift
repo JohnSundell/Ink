@@ -69,6 +69,21 @@ final class LinkTests: XCTestCase {
         let html = MarkdownParser().html(from: "[\\[Hello\\]](hello)")
         XCTAssertEqual(html, #"<p><a href="hello">[Hello]</a></p>"#)
     }
+    
+   func testBackslashInURL() {
+       // Derived from CommonMark spec lines 596-600
+       // Backslash work in all other contexts, including URLs
+       let inputString =
+       #####"""
+       [foo](/bar\* "ti\*tle")
+       """#####
+       let html = MarkdownParser().html(from: inputString)
+       
+       let properAnswer = #####"""
+       <p><a href="/bar*" title="ti*tle">foo</a></p>
+       """#####
+       XCTAssertEqual(html, properAnswer)
+   }
 }
 
 extension LinkTests {
@@ -82,7 +97,8 @@ extension LinkTests {
             ("testBoldLinkWithExternalMarkers", testBoldLinkWithExternalMarkers),
             ("testLinkWithUnderscores", testLinkWithUnderscores),
             ("testUnterminatedLink", testUnterminatedLink),
-            ("testLinkWithEscapedSquareBrackets", testLinkWithEscapedSquareBrackets)
+            ("testLinkWithEscapedSquareBrackets", testLinkWithEscapedSquareBrackets),
+            ("testBackslashInURL", testBackslashInURL)
         ]
     }
 }
