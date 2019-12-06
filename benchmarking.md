@@ -2,8 +2,8 @@
 
 There are several ways to test and benchmark Ink in addition to the tests implemented in the InkTests target. Generally, these can be divided into two categories:
 
-1. Running the testing and benchmarking scripts included in the [commonmark-spec]() and [Cmark]() repositories.
-2. Using the [raw test data]() from the CommonMark spec to generate additional XCTest classes and methods.
+1. Running the testing and benchmarking scripts included in the [commonmark-spec](https://github.com/commonmark/commonmark-spec) and [cmark](https://github.com/commonmark/cmark) repositories.
+2. Using the [raw test data](https://spec.commonmark.org/0.29/spec.json) from the CommonMark spec to generate additional XCTest classes and methods.
 
 The primary motivation for using these additional tests is to find areas where Ink could incorporate common Markdown features that are currently unimplemented.
 
@@ -119,7 +119,7 @@ make bench PROG="$(which cmark) --unsafe"
 
 There are at least two active community approaches to generating XCTest classes:
 
-#### [commonmark-xctests](https://github.com/john-mueller/Ink/tree/commonmark-xctests) branch on the [john-mueller/Ink]() fork  
+#### [commonmark-xctests](https://github.com/john-mueller/Ink/tree/commonmark-xctests) branch on the [john-mueller/Ink](https://github.com/john-mueller/Ink) fork  
 
 Branch includes both a generator which creates static .swift files in the Tests directory, and the generated files themselves. You shouldn't need to regenerate the test files unless you've made changes or want to see how it works.
 
