@@ -52,4 +52,8 @@ internal struct CodeBlock: Fragment {
         let languageClass = language.isEmpty ? "" : " class=\"language-\(language)\""
         return "<pre><code\(languageClass)>\(code)</code></pre>"
     }
+
+    func plainText() -> String {
+        code
+    }
 }

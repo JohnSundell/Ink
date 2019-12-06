@@ -38,4 +38,8 @@ struct InlineCode: Fragment {
               modifiers: ModifierCollection) -> String {
         return "<code>\(code)</code>"
     }
+
+    func plainText() -> String {
+        code
+    }
 }
