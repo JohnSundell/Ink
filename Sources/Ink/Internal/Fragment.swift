@@ -4,4 +4,4 @@
 *  MIT license, see LICENSE file for details
 */
 
-internal typealias Fragment = Readable & Modifiable & HTMLConvertible
+internal typealias Fragment = Readable & Modifiable & HTMLConvertible & PlainTextConvertible

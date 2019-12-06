@@ -18,4 +18,8 @@ internal struct Paragraph: Fragment {
         let body = text.html(usingURLs: urls, modifiers: modifiers)
         return "<p>\(body)</p>"
     }
+
+    func plainText() -> String {
+        text.plainText()
+    }
 }
