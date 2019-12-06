@@ -36,4 +36,8 @@ internal struct Blockquote: Fragment {
         let body = text.html(usingURLs: urls, modifiers: modifiers)
         return "<blockquote><p>\(body)</p></blockquote>"
     }
+
+    func plainText() -> String {
+        text.plainText()
+    }
 }

@@ -147,6 +147,20 @@ internal struct List: Fragment {
 
         return "<\(tagName)\(startAttribute)>\(body)</\(tagName)>"
     }
+
+    func plainText() -> String {
+        var isFirst = true
+
+        return items.reduce(into: "") { string, item in
+            if isFirst {
+                isFirst = false
+            } else {
+                string.append(", ")
+            }
+
+            string.append(item.text.plainText())
+        }
+    }
 }
 
 private extension List {
