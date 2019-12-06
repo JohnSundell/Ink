@@ -5,7 +5,7 @@
 */
 
 ///
-/// A parser used to convert Markdown text into HTML
+/// A parser used to convert Markdown text into HTML.
 ///
 /// You can use an instance of this type to either convert
 /// a Markdown string into an HTML string, or into a `Markdown`
