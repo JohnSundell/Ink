@@ -39,16 +39,11 @@ let escapeSubstitutions: [Character: String] = [
     ">": "&gt;",
     "<": "&lt;",
     "&": "&amp;",
-    "\"": "&quot;",
-    
-]
+    "\"": "&quot;"
+    ]
 
-func escaped(_ char: Character) -> String? {
-if let substitution = escapeSubstitutions[char] {
-    return substitution
-}
-return nil
-}
+func escaped(_ char: Character) -> String? { escapeSubstitutions[char] }
+
 
 internal extension Character {
     @available(*, deprecated, message: "use escaped(_ char: Character) -> String?")

@@ -229,7 +229,8 @@ final class TextFormattingTests: XCTestCase {
         let html = MarkdownParser().html(from: inputString)
         
         let properAnswer = #####"""
-        <pre><code>\[\]</code></pre>
+        <pre><code>\[\]
+        </code></pre>
         """#####
         XCTAssertEqual(html, properAnswer)
     }
