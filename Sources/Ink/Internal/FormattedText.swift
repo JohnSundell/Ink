@@ -30,7 +30,7 @@ internal struct FormattedText: Readable, HTMLConvertible {
         return components.reduce(into: "") { string, component in
             switch component {
             case .linebreak:
-                string.append("<br/>")
+                string.append("<br>")
             case .text(let text):
                 string.append(String(text))
             case .styleMarker(let marker):
@@ -81,7 +81,7 @@ private extension FormattedText {
 
             while !reader.didReachEnd {
                 do {
-                    if let terminator = terminator {
+                    if let terminator = terminator, reader.previousCharacter != "\\" {
                         guard reader.currentCharacter != terminator else {
                             break
                         }
@@ -176,9 +176,7 @@ private extension FormattedText {
             var string = reader.characters(in: endingTextRange)
 
             if trimWhitespaces {
-                while string.last?.isWhitespace == true {
-                    string = string.dropLast()
-                }
+                string = string.trimmingTrailingWhitespaces()
             }
 
             text.components.append(.text(string))

@@ -74,7 +74,7 @@ final class ModifierTests: XCTestCase {
         ```
         """)
 
-        XCTAssertEqual(html, "<p>Code is cool:</p><pre><code>Code</code></pre>")
+        XCTAssertEqual(html, "<p>Code is cool:</p><pre><code>Code\n</code></pre>")
     }
 }
 

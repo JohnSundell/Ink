@@ -131,7 +131,14 @@ extension Reader {
 
         return string[startIndex..<currentIndex]
     }
-
+    
+    mutating func discardWhitespaces() {
+        while !didReachEnd {
+            guard currentCharacter.isSameLineWhitespace else { return }
+            advanceIndex()
+        }
+    }
+    
     mutating func discardWhitespacesAndNewlines() {
         while !didReachEnd {
             guard currentCharacter.isWhitespace else { return }
