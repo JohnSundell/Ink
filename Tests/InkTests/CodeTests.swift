@@ -13,6 +13,12 @@ final class CodeTests: XCTestCase {
         XCTAssertEqual(html, "<p>Hello <code>inline.code()</code></p>")
     }
 
+    func testInlineCodeLeftToRight() {
+        // Derived from CommonMark spec lines 5842-5846
+        let html = MarkdownParser().html(from: "`hi`lo`")
+        XCTAssertEqual(html, "<p><code>hi</code>lo`</p>")
+    }
+    
     func testCodeBlockWithJustBackticks() {
         let html = MarkdownParser().html(from: """
         ```
@@ -70,16 +76,22 @@ final class CodeTests: XCTestCase {
     }
     
     func testEscapeBehaviorWithinCodeBlock() {
-        let html = MarkdownParser().html(from: """
-        ```swi\ft
+        let html = MarkdownParser().html(from:
+        #####"""
+        ```swift
         \< < \& & \" " \> >
         \a a \\ \` `
         ```
-        """)
+        """#####
+        )
 
-        XCTAssertEqual(html, """
-        <pre><code class="language-swift">\&lt; &lt; \&amp; &amp; \&quot; &quot; \&gt; &gt;\n\a a \\ \` `\n</code></pre>
-        """)
+        XCTAssertEqual(html,
+        #####"""
+        <pre><code class="language-swift">\&lt; &lt; \&amp; &amp; \&quot; &quot; \&gt; &gt;
+        \a a \\ \` `
+        </code></pre>
+        """#####
+        )
     }
 
     func testIgnoringFormattingWithinCodeBlock() {
@@ -103,11 +115,13 @@ extension CodeTests {
     static var allTests: Linux.TestList<CodeTests> {
         return [
             ("testInlineCode", testInlineCode),
+            ("testInlineCodeLeftToRight", testInlineCodeLeftToRight),
             ("testCodeBlockWithJustBackticks", testCodeBlockWithJustBackticks),
             ("testCodeBlockWithBackticksAndLabel", testCodeBlockWithBackticksAndLabel),
             ("testCodeBlockWithBackticksAndLabelNeedingTrimming", testCodeBlockWithBackticksAndLabelNeedingTrimming),
             ("testCodeBlockManyBackticks", testCodeBlockManyBackticks),
             ("testEncodingSpecialCharactersWithinCodeBlock", testEncodingSpecialCharactersWithinCodeBlock),
+            ("testEscapeBehaviorWithinCodeBlock", testEscapeBehaviorWithinCodeBlock),
             ("testIgnoringFormattingWithinCodeBlock", testIgnoringFormattingWithinCodeBlock)
         ]
     }
