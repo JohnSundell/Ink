@@ -35,7 +35,7 @@ internal struct CodeBlock: Fragment {
                 }
             }
 
-            if let escaped = escaped(reader.currentCharacter) {
+            if let escaped = escapedHtml(reader.currentCharacter) {
                 code.append(escaped)
             } else {
                 code.append(reader.currentCharacter)

@@ -21,7 +21,7 @@ struct InlineCode: Fragment {
                 reader.advanceIndex()
                 return InlineCode(code: code)
             default:
-                if let escaped = escaped(reader.currentCharacter) {
+                if let escaped = escapedHtml(reader.currentCharacter) {
                     code.append(escaped)
                 } else {
                     code.append(reader.currentCharacter)

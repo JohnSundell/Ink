@@ -68,6 +68,19 @@ final class CodeTests: XCTestCase {
         <pre><code class="language-swift">Generic&lt;T&gt;() &amp;&amp; expression()\n</code></pre>
         """)
     }
+    
+    func testEscapeBehaviorWithinCodeBlock() {
+        let html = MarkdownParser().html(from: """
+        ```swi\ft
+        \< < \& & \" " \> >
+        \a a \\ \` `
+        ```
+        """)
+
+        XCTAssertEqual(html, """
+        <pre><code class="language-swift">\&lt; &lt; \&amp; &amp; \&quot; &quot; \&gt; &gt;\n\a a \\ \` `\n</code></pre>
+        """)
+    }
 
     func testIgnoringFormattingWithinCodeBlock() {
         let html = MarkdownParser().html(from: """
