@@ -17,10 +17,12 @@ internal struct CodeBlock: Fragment {
         try require(startingMarkerCount >= 3)
         reader.discardWhitespaces()
 
-        let language = reader
+        let infoString = reader
             .readUntilEndOfLine()
             .trimmingTrailingWhitespaces()
-
+        // https://spec.commonmark.org/0.29/#fenced-code-blocks
+        // cannot contain backtick
+        try require(!infoString.contains("`"))
         var code = ""
 
         while !reader.didReachEnd {
@@ -43,13 +45,16 @@ internal struct CodeBlock: Fragment {
 
             reader.advanceIndex()
         }
-
-        return CodeBlock(language: language, code: code)
+        // store the raw Substring for expediency here. The first word is the word is the language and the rest has no meaning.
+        // trim to the first word on output
+        return CodeBlock(language: infoString, code: code)
     }
 
     func html(usingURLs urls: NamedURLCollection,
               modifiers: ModifierCollection) -> String {
-        let languageClass = language.isEmpty ? "" : " class=\"language-\(language)\""
+        // https://spec.commonmark.org/0.29/#fenced-code-blocks
+        // first word of any info string is actually the language added
+        let languageClass = language.isEmpty ? "" : " class=\"language-\(language.split(separator: " ")[0])\""
         return "<pre><code\(languageClass)>\(code)</code></pre>"
     }
 
