@@ -26,7 +26,7 @@ internal struct CodeBlock: Fragment {
         var code = ""
 
         while !reader.didReachEnd {
-            if code.last == "\n", reader.currentCharacter == marker {
+            if reader.previousCharacter == "\n", reader.currentCharacter == marker {
                 let markerCount = reader.readCount(of: marker)
 
                 if markerCount == startingMarkerCount {

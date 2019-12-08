@@ -40,6 +40,39 @@ final class CodeTests: XCTestCase {
         XCTAssertEqual(html, "<pre><code class=\"language-swift\">code()\n</code></pre>")
     }
     
+    func testCodeBlockWithBackticksAndLongInfoString() {
+        // Derived from CommonMark spec lines 2304-2315
+        let html = MarkdownParser().html(from: """
+        ````    ruby startline=3 $%@#$
+        def foo(x)
+          return 3
+        end
+        ````
+        """)
+
+        XCTAssertEqual(html, """
+        <pre><code class="language-ruby">def foo(x)
+          return 3
+        end
+        </code></pre>
+        """)
+    }
+    
+    func testCodeBlockWithSillyLanguageName() {
+        // Derived from CommonMark spec lines 2318-2323
+        let html = MarkdownParser().html(from:
+        #####"""
+        ```;
+        ```
+        """#####
+        + "\n"
+        )
+
+        XCTAssertEqual(html, """
+        <pre><code class="language-;"></code></pre>
+        """)
+    }
+    
     func testCodeBlockWithBackticksAndLabelNeedingTrimming() {
        // there are 2 spaces after the swift label that need trimming too
        let html = MarkdownParser().html(from: """
@@ -118,6 +151,8 @@ extension CodeTests {
             ("testInlineCodeLeftToRight", testInlineCodeLeftToRight),
             ("testCodeBlockWithJustBackticks", testCodeBlockWithJustBackticks),
             ("testCodeBlockWithBackticksAndLabel", testCodeBlockWithBackticksAndLabel),
+            ("testCodeBlockWithBackticksAndLongInfoString", testCodeBlockWithBackticksAndLongInfoString),
+            ("testCodeBlockWithSillyLanguageName", testCodeBlockWithSillyLanguageName),
             ("testCodeBlockWithBackticksAndLabelNeedingTrimming", testCodeBlockWithBackticksAndLabelNeedingTrimming),
             ("testCodeBlockManyBackticks", testCodeBlockManyBackticks),
             ("testEncodingSpecialCharactersWithinCodeBlock", testEncodingSpecialCharactersWithinCodeBlock),
