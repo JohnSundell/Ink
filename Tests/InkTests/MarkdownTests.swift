@@ -77,6 +77,21 @@ final class MarkdownTests: XCTestCase {
         XCTAssertEqual(markdown.html, "<hr><h1>Title</h1>")
     }
 
+    func testMetadataInWrongPlace() {
+        let markdown = MarkdownParser().parse("""
+        # Title
+        ---
+        a: 1
+        b : 2
+        ---
+        ## Section
+        """)
+
+        XCTAssertEqual(markdown.metadata, [:])
+        // This test will start to fail if the --- can be interpreted as underlining changing the paragraph to a <h2>
+        // without underlining the second --- might be also an <hr> but the current parser is not looking out for ---
+        XCTAssertEqual(markdown.html, "<h1>Title</h1><hr><p>a: 1 b : 2 ---</p><h2>Section</h2>")
+    }
 
     func testPlainTextTitle() {
         let markdown = MarkdownParser().parse("""
