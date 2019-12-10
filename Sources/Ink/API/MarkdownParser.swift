@@ -45,31 +45,30 @@ public struct MarkdownParser {
         var urlsByName = [String : URL]()
         var titleHeading: Heading?
         var metadata: Metadata?
-
+        reader.discardWhitespacesAndNewlines()
+        if !reader.didReachEnd {
+            if metadata == nil, fragments.isEmpty, reader.currentCharacter == "-" {
+                if let parsedMetadata = try? Metadata.readOrRewind(using: &reader) {
+                    metadata = parsedMetadata
+                }
+            }
+        }
         while !reader.didReachEnd {
             reader.discardWhitespacesAndNewlines()
             guard !reader.didReachEnd else { break }
-
             do {
-                if metadata == nil, fragments.isEmpty, reader.currentCharacter == "-" {
-                    if let parsedMetadata = try? Metadata.readOrRewind(using: &reader) {
-                        metadata = parsedMetadata
-                        continue
-                    }
-                }
-
                 guard reader.currentCharacter != "[" else {
                     let declaration = try URLDeclaration.readOrRewind(using: &reader)
                     urlsByName[declaration.name] = declaration.url
                     continue
                 }
-
+                
                 let type = fragmentType(for: reader.currentCharacter,
                                         nextCharacter: reader.nextCharacter)
-
+                
                 let fragment = try makeFragment(using: type.readOrRewind, reader: &reader)
                 fragments.append(fragment)
-
+                
                 if titleHeading == nil, let heading = fragment.fragment as? Heading {
                     if heading.level == 1 {
                         titleHeading = heading

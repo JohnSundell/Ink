@@ -17,7 +17,7 @@ internal struct Reader {
 extension Reader {
     struct Error: Swift.Error {}
 
-    var didReachEnd: Bool { currentIndex == endIndex }
+    var didReachEnd: Bool { currentIndex >= endIndex } // in case it was advanced past end.
     var previousCharacter: Character? { lookBehindAtPreviousCharacter() }
     var currentCharacter: Character { string[currentIndex] }
     var nextCharacter: Character? { lookAheadAtNextCharacter() }
