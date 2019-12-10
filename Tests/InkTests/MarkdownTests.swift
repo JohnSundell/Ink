@@ -142,6 +142,7 @@ extension MarkdownTests {
             ("testMergingOrphanMetadataValueIntoPreviousOne", testMergingOrphanMetadataValueIntoPreviousOne),
             ("testMissingMetadata", testMissingMetadata),
             ("testStartWithRule", testStartWithRule),
+            ("testMetadataInWrongPlace", testMetadataInWrongPlace),
             ("testPlainTextTitle", testPlainTextTitle),
             ("testRemovingTrailingMarkersFromTitle", testRemovingTrailingMarkersFromTitle),
             ("testConvertingFormattedTitleTextToPlainText", testConvertingFormattedTitleTextToPlainText),
