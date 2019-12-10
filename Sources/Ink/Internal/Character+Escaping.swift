@@ -10,7 +10,13 @@ internal extension Character {
         case ">": return "&gt;"
         case "<": return "&lt;"
         case "&": return "&amp;"
-        default: return nil
+        default:
+            guard let unicodeScalar = self.unicodeScalars.first?.value else { return nil }
+            if unicodeScalar > 255 {
+                return "&#\(unicodeScalar);"
+            } else {
+                return nil
+            }
         }
     }
 }
