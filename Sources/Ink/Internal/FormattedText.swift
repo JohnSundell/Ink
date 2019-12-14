@@ -219,7 +219,7 @@ private extension FormattedText {
                         }
                     }
                 } else {
-                    if let escaped = escapedHtml(reader.currentCharacter) {
+                    if let escaped = escapedMarkdownHTML(reader.currentCharacter) {
                         addPendingTextIfNeeded()
                         text.components.append(.text(Substring(escaped)))
                         skipCharacter()
