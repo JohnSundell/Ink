@@ -10,6 +10,9 @@ import PackageDescription
 
 let package = Package(
     name: "Ink",
+    platforms: [
+        .macOS(.v10_15),
+    ],
     products: [
         .library(name: "Ink", targets: ["Ink"]),
         .executable(name: "ink-cli", targets: ["InkCLI"])
