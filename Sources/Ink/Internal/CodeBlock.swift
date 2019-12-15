@@ -26,14 +26,28 @@ internal struct CodeBlock: Fragment {
         var code = ""
 
         while !reader.didReachEnd {
-            if reader.previousCharacter == "\n", reader.currentCharacter == marker {
+            if reader.currentCharacter == marker, reader.previousCharacter == "\n" {  // faster to fail out on rarer marker and currentCharacter func
                 let markerCount = reader.readCount(of: marker)
 
-                if markerCount == startingMarkerCount {
-                    break
-                } else {
+                if markerCount >= startingMarkerCount {
+                    // now comes the tricky part; if there is something else after the marker,
+                    // then it needs the whole line needs to end up in the emitted code.
+                    // The marker and any whitespace is OK and won't need escaping.
+                    // We will read any whitespace but ignore the error throw if there are none.
+                    let theWhitespace = try? reader.readWhitespaces()
+                    guard !reader.didReachEnd else { break } // We could have just read the last char and it is still a good code block.
+                    if reader.currentCharacter == "\n" {
+                        break // great we had a proper ending; break to emit the code block
+                    } else {
+                        // This is the tricky case; add the marker and the whitespace back and then continue in the loop to get any other characters properly escaped.
+                        code.append(String(repeating: marker, count: markerCount))
+                        if let white = theWhitespace {
+                            code.append(String(white))
+                        }
+                    }
+                } else { // The marker was not long enough so we put it in the code and fall through.
                     code.append(String(repeating: marker, count: markerCount))
-                    guard !reader.didReachEnd else { break }
+                    guard !reader.didReachEnd else { break } // Unless we just read the last char and it is still a good code block.
                 }
             }
 

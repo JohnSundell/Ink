@@ -96,6 +96,38 @@ final class CodeTests: XCTestCase {
         XCTAssertEqual(html, "<pre><code class=\"language-foo\">bar\n</code></pre>")
     }
     
+    func testCodeBlockSufficientBackticks() {
+        // Derived from CommonMark spec lines 2046-2055
+        let html = MarkdownParser().html(from: """
+           ````
+           aaa
+           ```
+           ``````
+           """)
+        
+        XCTAssertEqual(html, #####"""
+           <pre><code>aaa
+           ```
+           </code></pre>
+           """#####)
+    }
+    
+    func testCodeBlockFakeClosureAndFileEndingBlock() {
+        // Derived from CommonMark spec lines 2046-2055
+        let html = MarkdownParser().html(from: #####"""
+           ````
+           aaa
+           ```` this is \really code \" &
+           ```
+           """#####)
+        
+        XCTAssertEqual(html, #####"""
+           <pre><code>aaa
+           ```` this is \really code \&quot; &amp;
+           ```</code></pre>
+           """#####)
+    }
+
     func testEncodingSpecialCharactersWithinCodeBlock() {
         let html = MarkdownParser().html(from: """
         ```swift
@@ -155,6 +187,8 @@ extension CodeTests {
             ("testCodeBlockWithSillyLanguageName", testCodeBlockWithSillyLanguageName),
             ("testCodeBlockWithBackticksAndLabelNeedingTrimming", testCodeBlockWithBackticksAndLabelNeedingTrimming),
             ("testCodeBlockManyBackticks", testCodeBlockManyBackticks),
+            ("testCodeBlockSufficientBackticks", testCodeBlockSufficientBackticks),
+            ("testCodeBlockFakeClosureAndFileEndingBlock", testCodeBlockFakeClosureAndFileEndingBlock),
             ("testEncodingSpecialCharactersWithinCodeBlock", testEncodingSpecialCharactersWithinCodeBlock),
             ("testEscapeBehaviorWithinCodeBlock", testEscapeBehaviorWithinCodeBlock),
             ("testIgnoringFormattingWithinCodeBlock", testIgnoringFormattingWithinCodeBlock)
