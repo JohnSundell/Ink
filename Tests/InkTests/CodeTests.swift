@@ -174,6 +174,22 @@ final class CodeTests: XCTestCase {
         - Not a list\n</code></pre>
         """)
     }
+    
+    func testCodeBlockBetweenParagraphs() {
+        // Derived from CommonMark spec lines 2251-2262
+        let html = MarkdownParser().html(from: #####"""
+        foo
+        ```
+        bar
+        ```
+        baz
+        """#####)
+        
+        XCTAssertEqual(html, #####"""
+        <p>foo</p><pre><code>bar
+        </code></pre><p>baz</p>
+        """#####)
+    }
 }
 
 extension CodeTests {
@@ -191,7 +207,8 @@ extension CodeTests {
             ("testCodeBlockFakeClosureAndFileEndingBlock", testCodeBlockFakeClosureAndFileEndingBlock),
             ("testEncodingSpecialCharactersWithinCodeBlock", testEncodingSpecialCharactersWithinCodeBlock),
             ("testEscapeBehaviorWithinCodeBlock", testEscapeBehaviorWithinCodeBlock),
-            ("testIgnoringFormattingWithinCodeBlock", testIgnoringFormattingWithinCodeBlock)
+            ("testIgnoringFormattingWithinCodeBlock", testIgnoringFormattingWithinCodeBlock),
+            ("testCodeBlockBetweenParagraphs", testCodeBlockBetweenParagraphs)
         ]
     }
 }
