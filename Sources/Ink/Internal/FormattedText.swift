@@ -29,21 +29,20 @@ internal struct FormattedText: Readable, HTMLConvertible, PlainTextConvertible {
               modifiers: ModifierCollection) -> String {
         components.reduce(into: "") { string, component in
             switch component {
-            case .linebreak:
-                string.append("<br>")
             case .text(let text):
                 string.append(String(text))
             case .styleMarker(let marker):
-                let html = marker.html(usingURLs: urls, modifiers: modifiers)
-                string.append(html)
+                       let html = marker.html(usingURLs: urls, modifiers: modifiers)
+                       string.append(html)
             case .fragment(let fragment, let rawString):
                 let html = fragment.html(
                     usingURLs: urls,
                     rawString: rawString,
                     applyingModifiers: modifiers
                 )
-
                 string.append(html)
+            case .linebreak:
+                string.append("<br>")
             }
         }
     }
@@ -51,14 +50,14 @@ internal struct FormattedText: Readable, HTMLConvertible, PlainTextConvertible {
     func plainText() -> String {
         components.reduce(into: "") { string, component in
             switch component {
-            case .linebreak:
-                string.append("\n")
             case .text(let text):
                 string.append(String(text))
-            case .styleMarker:
-                break
             case .fragment(let fragment, _):
                 string.append(fragment.plainText())
+            case .styleMarker:
+                break
+            case .linebreak:
+                string.append("\n")
             }
         }
     }
