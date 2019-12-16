@@ -14,7 +14,7 @@ final class CodeTests: XCTestCase {
     }
 
     func testInlineCodeLeftToRight() {
-        // Derived from CommonMark spec lines 5842-5846
+        // Derived from CommonMark spec lines 5499-5503
         let html = MarkdownParser().html(from: "`hi`lo`")
         XCTAssertEqual(html, "<p><code>hi</code>lo`</p>")
     }
@@ -41,7 +41,7 @@ final class CodeTests: XCTestCase {
     }
     
     func testCodeBlockWithBackticksAndLongInfoString() {
-        // Derived from CommonMark spec lines 2304-2315
+        // Derived from CommonMark spec lines 1961-1972
         let html = MarkdownParser().html(from: """
         ````    ruby startline=3 $%@#$
         def foo(x)
@@ -59,7 +59,7 @@ final class CodeTests: XCTestCase {
     }
     
     func testCodeBlockWithSillyLanguageName() {
-        // Derived from CommonMark spec lines 2318-2323
+        // Derived from CommonMark spec lines 1975-1980
         let html = MarkdownParser().html(from:
         #####"""
         ```;
@@ -74,7 +74,7 @@ final class CodeTests: XCTestCase {
     }
     
     func testCodeBlockWithBackticksAndLabelNeedingTrimming() {
-       // there are 2 spaces after the swift label that need trimming too
+       // there should be 2 spaces after the swift label below that need trimming too
        let html = MarkdownParser().html(from: """
        ``` swift  
        code()
@@ -85,7 +85,6 @@ final class CodeTests: XCTestCase {
    }
     
     func testCodeBlockManyBackticks() {
-        // there are 2 spaces after the swift label that need trimming too
         let html = MarkdownParser().html(from: """
         
         ```````````````````````````````` foo
@@ -97,7 +96,7 @@ final class CodeTests: XCTestCase {
     }
     
     func testCodeBlockSufficientBackticks() {
-        // Derived from CommonMark spec lines 2046-2055
+        // Derived from CommonMark spec 0.29 lines 1703-1712
         let html = MarkdownParser().html(from: """
            ````
            aaa
@@ -113,7 +112,7 @@ final class CodeTests: XCTestCase {
     }
     
     func testCodeBlockFakeClosureAndFileEndingBlock() {
-        // Derived from CommonMark spec lines 2046-2055
+        // To complete code coverage for bad closing of block cases
         let html = MarkdownParser().html(from: #####"""
            ````
            aaa
@@ -176,7 +175,7 @@ final class CodeTests: XCTestCase {
     }
     
     func testCodeBlockBetweenParagraphs() {
-        // Derived from CommonMark spec lines 2251-2262
+        // Derived from CommonMark spec 0.29 lines 1908-1919
         let html = MarkdownParser().html(from: #####"""
         foo
         ```

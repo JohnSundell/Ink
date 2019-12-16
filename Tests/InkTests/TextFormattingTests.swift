@@ -160,7 +160,7 @@ final class TextFormattingTests: XCTestCase {
     }
     
     func testEscapedPunctuation() {
-        // Derived from CommonMark spec lines 488-492
+        // Derived from CommonMark spec lines 5513-5517
         let allTheSpecialASCIIChars =
         #####"""
         \!\"\#\$\%\&\'\(\)\*\+\,\-\.\/\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~
@@ -174,7 +174,7 @@ final class TextFormattingTests: XCTestCase {
     }
     
     func testOtherCharactersNotEscaped() {
-        // Derived from CommonMark spec lines 498-502
+        // Derived from CommonMark spec lines 5523-5527
         // watch out as there are tab characters in this test \#####t
         let inputString =
         #####"""
@@ -189,7 +189,7 @@ final class TextFormattingTests: XCTestCase {
     }
     
     func testEscapesThatOverrideMarkdown() {
-        // Derived from CommonMark spec lines 508-528
+        // Derived from CommonMark spec lines 5533-5553
         // Escaped characters are treated as regular characters and do
         // not have their usual Markdown meanings:
         let inputString =
@@ -213,7 +213,7 @@ final class TextFormattingTests: XCTestCase {
     }
     
     func testEscapeOfBackslash() {
-        // Derived from CommonMark spec lines 533-537
+        // Derived from CommonMark spec lines 5558-5562
         // If a backslash is itself escaped, the following character is not:
         let inputString =
         #####"""
@@ -228,7 +228,7 @@ final class TextFormattingTests: XCTestCase {
     }
     
     func testCodeAreasPreserveBackslash() {
-        // Derived from CommonMark spec lines 569-576
+        // Derived from CommonMark spec lines 5594-5601
         // Backslash escapes do not work in code blocks
         let inputString =
         #####"""
@@ -246,7 +246,7 @@ final class TextFormattingTests: XCTestCase {
     }
     
     func testRawHTMLPreserveBackslash() {
-           // Derived from CommonMark spec lines 586-590
+           // Derived from CommonMark spec lines 5611-5615
            // Backslash escapes do not work in raw HTML
            let inputString =
            #####"""
