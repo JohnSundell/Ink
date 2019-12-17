@@ -7,12 +7,13 @@
 internal struct CodeBlock: Fragment {
     var modifierTarget: Modifier.Target { .codeBlocks }
 
-    private static let marker: Character = "`"
+//    private static let marker: Character = "`"
 
     private var language: Substring
     private var code: String
 
     static func read(using reader: inout Reader) throws -> CodeBlock {
+        let marker = reader.currentCharacter // ` or ~ are expected but later need to implement indented code blocks.
         let startingMarkerCount = reader.readCount(of: marker)
         try require(startingMarkerCount >= 3)
         reader.discardWhitespaces()

@@ -29,7 +29,26 @@ final class CodeTests: XCTestCase {
 
         XCTAssertEqual(html, "<pre><code>code()\nblock()\n</code></pre>")
     }
-
+    
+    // https://github.com/commonmark/commonmark-spec
+    // spec.txt lines 1653-1662
+    func testCodeBlockWithTilde() {
+        let html = MarkdownParser().html(from: """
+        ~~~
+        <
+         >
+        ~~~
+        """)
+        
+        let normalizedCM = #####"""
+            <pre><code>&lt;
+             &gt;
+            </code></pre>
+            """#####
+        
+        XCTAssertEqual(html,normalizedCM)
+    }
+    
     func testCodeBlockWithBackticksAndLabel() {
         let html = MarkdownParser().html(from: """
         ```swift
@@ -197,6 +216,7 @@ extension CodeTests {
             ("testInlineCode", testInlineCode),
             ("testInlineCodeLeftToRight", testInlineCodeLeftToRight),
             ("testCodeBlockWithJustBackticks", testCodeBlockWithJustBackticks),
+            ("testCodeBlockWithTilde", testCodeBlockWithTilde),
             ("testCodeBlockWithBackticksAndLabel", testCodeBlockWithBackticksAndLabel),
             ("testCodeBlockWithBackticksAndLongInfoString", testCodeBlockWithBackticksAndLongInfoString),
             ("testCodeBlockWithSillyLanguageName", testCodeBlockWithSillyLanguageName),

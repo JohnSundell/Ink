@@ -158,7 +158,7 @@ Ink supports the following Markdown features:
 - Bold text, by surrounding a piece of text with either two asterisks (`**`), or two underscores (`__`). For example `**Bold text**`.
 - Text strikethrough, by surrounding a piece of text with two tildes (`~~`), for example `~~Strikethrough text~~`.
 - Inline code, marked with a backtick on either site of the code.
-- Code blocks, marked with three or more backticks both above and below the block.
+- Code blocks, marked with three or more backticks, or three or more tildes (`~~~`), both above and below the block.
 - Links, using the following syntax: `[Title](url)`.
 - Images, using the following syntax: `![Alt text](image-url)`.
 - Both images and links can also use reference URLs, which can be defined anywhere in a Markdown document using this syntax: `[referenceName]: url`.
