@@ -115,7 +115,7 @@ private extension FormattedText {
                             continue
                         }
 
-                        guard !nextCharacter.isAny(of: ["\n", "#", "<", "`", "&"]) else {
+                        guard !nextCharacter.isAny(of: ["\n", "#", "<", "`"]) else {
                             break
                         }
 
@@ -150,7 +150,17 @@ private extension FormattedText {
                         try parseStyleMarker()
                         continue
                     }
-
+                    
+                    guard reader.currentCharacter != "&" else {
+                        addPendingTextIfNeeded()
+                        let startIndex = reader.currentIndex
+                        let fragment = try HTMLEntity.readOrRewind(using: &reader)
+                        let rawString = reader.characters(in: startIndex..<reader.currentIndex)
+                        text.components.append(.fragment(fragment, rawString: rawString))
+                        pendingTextRange = reader.currentIndex..<reader.endIndex
+                        continue
+                    }
+                    
                     if reader.currentCharacter == "<" {
                         guard let nextCharacter = reader.nextCharacter else {
                             reader.advanceIndex()

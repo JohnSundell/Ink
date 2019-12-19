@@ -14,13 +14,17 @@ struct HTMLEntity: Fragment {
 
         while !reader.didReachEnd {
             switch reader.currentCharacter {
-            case \.isNewline:
+            case \.isWhitespace:
                 throw Reader.Error()
             case ";":
                 value.append(reader.currentCharacter)
                 reader.advanceIndex()
                 if let result = namedCharactersDecodeMap[value] {
-                    return HTMLEntity(entityCharacters: String(result))
+                    if let escaped = result.escaped {
+                        return HTMLEntity(entityCharacters: String(escaped))
+                    } else {
+                        return HTMLEntity(entityCharacters: String(result))
+                    }
                 } else {
                     throw Reader.Error()
                 }
