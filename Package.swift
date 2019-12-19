@@ -14,6 +14,9 @@ let package = Package(
         .library(name: "Ink", targets: ["Ink"]),
         .executable(name: "ink-cli", targets: ["InkCLI"])
     ],
+    dependencies: [
+      .package(url: "https://github.com/IBM-Swift/swift-html-entities.git", from: "3.0.0")
+    ],
     targets: [
         .target(name: "Ink"),
         .target(name: "InkCLI", dependencies: ["Ink"]),
