@@ -136,7 +136,7 @@ struct HTMLEntity: Fragment {
                             }
                         }
                     }
-                    throw Reader.Error()
+                    throw Reader.Error()  // need to dream up a code that has no character for coverage
                 } else {
                     throw Reader.Error()
                 }
