@@ -21,8 +21,8 @@
 //    import Foundation
 //#endif
 //
-//// Replacement character U+FFFD
-//let replacementCharacterAsUInt32: UInt32 = 0xFFFD
+// Replacement character U+FFFD
+let replacementCharacterAsUInt32: UInt32 = 0xFFFD
 //
 //// Generated from
 //// https://www.w3.org/TR/html5/syntax.html#tokenizing-character-references

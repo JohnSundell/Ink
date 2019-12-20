@@ -12,7 +12,7 @@ public func allTests() -> [Linux.TestCase] {
         Linux.makeTestCase(using: HeadingTests.allTests),
         Linux.makeTestCase(using: HorizontalLineTests.allTests),
         Linux.makeTestCase(using: HTMLTests.allTests),
-        Linux.makeTestCase(using: HTMLEntityTests.allTests),
+        Linux.makeTestCase(using: EntityAndNumericCharacterReferencesTests.allTests),
         Linux.makeTestCase(using: ImageTests.allTests),
         Linux.makeTestCase(using: LinkTests.allTests),
         Linux.makeTestCase(using: ListTests.allTests),
