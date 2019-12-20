@@ -2,16 +2,17 @@
 *  Ink
 *  Copyright (c) Steve Hume 2019
 *  MIT license, see LICENSE file for details
-These tests are extracted from https://spec.commonmark.org/0.29/
-title: CommonMark Spec
-author: John MacFarlane
+---
+title: GitHub Flavored Markdown Spec
 version: 0.29
 date: '2019-04-06'
-license: '[CC-BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0
+license: '[CC-BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/)'
+...
 */
 
 import XCTest
 import Ink
+import Foundation
 
 final class EntityAndNumericCharacterReferencesTests: XCTestCase {
 
@@ -42,9 +43,9 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
     // references and their corresponding code points.
     //
     //
-    // https://github.com/commonmark/commonmark-spec
-    // spec.txt lines 5674-5682
-    func testExample311() {
+    // https://github.com/github/cmark-gfm/blob/master/test/spec.txt
+    // spec.txt lines 5955-5963
+    func testExample321() {
         let markdownTest =
         #####"""
         &nbsp; &amp; &copy; &AElig; &Dcaron;
@@ -53,6 +54,7 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
         """#####
     
         let html = MarkdownParser().html(from: markdownTest)
+        .replacingOccurrences(of: ">\n<", with: "><")
         
       //<p>  &amp; © Æ Ď
       //¾ ℋ ⅆ
@@ -73,15 +75,16 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
     // the code point `U+0000` will also be replaced by `U+FFFD`.
     //
     //
-    // https://github.com/commonmark/commonmark-spec
-    // spec.txt lines 5693-5697
-    func testExample312() {
+    // https://github.com/github/cmark-gfm/blob/master/test/spec.txt
+    // spec.txt lines 5974-5978
+    func testExample322() {
         let markdownTest =
         #####"""
         &#35; &#1234; &#992; &#0;
         """#####
     
         let html = MarkdownParser().html(from: markdownTest)
+        
         
       //<p># Ӓ Ϡ �</p>
         let normalizedCM = #####"""
@@ -98,15 +101,16 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
     // time specified with a hexadecimal numeral instead of decimal).
     //
     //
-    // https://github.com/commonmark/commonmark-spec
-    // spec.txt lines 5706-5710
-    func testExample313() {
+    // https://github.com/github/cmark-gfm/blob/master/test/spec.txt
+    // spec.txt lines 5987-5991
+    func testExample323() {
         let markdownTest =
         #####"""
         &#X22; &#XD06; &#xcab;
         """#####
     
         let html = MarkdownParser().html(from: markdownTest)
+        
         
       //<p>&quot; ആ ಫ</p>
         let normalizedCM = #####"""
@@ -119,9 +123,9 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
     // Here are some nonentities:
     //
     //
-    // https://github.com/commonmark/commonmark-spec
-    // spec.txt lines 5715-5725
-    func testExample314() {
+    // https://github.com/github/cmark-gfm/blob/master/test/spec.txt
+    // spec.txt lines 5996-6006
+    func testExample324() {
         let markdownTest =
         #####"""
         &nbsp &x; &#; &#x;
@@ -131,6 +135,7 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
         """#####
     
         let html = MarkdownParser().html(from: markdownTest)
+        .replacingOccurrences(of: ">\n<", with: "><")
         
       //<p>&amp;nbsp &amp;x; &amp;#; &amp;#x;
       //&amp;#987654321;
@@ -148,15 +153,16 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
     // recognized here, because it makes the grammar too ambiguous:
     //
     //
-    // https://github.com/commonmark/commonmark-spec
-    // spec.txt lines 5732-5736
-    func testExample315() {
+    // https://github.com/github/cmark-gfm/blob/master/test/spec.txt
+    // spec.txt lines 6013-6017
+    func testExample325() {
         let markdownTest =
         #####"""
         &copy
         """#####
     
         let html = MarkdownParser().html(from: markdownTest)
+        
         
       //<p>&amp;copy</p>
         let normalizedCM = #####"""
@@ -170,15 +176,16 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
     // recognized as entity references either:
     //
     //
-    // https://github.com/commonmark/commonmark-spec
-    // spec.txt lines 5742-5746
-    func testExample316() {
+    // https://github.com/github/cmark-gfm/blob/master/test/spec.txt
+    // spec.txt lines 6023-6027
+    func testExample326() {
         let markdownTest =
         #####"""
         &MadeUpEntity;
         """#####
     
         let html = MarkdownParser().html(from: markdownTest)
+        
         
       //<p>&amp;MadeUpEntity;</p>
         let normalizedCM = #####"""
@@ -193,15 +200,16 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
     // URLs, [link titles], and [fenced code block][] [info strings]:
     //
     //
-    // https://github.com/commonmark/commonmark-spec
-    // spec.txt lines 5753-5757
-    func testExample317() {
+    // https://github.com/github/cmark-gfm/blob/master/test/spec.txt
+    // spec.txt lines 6034-6038
+    func testExample327() {
         let markdownTest =
         #####"""
         <a href="&ouml;&ouml;.html">
         """#####
     
         let html = MarkdownParser().html(from: markdownTest)
+        
         
       //<a href="&ouml;&ouml;.html">
         let normalizedCM = #####"""
@@ -212,15 +220,16 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
     }
 
     //
-    // https://github.com/commonmark/commonmark-spec
-    // spec.txt lines 5760-5764
-    func testExample318() {
+    // https://github.com/github/cmark-gfm/blob/master/test/spec.txt
+    // spec.txt lines 6041-6045
+    func testExample328() {
         let markdownTest =
         #####"""
         [foo](/f&ouml;&ouml; "f&ouml;&ouml;")
         """#####
     
         let html = MarkdownParser().html(from: markdownTest)
+        
         
       //<p><a href="/f%C3%B6%C3%B6" title="föö">foo</a></p>
         let normalizedCM = #####"""
@@ -231,9 +240,9 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
     }
 
     //
-    // https://github.com/commonmark/commonmark-spec
-    // spec.txt lines 5767-5773
-    func testExample319() {
+    // https://github.com/github/cmark-gfm/blob/master/test/spec.txt
+    // spec.txt lines 6048-6054
+    func testExample329() {
         let markdownTest =
         #####"""
         [foo]
@@ -242,19 +251,20 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
         """#####
     
         let html = MarkdownParser().html(from: markdownTest)
+        .replacingOccurrences(of: ">\n<", with: "><")
         
       //<p><a href="/f%C3%B6%C3%B6" title="föö">foo</a></p>
         let normalizedCM = #####"""
         <p><a href="/f%C3%B6%C3%B6" title="föö">foo</a></p>
         """#####
-    // Change this to XCTAssertEqual when link titles and URL escaping done
+        // Change this to XCTAssertEqual when link titles and URL escaping done
         XCTAssertNotEqual(html,normalizedCM)
     }
 
     //
-    // https://github.com/commonmark/commonmark-spec
-    // spec.txt lines 5776-5783
-    func testExample320() {
+    // https://github.com/github/cmark-gfm/blob/master/test/spec.txt
+    // spec.txt lines 6057-6064
+    func testExample330() {
         let markdownTest =
         #####"""
         ``` f&ouml;&ouml;
@@ -263,6 +273,7 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
         """#####
     
         let html = MarkdownParser().html(from: markdownTest)
+        .replacingOccurrences(of: ">\n<", with: "><")
         
       //<pre><code class="language-föö">foo
       //</code></pre>
@@ -270,23 +281,25 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
         <pre><code class="language-föö">foo
         </code></pre>
         """#####
-    // Change this to XCTAssertEqual when backslashescapes merge complete
+     // Change this to XCTAssertEqual when backslashescapes merge complete
         XCTAssertNotEqual(html,normalizedCM)
+
     }
 
     // Entity and numeric character references are treated as literal
     // text in code spans and code blocks:
     //
     //
-    // https://github.com/commonmark/commonmark-spec
-    // spec.txt lines 5789-5793
-    func testExample321() {
+    // https://github.com/github/cmark-gfm/blob/master/test/spec.txt
+    // spec.txt lines 6070-6074
+    func testExample331() {
         let markdownTest =
         #####"""
         `f&ouml;&ouml;`
         """#####
     
         let html = MarkdownParser().html(from: markdownTest)
+        
         
       //<p><code>f&amp;ouml;&amp;ouml;</code></p>
         let normalizedCM = #####"""
@@ -297,9 +310,9 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
     }
 
     //
-    // https://github.com/commonmark/commonmark-spec
-    // spec.txt lines 5796-5801
-    func testExample322() {
+    // https://github.com/github/cmark-gfm/blob/master/test/spec.txt
+    // spec.txt lines 6077-6082
+    func testExample332() {
         let markdownTest =
         #####"""
             f&ouml;f&ouml;
@@ -307,14 +320,16 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
     
         let html = MarkdownParser().html(from: markdownTest)
         
+        
       //<pre><code>f&amp;ouml;f&amp;ouml;
       //</code></pre>
         let normalizedCM = #####"""
         <pre><code>f&amp;ouml;f&amp;ouml;
         </code></pre>
         """#####
-     // Change this to XCTAssertEqual when indented code blocks implemented
-        XCTAssertNotEqual(html,normalizedCM)
+      // Change this to XCTAssertEqual when indented code blocks implemented
+       XCTAssertNotEqual(html,normalizedCM)
+
     }
 
     // Entity and numeric character references cannot be used
@@ -322,9 +337,9 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
     // documents.
     //
     //
-    // https://github.com/commonmark/commonmark-spec
-    // spec.txt lines 5808-5814
-    func testExample323() {
+    // https://github.com/github/cmark-gfm/blob/master/test/spec.txt
+    // spec.txt lines 6089-6095
+    func testExample333() {
         let markdownTest =
         #####"""
         &#42;foo&#42;
@@ -332,6 +347,7 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
         """#####
     
         let html = MarkdownParser().html(from: markdownTest)
+        .replacingOccurrences(of: ">\n<", with: "><")
         
       //<p>*foo*
       //<em>foo</em></p>
@@ -343,9 +359,9 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
     }
 
     //
-    // https://github.com/commonmark/commonmark-spec
-    // spec.txt lines 5816-5825
-    func testExample324() {
+    // https://github.com/github/cmark-gfm/blob/master/test/spec.txt
+    // spec.txt lines 6097-6106
+    func testExample334() {
         let markdownTest =
         #####"""
         &#42; foo
@@ -354,6 +370,7 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
         """#####
     
         let html = MarkdownParser().html(from: markdownTest)
+        .replacingOccurrences(of: ">\n<", with: "><")
         
       //<p>* foo</p>
       //<ul>
@@ -367,15 +384,16 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
     }
 
     //
-    // https://github.com/commonmark/commonmark-spec
-    // spec.txt lines 5827-5833
-    func testExample325() {
+    // https://github.com/github/cmark-gfm/blob/master/test/spec.txt
+    // spec.txt lines 6108-6114
+    func testExample335() {
         let markdownTest =
         #####"""
         foo&#10;&#10;bar
         """#####
     
         let html = MarkdownParser().html(from: markdownTest)
+        
         
       //<p>foo
       //
@@ -390,15 +408,16 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
     }
 
     //
-    // https://github.com/commonmark/commonmark-spec
-    // spec.txt lines 5835-5839
-    func testExample326() {
+    // https://github.com/github/cmark-gfm/blob/master/test/spec.txt
+    // spec.txt lines 6116-6120
+    func testExample336() {
         let markdownTest =
         #####"""
         &#9;foo
         """#####
     
         let html = MarkdownParser().html(from: markdownTest)
+        
         
       //<p>    foo</p>
         let normalizedCM = #####"""
@@ -409,9 +428,9 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
     }
 
     //
-    // https://github.com/commonmark/commonmark-spec
-    // spec.txt lines 5842-5846
-    func testExample327() {
+    // https://github.com/github/cmark-gfm/blob/master/test/spec.txt
+    // spec.txt lines 6123-6127
+    func testExample337() {
         let markdownTest =
         #####"""
         [a](url &quot;tit&quot;)
@@ -419,48 +438,41 @@ final class EntityAndNumericCharacterReferencesTests: XCTestCase {
     
         let html = MarkdownParser().html(from: markdownTest)
         
+        
       //<p>[a](url &quot;tit&quot;)</p>
         let normalizedCM = #####"""
         <p>[a](url &quot;tit&quot;)</p>
         """#####
+    
     // Change this to XCTAssertEqual when link titles are done
         XCTAssertNotEqual(html,normalizedCM)
+        
     }
     
     func testObscureCasesForCodeCoverage() {
-        let markdownTest =
-        #####"""
-        &#34; &fjlig; &ThickSpace;
-        &#⅚;  &#f;
-        &#x0; &#xD800;
-        &asuperlongtextvaluetokeeptheparserfromconsumingalltheinput;
-        """#####
-        
-        let html = MarkdownParser().html(from: markdownTest)
-        
-        //<p>[a](url &quot;tit&quot;)</p>
-        let normalizedCM = #####"""
-           <p>&quot; fj    &amp;#⅚; &amp;#f; � &amp;#xD800; &amp;asuperlongtextvaluetokeeptheparserfromconsumingalltheinput;</p>
-           """#####
-        // Change this to XCTAssertEqual when link titles are done
-        XCTAssertEqual(html,normalizedCM)
-    }
+         let markdownTest =
+         #####"""
+         &#34; &fjlig; &ThickSpace;
+         &#⅚;  &#f;
+         &#x0; &#xD800;
+         &asuperlongtextvaluetokeeptheparserfromconsumingalltheinput;
+         """#####
+         
+         let html = MarkdownParser().html(from: markdownTest)
+         
+         //<p>[a](url &quot;tit&quot;)</p>
+         let normalizedCM = #####"""
+            <p>&quot; fj    &amp;#⅚; &amp;#f; � &amp;#xD800; &amp;asuperlongtextvaluetokeeptheparserfromconsumingalltheinput;</p>
+            """#####
+         // Change this to XCTAssertEqual when link titles are done
+         XCTAssertEqual(html,normalizedCM)
+     }
 
 }
 
 extension EntityAndNumericCharacterReferencesTests {
     static var allTests: Linux.TestList<EntityAndNumericCharacterReferencesTests> {
         return [
-        ("testExample311", testExample311),
-        ("testExample312", testExample312),
-        ("testExample313", testExample313),
-        ("testExample314", testExample314),
-        ("testExample315", testExample315),
-        ("testExample316", testExample316),
-        ("testExample317", testExample317),
-        ("testExample318", testExample318),
-        ("testExample319", testExample319),
-        ("testExample320", testExample320),
         ("testExample321", testExample321),
         ("testExample322", testExample322),
         ("testExample323", testExample323),
@@ -468,6 +480,16 @@ extension EntityAndNumericCharacterReferencesTests {
         ("testExample325", testExample325),
         ("testExample326", testExample326),
         ("testExample327", testExample327),
+        ("testExample328", testExample328),
+        ("testExample329", testExample329),
+        ("testExample330", testExample330),
+        ("testExample331", testExample331),
+        ("testExample332", testExample332),
+        ("testExample333", testExample333),
+        ("testExample334", testExample334),
+        ("testExample335", testExample335),
+        ("testExample336", testExample336),
+        ("testExample337", testExample337),
         ("testObscureCasesForCodeCoverage", testObscureCasesForCodeCoverage)
         ]
     }
