@@ -260,6 +260,42 @@ final class TextFormattingTests: XCTestCase {
            XCTAssertEqual(html, properAnswer)
        }
 
+    func testNullCharacterIsEscapedToHexFFFD() {
+        // Derived from CommonMark spec lines 494-495
+        // For security reasons, the Unicode character `U+0000` must be replaced
+        // with the REPLACEMENT CHARACTER (`U+FFFD`).
+        var inputString =
+        #####"""
+        A paragraph.
+
+        > a blockquote `code span`
+
+        - list item
+        ```
+        code block Here
+        ```
+        **bad Bold Text*
+        ##bad heading
+        """#####
+        
+        // construct a null character and insert it into various places to test escape to 0xFFFD
+        // that looks like a white questionmark in a hexagon in the test answer.
+        let null = Character(UnicodeScalar(UInt8(0)))
+        inputString.insert(null, at: inputString.firstIndex(of: "g")!)
+        inputString.insert(null, at: inputString.firstIndex(of: "q")!)
+        inputString.insert(null, at: inputString.firstIndex(of: "d")!)
+        inputString.insert(null, at: inputString.firstIndex(of: "i")!)
+        inputString.insert(null, at: inputString.firstIndex(of: "H")!)
+        inputString.insert(null, at: inputString.firstIndex(of: "*")!)
+        inputString.insert(null, at: inputString.firstIndex(of: "#")!)
+        
+        let html = MarkdownParser().html(from: inputString)
+        
+        let properAnswer = #####"""
+        <p>A para�graph.</p><blockquote><p>a block�quote <code>co�de span</code></p></blockquote><ul><li>l�ist item <code></code>` code block �Here <code></code>` �*<em>bad Bold Text</em> �##bad heading</li></ul>
+        """#####
+        XCTAssertEqual(html, properAnswer)
+    }
 }
 
 extension TextFormattingTests {
@@ -298,7 +334,8 @@ extension TextFormattingTests {
             ("testEscapesThatOverrideMarkdown", testEscapesThatOverrideMarkdown),
             ("testEscapeOfBackslash", testEscapeOfBackslash),
             ("testCodeAreasPreserveBackslash", testCodeAreasPreserveBackslash),
-            ("testRawHTMLPreserveBackslash", testRawHTMLPreserveBackslash)            
+            ("testRawHTMLPreserveBackslash", testRawHTMLPreserveBackslash),
+            ("testNullCharacterIsEscapedToHexFFFD", testNullCharacterIsEscapedToHexFFFD)
         ]
     }
 }
