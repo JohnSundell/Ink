@@ -9,6 +9,7 @@ import XCTest
 public func allTests() -> [Linux.TestCase] {
     return [
         Linux.makeTestCase(using: CodeTests.allTests),
+        Linux.makeTestCase(using: CodeSpansTests.allTests),
         Linux.makeTestCase(using: HeadingTests.allTests),
         Linux.makeTestCase(using: HorizontalLineTests.allTests),
         Linux.makeTestCase(using: HTMLTests.allTests),

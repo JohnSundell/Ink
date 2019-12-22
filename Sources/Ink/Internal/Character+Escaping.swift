@@ -10,6 +10,7 @@ internal extension Character {
         case ">": return "&gt;"
         case "<": return "&lt;"
         case "&": return "&amp;"
+        case "\"": return "&quot;"
         default: return nil
         }
     }
