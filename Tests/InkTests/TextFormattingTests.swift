@@ -3,7 +3,11 @@
 *  Copyright (c) John Sundell 2019
 *  MIT license, see LICENSE file for details
 */
-
+// Some test are from a markdown spec with different licensing
+// title: GitHub Flavored Markdown Spec
+// version: 0.29
+// date: '2019-04-06'
+// license: '[CC-BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/)'
 import XCTest
 import Ink
 
@@ -160,7 +164,8 @@ final class TextFormattingTests: XCTestCase {
     }
     
     func testEscapedPunctuation() {
-        // Derived from CommonMark spec lines 5513-5517
+        // Derived from GitHub Flavored Markdown Spec lines 5794-5798
+        // Any ASCII punctuation character may be backslash-escaped:
         let allTheSpecialASCIIChars =
         #####"""
         \!\"\#\$\%\&\'\(\)\*\+\,\-\.\/\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~
@@ -174,8 +179,10 @@ final class TextFormattingTests: XCTestCase {
     }
     
     func testOtherCharactersNotEscaped() {
-        // Derived from CommonMark spec lines 5523-5527
+        // Derived from GitHub Flavored Markdown Spec lines 5804-5808
         // watch out as there are tab characters in this test \#####t
+        // Backslashes before other characters are treated as literal
+        // backslashes:
         let inputString =
         #####"""
         \\#####t\A\a\ \3\φ\«
@@ -189,7 +196,7 @@ final class TextFormattingTests: XCTestCase {
     }
     
     func testEscapesThatOverrideMarkdown() {
-        // Derived from CommonMark spec lines 5533-5553
+        // Derived from GitHub Flavored Markdown Spec lines 5814-5834
         // Escaped characters are treated as regular characters and do
         // not have their usual Markdown meanings:
         let inputString =
@@ -213,7 +220,7 @@ final class TextFormattingTests: XCTestCase {
     }
     
     func testEscapeOfBackslash() {
-        // Derived from CommonMark spec lines 5558-5562
+        // Derived from GitHub Flavored Markdown Spec lines 5839-5843
         // If a backslash is itself escaped, the following character is not:
         let inputString =
         #####"""
@@ -228,8 +235,9 @@ final class TextFormattingTests: XCTestCase {
     }
     
     func testCodeAreasPreserveBackslash() {
-        // Derived from CommonMark spec lines 5594-5601
-        // Backslash escapes do not work in code blocks
+        // Derived from GitHub Flavored Markdown Spec lines 5860-5864
+        // Backslash escapes do not work in code blocks, code spans, autolinks, or
+        // raw HTML:
         let inputString =
         #####"""
         ```
@@ -246,7 +254,7 @@ final class TextFormattingTests: XCTestCase {
     }
     
     func testRawHTMLPreserveBackslash() {
-           // Derived from CommonMark spec lines 5611-5615
+           // Derived from GitHub Flavored Markdown Spec lines 5892-5896
            // Backslash escapes do not work in raw HTML
            let inputString =
            #####"""
@@ -261,7 +269,7 @@ final class TextFormattingTests: XCTestCase {
        }
 
     func testNullCharacterIsEscapedToHexFFFD() {
-        // Derived from CommonMark spec lines 494-495
+        // Derived from GitHub Flavored Markdown Spec lines 494-495
         // For security reasons, the Unicode character `U+0000` must be replaced
         // with the REPLACEMENT CHARACTER (`U+FFFD`).
         var inputString =
@@ -271,7 +279,7 @@ final class TextFormattingTests: XCTestCase {
         > a blockquote `code span`
 
         - list item
-        ```
+        ``` swift
         code block Here
         ```
         **bad Bold Text*
@@ -285,14 +293,18 @@ final class TextFormattingTests: XCTestCase {
         inputString.insert(null, at: inputString.firstIndex(of: "q")!)
         inputString.insert(null, at: inputString.firstIndex(of: "d")!)
         inputString.insert(null, at: inputString.firstIndex(of: "i")!)
+        inputString.insert(null, at: inputString.firstIndex(of: "w")!)
         inputString.insert(null, at: inputString.firstIndex(of: "H")!)
         inputString.insert(null, at: inputString.firstIndex(of: "*")!)
         inputString.insert(null, at: inputString.firstIndex(of: "#")!)
         
         let html = MarkdownParser().html(from: inputString)
         
+        // This test answer may fail when other code areas change.
+        // Make sure the nulls are still escaped and then paste the xctest into the following
+        // properAnswer field to get this test to pass.
         let properAnswer = #####"""
-        <p>A para�graph.</p><blockquote><p>a block�quote <code>co�de span</code></p></blockquote><ul><li>l�ist item <code></code>` code block �Here <code></code>` �*<em>bad Bold Text</em> �##bad heading</li></ul>
+        <p>A para�graph.</p><blockquote><p>a block�quote <code>co�de span</code></p></blockquote><ul><li>l�ist item <code></code>` s�wift code block �Here <code></code>` �*<em>bad Bold Text</em> �##bad heading</li></ul>
         """#####
         XCTAssertEqual(html, properAnswer)
     }

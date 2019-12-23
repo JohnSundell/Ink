@@ -127,6 +127,13 @@ private extension FormattedText {
                     }
 
                     if reader.currentCharacter == " " {
+                        if sequentialSpaceCount >= 1 {
+                            // This code is here to allow a backslash-space to be preserved whitespace
+                            skipCharacter()
+                            sequentialSpaceCount += 1
+                            continue
+                        }
+                        addPendingTextIfNeeded()
                         sequentialSpaceCount += 1
                     } else {
                         sequentialSpaceCount = 0
@@ -149,7 +156,8 @@ private extension FormattedText {
                         try parseStyleMarker()
                         continue
                     }
-
+                    // This code appears to be a custom case of html in a paragraph.
+                    // Assume it will be enhanced in the future.
                     if reader.currentCharacter == "<" {
                         guard let nextCharacter = reader.nextCharacter else {
                             reader.advanceIndex()
@@ -199,20 +207,22 @@ private extension FormattedText {
 
         private mutating func parseNonTriggeringCharacter() {
                     if reader.currentCharacter == "\\"  {
-                    addPendingTextIfNeeded()
+                    
                     if let nextChr = reader.nextCharacter {
                         // only ASCII punctuation and the html special chars are escapable in CommonMark
-                        if let _ = escaped(nextChr) {
+                        if escapedASCIIPunctuation(nextChr) {
+                            addPendingTextIfNeeded()
                             // skip the backslash and the following char and use substitution instead
                             skipCharacter() // skip past the backslash
-                            reader.advanceIndex() // include the escaped punctuation character
+                            reader.advanceIndex() // include the escaped punctuation character as-is
                         } else if nextChr.isNewline {
                             // just skip the backslash and the newline
+                            addPendingTextIfNeeded()
                             text.components.append(.linebreak)
                             skipCharacter()
                             skipCharacter()
                         } else {
-                            // the backslash remains in all other cases
+                            // the backslash remains in all other cases and the next character can be processed
                             reader.advanceIndex()
                         }
                     }

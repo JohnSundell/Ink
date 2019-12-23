@@ -6,7 +6,7 @@
 
 struct InlineCode: Fragment {
     var modifierTarget: Modifier.Target { .inlineCode }
-
+    // This should probably evolve to a Substring too
     private var code: String
 
     static func read(using reader: inout Reader) throws -> InlineCode {
@@ -21,12 +21,7 @@ struct InlineCode: Fragment {
                 reader.advanceIndex()
                 return InlineCode(code: code)
             default:
-                if let escaped = escapedMarkdownHTML(reader.currentCharacter) {
-                    code.append(escaped)
-                } else {
-                    code.append(reader.currentCharacter)
-                }
-
+                code.append(reader.currentCharacter)
                 reader.advanceIndex()
             }
         }
@@ -36,7 +31,7 @@ struct InlineCode: Fragment {
 
     func html(usingURLs urls: NamedURLCollection,
               modifiers: ModifierCollection) -> String {
-        return "<code>\(code)</code>"
+        return "<code>\(htmlEscapeAString(code))</code>"
     }
 
     func plainText() -> String {

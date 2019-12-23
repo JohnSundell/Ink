@@ -81,14 +81,17 @@ let escapeSubstitutions: [Character: String] = [
     ">": "&gt;",
     "<": "&lt;",
     "&": "&amp;",
-    "\"": "&quot;",
-    Character(Unicode.Scalar(0000)): String(Unicode.Scalar(UInt32(0xFFFD))!),
-    // Took some research to initialize this one. For security the null char replaced
-    // so it cannot be used to cause end of file/string problems somewhere else.
-    // I don't think this is easy to test?
-    // https://spec.commonmark.org/0.29/#insecure-characters
+    "\"": "&quot;"
     ]
 
+// A future performance opportunity is to discover if loading a [Bool]
+// just for low order ASCII is faster than a dictionary.
+let escapeSubstitutionsTruthDict: [Character: Bool] =
+    #####"""
+    !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
+    """#####.reduce(into: [:]) {result,char in
+    result[char] = true
+}
 /// The escape used to meet the CommonMark spec.
 /// It includes the basic HTML escapes used to make html text and attributes inside double quotes safe.
 /// Also included is the ability to backslash escape the ASCII punctuation characters
@@ -99,7 +102,7 @@ let escapeSubstitutions: [Character: String] = [
 ///  {, |, }, or ~ (U+007B–007E).
 ///  If nil is returned the character is not needing markdown escaping.
 /// - Parameter char: A single Character
-func escaped(_ char: Character) -> String? { escapeSubstitutions[char] }
+func escapedASCIIPunctuation(_ char: Character) -> Bool {escapeSubstitutionsTruthDict[char] ?? false}
 
 /// A minimal HTML escape for html text and attributes inside double quotes
 /// If nil is returned the character is not needing html escaping.
