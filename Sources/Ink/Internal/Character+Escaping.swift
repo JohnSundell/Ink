@@ -105,3 +105,12 @@ func escaped(_ char: Character) -> String? { escapeSubstitutions[char] }
 /// If nil is returned the character is not needing html escaping.
 /// - Parameter char: A single Character
 func escapedMarkdownHTML(_ char: Character) -> String? { escapeSubstitutionsForMarkdown[char] }
+func htmlEscapeASubstring(_ substring: Substring) -> String {
+     substring.reduce(into: ""){result,char in
+        result.append(contentsOf: escapeSubstitutionsForMarkdown[char] ?? String(char))
+    }
+}
+
+func htmlEscapeAString(_ str: String) -> String {
+     return htmlEscapeASubstring(Substring(str))
+    }

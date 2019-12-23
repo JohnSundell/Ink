@@ -52,11 +52,9 @@ internal struct CodeBlock: Fragment {
                 }
             }
 
-            if let escaped = escapedMarkdownHTML(reader.currentCharacter) {
-                code.append(escaped)
-            } else {
-                code.append(reader.currentCharacter)
-            }
+            // I think we can now use the substring methods here too rather than copy to string
+            code.append(reader.currentCharacter)
+            
 
             reader.advanceIndex()
         }
@@ -69,8 +67,8 @@ internal struct CodeBlock: Fragment {
               modifiers: ModifierCollection) -> String {
         // https://spec.commonmark.org/0.29/#fenced-code-blocks
         // first word of any info string is actually the language added
-        let languageClass = language.isEmpty ? "" : " class=\"language-\(language.split(separator: " ")[0])\""
-        return "<pre><code\(languageClass)>\(code)</code></pre>"
+        let languageClass = language.isEmpty ? "" : " class=\"language-\(htmlEscapeASubstring(language.split(separator: " ")[0]))\""
+        return "<pre><code\(languageClass)>\(htmlEscapeAString(code))</code></pre>"
     }
 
     func plainText() -> String {

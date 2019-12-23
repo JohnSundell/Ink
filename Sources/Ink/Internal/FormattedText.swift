@@ -30,7 +30,7 @@ internal struct FormattedText: Readable, HTMLConvertible, PlainTextConvertible {
         components.reduce(into: "") { string, component in
             switch component {
             case .text(let text):
-                string.append(String(text))
+                string.append(htmlEscapeASubstring(text))
             case .styleMarker(let marker):
                        let html = marker.html(usingURLs: urls, modifiers: modifiers)
                        string.append(html)
@@ -202,11 +202,10 @@ private extension FormattedText {
                     addPendingTextIfNeeded()
                     if let nextChr = reader.nextCharacter {
                         // only ASCII punctuation and the html special chars are escapable in CommonMark
-                        if let foundSubstitution = escaped(nextChr) {
+                        if let _ = escaped(nextChr) {
                             // skip the backslash and the following char and use substitution instead
-                            skipCharacter()
-                            skipCharacter()
-                            text.components.append(.text(Substring(foundSubstitution)))
+                            skipCharacter() // skip past the backslash
+                            reader.advanceIndex() // include the escaped punctuation character
                         } else if nextChr.isNewline {
                             // just skip the backslash and the newline
                             text.components.append(.linebreak)
@@ -218,13 +217,7 @@ private extension FormattedText {
                         }
                     }
                 } else {
-                    if let escaped = escapedMarkdownHTML(reader.currentCharacter) {
-                        addPendingTextIfNeeded()
-                        text.components.append(.text(Substring(escaped)))
-                        skipCharacter()
-                    } else {
                         reader.advanceIndex()
-                    }
                 }
             }
 
