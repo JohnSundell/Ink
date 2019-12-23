@@ -49,40 +49,6 @@ Character(Unicode.Scalar(0000)): String(Unicode.Scalar(UInt32(0xFFFD))!)
 // An ASCII punctuation character is !, ", #, $, %, &, ', (, ), *, +, ,, -, .,/
 // (U+0021–2F), :, ;, <, =, >, ?, @ (U+003A–0040), [, \, ], ^, _,`
 // (U+005B–0060), {, |, }, or ~ (U+007B–007E).
-let escapeSubstitutions: [Character: String] = [
-    "!": "!",
-    "#": "#",
-    "$": "$",
-    "%": "%",
-    "(": "(",
-    ")": ")",
-    "\'": "\'", // "&#34;" maybe here for cross-site scripting security. Needs more investigation
-    "*": "*",
-    "+": "+",
-    ",": ",",
-    "-": "-",
-    ".": ".",
-    "/": "/",
-    "\\": "\\",
-    ":": ":",
-    ";": ";",
-    "=": "=",
-    "?": "?",
-    "@": "@",
-    "[": "[",
-    "]": "]",
-    "^": "^",
-    "_": "_",
-    "`": "`",
-    "{": "{",
-    "}": "}",
-    "|": "|",
-    "~": "~",
-    ">": "&gt;",
-    "<": "&lt;",
-    "&": "&amp;",
-    "\"": "&quot;"
-    ]
 
 // A future performance opportunity is to discover if loading a [Bool]
 // just for low order ASCII is faster than a dictionary.
@@ -92,28 +58,57 @@ let escapeSubstitutionsTruthDict: [Character: Bool] =
     """#####.reduce(into: [:]) {result,char in
     result[char] = true
 }
-/// The escape used to meet the CommonMark spec.
-/// It includes the basic HTML escapes used to make html text and attributes inside double quotes safe.
-/// Also included is the ability to backslash escape the ASCII punctuation characters
+/// Use to meet the CommonMark spec.
+/// to backslash escape the ASCII punctuation characters
+///
 /// An ASCII punctuation character is
+///
 ///  !, ", #, $, %, &, ', (, ), *, +, ,, -, .,/ (U+0021–2F),
+///
 ///  :, ;, <, =, >, ?, @ (U+003A–0040),
+///
 ///  [, \, ], ^, _,`(U+005B–0060),
+///
 ///  {, |, }, or ~ (U+007B–007E).
-///  If nil is returned the character is not needing markdown escaping.
+///
 /// - Parameter char: A single Character
 func escapedASCIIPunctuation(_ char: Character) -> Bool {escapeSubstitutionsTruthDict[char] ?? false}
 
 /// A minimal HTML escape for html text and attributes inside double quotes
 /// If nil is returned the character is not needing html escaping.
+///
+/// ">": "\&gt;",  "<": "\&lt;", "&": "\&amp;", "\"": "\&quot;",
+/// And for security the Null character is substituted.
+/// Character(Unicode.Scalar(0000)): String(Unicode.Scalar(UInt32(0xFFFD))!)
 /// - Parameter char: A single Character
 func escapedMarkdownHTML(_ char: Character) -> String? { escapeSubstitutionsForMarkdown[char] }
+
+/// A minimal HTML escape for html text and attributes inside double quotes
+///
+/// Use on HTML output phase to escape Substrings to output Strings.
+///
+/// /// ">": "\&gt;",  "<": "\&lt;", "&": "\&amp;", "\"": "\&quot;",
+///
+/// And for security the Null character is substituted.
+///
+/// Character(Unicode.Scalar(0000)): String(Unicode.Scalar(UInt32(0xFFFD))!)
+/// - Parameter substring: A substring of the original input usually
 func htmlEscapeASubstring(_ substring: Substring) -> String {
      substring.reduce(into: ""){result,char in
         result.append(contentsOf: escapeSubstitutionsForMarkdown[char] ?? String(char))
     }
 }
 
+/// A minimal HTML escape for html text and attributes inside double quotes
+///
+/// Use on HTML output phase to escape Strings to output Strings.
+///
+/// /// ">": "\&gt;",  "<": "\&lt;", "&": "\&amp;", "\"": "\&quot;",
+///
+/// And for security the Null character is substituted.
+///
+/// Character(Unicode.Scalar(0000)): String(Unicode.Scalar(UInt32(0xFFFD))!)
+/// - Parameter str: The input is already a String
 func htmlEscapeAString(_ str: String) -> String {
      return htmlEscapeASubstring(Substring(str))
     }
