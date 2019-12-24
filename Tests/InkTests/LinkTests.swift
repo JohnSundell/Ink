@@ -69,6 +69,80 @@ final class LinkTests: XCTestCase {
         let html = MarkdownParser().html(from: "[\\[Hello\\]](hello)")
         XCTAssertEqual(html, #"<p><a href="hello">[Hello]</a></p>"#)
     }
+     // A link can contain fragment identifiers and queries:
+     //
+     //
+     // https://github.com/github/cmark-gfm/blob/master/test/spec.txt
+     // spec.txt lines 7953-7963
+     func testExample509() {
+         let markdownTest =
+         #####"""
+         [link](#fragment)
+         
+         [link](http://example.com#fragment)
+         
+         [link](http://example.com?foo=3#frag)\#####n
+         """#####
+     
+         let html = MarkdownParser().html(from: markdownTest)
+         .replacingOccurrences(of: ">\n<", with: "><")
+         
+       //<p><a href="#fragment">link</a></p>
+       //<p><a href="http://example.com#fragment">link</a></p>
+       //<p><a href="http://example.com?foo=3#frag">link</a></p>
+         let normalizedCM = #####"""
+         <p><a href="#fragment">link</a></p><p><a href="http://example.com#fragment">link</a></p><p><a href="http://example.com?foo=3#frag">link</a></p>
+         """#####
+     
+         XCTAssertEqual(html,normalizedCM)
+     }
+
+    // Unicode case fold is used:
+    //
+    //
+    // https://github.com/github/cmark-gfm/blob/master/test/spec.txt
+    // spec.txt lines 8381-8387
+    func testExample548() {
+        let markdownTest =
+        #####"""
+        [Толпой][Толпой] is a Russian word.
+        
+        [ТОЛПОЙ]: /url\#####n
+        """#####
+    
+        let html = MarkdownParser().html(from: markdownTest)
+        .replacingOccurrences(of: ">\n<", with: "><")
+        
+      //<p><a href="/url">Толпой</a> is a Russian word.</p>
+        let normalizedCM = #####"""
+        <p><a href="/url">Толпой</a> is a Russian word.</p>
+        """#####
+    
+        XCTAssertEqual(html,normalizedCM)
+    }
+
+    // Note that a backslash before a non-escapable character is
+      // just a backslash:
+      //
+      //
+      // https://github.com/github/cmark-gfm/blob/master/test/spec.txt
+      // spec.txt lines 7969-7973
+      func testExample510() {
+          let markdownTest =
+          #####"""
+          [link](foo\bar)
+          """#####
+      
+          let html = MarkdownParser().html(from: markdownTest)
+          
+          
+        //<p><a href="foo%5Cbar">link</a></p>
+          let normalizedCM = #####"""
+          <p><a href="foo%5Cbar">link</a></p>
+          """#####
+      
+          XCTAssertEqual(html,normalizedCM)
+      }
     
 }
 
@@ -83,8 +157,11 @@ extension LinkTests {
             ("testBoldLinkWithExternalMarkers", testBoldLinkWithExternalMarkers),
             ("testLinkWithUnderscores", testLinkWithUnderscores),
             ("testUnterminatedLink", testUnterminatedLink),
-            ("testLinkWithEscapedSquareBrackets", testLinkWithEscapedSquareBrackets)
-//            ("testBackslashInURL", testBackslashInURL)
+            ("testLinkWithEscapedSquareBrackets", testLinkWithEscapedSquareBrackets),
+            ("testExample509", testExample509),
+            ("testExample548", testExample548),
+            ("testExample510", testExample510)
+
         ]
     }
 }

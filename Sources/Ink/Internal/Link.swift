@@ -30,7 +30,7 @@ internal struct Link: Fragment {
 
     func html(usingURLs urls: NamedURLCollection,
               modifiers: ModifierCollection) -> String {
-        let url = target.url(from: urls)
+        let url = uriEncoded(uriSubstring: target.url(from: urls))
         let title = text.html(usingURLs: urls, modifiers: modifiers)
         return "<a href=\"\(url)\">\(title)</a>"
     }

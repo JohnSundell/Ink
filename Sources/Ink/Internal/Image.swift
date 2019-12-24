@@ -16,7 +16,7 @@ internal struct Image: Fragment {
 
     func html(usingURLs urls: NamedURLCollection,
               modifiers: ModifierCollection) -> String {
-        let url = link.target.url(from: urls)
+        let url = uriEncoded(uriSubstring: link.target.url(from: urls))
         var alt = link.text.html(usingURLs: urls, modifiers: modifiers)
 
         if !alt.isEmpty {

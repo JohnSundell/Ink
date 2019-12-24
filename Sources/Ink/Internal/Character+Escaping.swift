@@ -112,3 +112,76 @@ func htmlEscapeASubstring(_ substring: Substring) -> String {
 func htmlEscapeAString(_ str: String) -> String {
      return htmlEscapeASubstring(Substring(str))
     }
+
+// prebuild an array to use for escaping URI
+let uriEncodedStrings: [String] = Array(repeating: "   ", count: 256).enumerated().map{ (index, element) in
+    if let uc = Unicode.Scalar(index) {
+        let char = Character(uc)
+        /* From the commonmark code comments
+         * The following characters will not be escaped:
+         *
+         *        -_.+!*'(),%#@?=;:/,+&$ alphanum
+         *
+         * Note that this character set is the addition of:
+         *
+         *    - The characters which are safe to be in an URL
+         *    - The characters which are *not* safe to be in
+         *    an URL because they are RESERVED characters.
+         *
+         * We asume (lazily) that any RESERVED char that
+         * appears inside an URL is actually meant to
+         * have its native function (i.e. as an URL
+         * component/separator) and hence needs no escaping.
+         *
+         * There are two exceptions: the chacters & (amp)
+         * and ' (single quote) do not appear in the table.
+         * They are meant to appear in the URL as components,
+         * yet they require special HTML-entity escaping
+         * to generate valid HTML markup.
+         *
+         * All other characters will be escaped to %XX.
+         *
+         */
+        if char.isLetter || char.isWholeNumber || "~-_.+!*'(),%#@?=;:/,+&$".contains(char) {  // even though ~-_. are the official chars
+            return String(char)
+        } else if char == "&" {
+            return "&amp;" // always required in html
+        } else if char == "\'" {
+            return "&#x27;"  // CommonMark does this safety against single quoted attributes
+        }
+    }
+    let hexChars:[String] = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"]
+    return "%" + hexChars[index >> 4] + hexChars[index & 0x0F]
+}
+/// The URI escape specified by CommonMark
+///
+///  The following characters will not be escaped:
+///
+///     - -_.+!*'(),%#@?=;:/,+&$ alphanum
+///
+///  Note that this character set is the addition of:
+///
+///     - The characters which are safe to be in an URL
+///     - The characters which are *not* safe to be in
+///     an URL because they are RESERVED characters.
+///
+///  We asume (lazily) that any RESERVED char that
+///  appears inside an URL is actually meant to
+///  have its native function (i.e. as an URL
+///  component/separator) and hence needs no escaping.
+///
+///  There are two exceptions: the chacters & (amp)
+///  and ' (single quote) do not appear in the table.
+///  They are meant to appear in the URL as components,
+///  yet they require special HTML-entity escaping
+///  to generate valid HTML markup.
+/// - Parameter substring: A URI substring to escape for output
+func uriEncoded(uriSubstring substring: Substring) -> String {
+    substring.reduce(into: ""){result, char in
+        if char.isASCII {
+            result.append(contentsOf: uriEncodedStrings[Int(char.unicodeScalars.map { $0.value }.reduce(0, +))])
+        } else {
+            result.append(char)
+        }
+    }
+}
