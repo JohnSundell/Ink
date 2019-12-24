@@ -8,6 +8,7 @@
 
 // first are the escapes used to make safe the HTML. Added here is the null character substitution for security.
 // this should be used for general HTML text and inside double-quote attributes.
+// This ultimately needs an optimization to see if a lookup array, compiler optimized switch, inlining are best.
 let escapeSubstitutionsForMarkdown: [Character: String] = [
 ">": "&gt;",
 "<": "&lt;",
@@ -43,15 +44,20 @@ Character(Unicode.Scalar(0000)): String(Unicode.Scalar(UInt32(0xFFFD))!)
 // Properly quoted attributes can only be escaped with the corresponding quote.
 // Unquoted attributes can be broken out of with many characters, including [space] % * + , - / ; < = > ^ and |.
 
-// This escape list seems archaic but is necessary because the backslash remains
-// if used on a character that is not a deemed ASCII punctuation symbol.
-// https://spec.commonmark.org/0.29/#characters-and-lines
-// An ASCII punctuation character is !, ", #, $, %, &, ', (, ), *, +, ,, -, .,/
-// (U+0021–2F), :, ;, <, =, >, ?, @ (U+003A–0040), [, \, ], ^, _,`
-// (U+005B–0060), {, |, }, or ~ (U+007B–007E).
-
-// A future performance opportunity is to discover if loading a [Bool]
-// just for low order ASCII is faster than a dictionary.
+/// This escape list seems archaic but is necessary because the backslash remains
+/// if used on a character that is not a deemed ASCII punctuation symbol.
+/// https://spec.commonmark.org/0.29/#characters-and-lines
+///
+/// An ASCII punctuation character is !, ", #, $, %, &, ', (, ), *, +, ,, -, .,/ (U+0021–2F),
+///
+///  :, ;, <, =, >, ?, @ (U+003A–0040),
+///
+///   [, \, ], ^, _,` (U+005B–0060),
+///
+/// {, |, }, or ~ (U+007B–007E).
+///
+/// A future performance opportunity is to discover if loading a [Bool]
+/// just for low order ASCII is faster than a dictionary.
 let escapeSubstitutionsTruthDict: [Character: Bool] =
     #####"""
     !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
@@ -77,9 +83,10 @@ func escapedASCIIPunctuation(_ char: Character) -> Bool {escapeSubstitutionsTrut
 /// A minimal HTML escape for html text and attributes inside double quotes
 /// If nil is returned the character is not needing html escaping.
 ///
-/// ">": "\&gt;",  "<": "\&lt;", "&": "\&amp;", "\"": "\&quot;",
+///     ">": "\&gt;",  "<": "\&lt;", "&": "\&amp;", "\"": "\&quot;"
 /// And for security the Null character is substituted.
-/// Character(Unicode.Scalar(0000)): String(Unicode.Scalar(UInt32(0xFFFD))!)
+///
+///     Unicode.Scalar(0000): Unicode.Scalar(UInt32(0xFFFD))
 /// - Parameter char: A single Character
 func escapedMarkdownHTML(_ char: Character) -> String? { escapeSubstitutionsForMarkdown[char] }
 
@@ -87,11 +94,11 @@ func escapedMarkdownHTML(_ char: Character) -> String? { escapeSubstitutionsForM
 ///
 /// Use on HTML output phase to escape Substrings to output Strings.
 ///
-/// /// ">": "\&gt;",  "<": "\&lt;", "&": "\&amp;", "\"": "\&quot;",
+///      ">":  "\&gt;",  "<": "\&lt;", "&": "\&amp;", "\"": "\&quot;"
 ///
 /// And for security the Null character is substituted.
 ///
-/// Character(Unicode.Scalar(0000)): String(Unicode.Scalar(UInt32(0xFFFD))!)
+///     Unicode.Scalar(0000): Unicode.Scalar(UInt32(0xFFFD))
 /// - Parameter substring: A substring of the original input usually
 func htmlEscapeASubstring(_ substring: Substring) -> String {
      substring.reduce(into: ""){result,char in
@@ -103,11 +110,11 @@ func htmlEscapeASubstring(_ substring: Substring) -> String {
 ///
 /// Use on HTML output phase to escape Strings to output Strings.
 ///
-/// /// ">": "\&gt;",  "<": "\&lt;", "&": "\&amp;", "\"": "\&quot;",
+///     ">": "\&gt;", "<": "\&lt;", "&": "\&amp;", "\"": "\&quot;"
 ///
 /// And for security the Null character is substituted.
 ///
-/// Character(Unicode.Scalar(0000)): String(Unicode.Scalar(UInt32(0xFFFD))!)
+///     Unicode.Scalar(0000): Unicode.Scalar(UInt32(0xFFFD))
 /// - Parameter str: The input is already a String
 func htmlEscapeAString(_ str: String) -> String {
      return htmlEscapeASubstring(Substring(str))
@@ -157,12 +164,12 @@ let uriEncodedStrings: [String] = Array(repeating: "   ", count: 256).enumerated
 ///
 ///  The following characters will not be escaped:
 ///
-///     - -_.+!*'(),%#@?=;:/,+&$ alphanum
+///      -_.+!*'(),%#@?=;:/,+&$ alphanum
 ///
 ///  Note that this character set is the addition of:
 ///
-///     - The characters which are safe to be in an URL
-///     - The characters which are *not* safe to be in
+///    - The characters which are safe to be in an URL
+///    - The characters which are *not* safe to be in
 ///     an URL because they are RESERVED characters.
 ///
 ///  We asume (lazily) that any RESERVED char that
