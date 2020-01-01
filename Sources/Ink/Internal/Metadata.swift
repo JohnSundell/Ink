@@ -55,7 +55,12 @@ internal struct Metadata: Readable {
             }
             let key = trim(separatedLine[0])
             if !key.isEmpty { //we just have a key at least
-                metadata.values[key] = trim(separatedLine[1]) // if the second component is empty it will init key
+                var value = trim(separatedLine[1])
+                if value.hasPrefix("[") && value.hasSuffix("]") {
+                    value.removeLast(1)
+                    value.removeFirst(1)
+                }
+                metadata.values[key] = value // if the second component is empty it will init key
                 lastKey = key
                 linesSinceLastKey = 0
             } else {

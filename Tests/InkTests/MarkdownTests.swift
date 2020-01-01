@@ -127,7 +127,7 @@ final class MarkdownTests: XCTestCase {
         # Title
         """)
 
-        XCTAssertEqual(markdown.metadata, ["date": "\'2018-11-19T13:10:52-05:00\'", "nobc": "true", "draft": "false", "language": "en", "description": "Privacy statement for --- Website Inc.", "lastmod": "\'2017-11-24T15:15:52-05:00\'", "type": "webpage", "tags": "[]", "keywords": "Website Inc.,privacy,gdpr", "title": "Privacy"])
+        XCTAssertEqual(markdown.metadata, ["draft": "false", "lastmod": "\'2017-11-24T15:15:52-05:00\'", "description": "Privacy statement for --- Website Inc.", "nobc": "true", "tags": "", "keywords": "Website Inc.,privacy,gdpr", "date": "\'2018-11-19T13:10:52-05:00\'", "type": "webpage", "language": "en", "title": "Privacy"])
         XCTAssertEqual(markdown.html, "<h1>Title</h1>")
     }
     
