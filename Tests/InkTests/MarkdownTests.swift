@@ -25,7 +25,7 @@ final class MarkdownTests: XCTestCase {
         XCTAssertEqual(markdown.html, "<h1>Title</h1>")
     }
 
-    func testDiscardingEmptyMetadataValues() {
+    func testAllowingEmptyMetadataValues() {
         let markdown = MarkdownParser().parse("""
         ---
         a: 1
@@ -37,6 +37,7 @@ final class MarkdownTests: XCTestCase {
 
         XCTAssertEqual(markdown.metadata, [
             "a": "1",
+            "b": "",
             "c": "2"
         ])
 
@@ -65,6 +66,93 @@ final class MarkdownTests: XCTestCase {
 
         XCTAssertEqual(markdown.metadata, [:])
         XCTAssertEqual(markdown.html, "<h1>Title</h1>")
+    }
+    
+    func testFalseMetadata() {
+        let markdown = MarkdownParser().parse("""
+        ---
+        Key: Verse
+        This
+        meta
+         - data
+        seems
+        to
+        be
+        prose
+        and
+        has
+        some
+        hr ---
+        markers
+        at
+        the
+        end.
+
+        We
+        better
+        fail
+        out
+        to
+        allow
+        the
+        paragraph
+        to
+        render.
+
+        ---
+        # Title
+        """)
+
+        XCTAssertEqual(markdown.metadata, [:])
+        XCTAssertEqual(markdown.html, "<hr><p>Key: Verse This meta - data seems to be prose and has some hr --- markers at the end.</p><p>We better fail out to allow the paragraph to render.</p><hr><h1>Title</h1>")
+    }
+    
+    func testYAMLLikeMetadata() {
+        let markdown = MarkdownParser().parse("""
+        ---
+        draft: false
+        title: Privacy
+        description: Privacy statement for --- Website Inc.
+        language: en
+        tags: []
+        keywords:
+          - Website Inc.
+          - privacy
+          - gdpr
+        date: '2018-11-19T13:10:52-05:00'
+        lastmod: '2017-11-24T15:15:52-05:00'
+        type: webpage
+        nobc: true
+        ---
+        # Title
+        """)
+
+        XCTAssertEqual(markdown.metadata, ["date": "\'2018-11-19T13:10:52-05:00\'", "nobc": "true", "draft": "false", "language": "en", "description": "Privacy statement for --- Website Inc.", "lastmod": "\'2017-11-24T15:15:52-05:00\'", "type": "webpage", "tags": "[]", "keywords": "Website Inc.,privacy,gdpr", "title": "Privacy"])
+        XCTAssertEqual(markdown.html, "<h1>Title</h1>")
+    }
+    
+    func testJustMetadata() {
+        let markdown = MarkdownParser().parse("""
+           ---
+           a:empty file
+            b:     more info
+           \n
+           """)
+        
+        XCTAssertEqual(markdown.metadata, ["b": "more info", "a": "empty file"])
+        XCTAssertEqual(markdown.html, "")
+    }
+    
+    func testStartWithRuleAndOtherNonMetaData() {
+        let markdown = MarkdownParser().parse("""
+        ---
+             
+            :: hi
+        \n
+        """)
+
+        XCTAssertEqual(markdown.metadata, [:])
+        XCTAssertEqual(markdown.html, "<hr><p>:: hi</p>")
     }
     
     func testStartWithRule() {
@@ -138,9 +226,13 @@ extension MarkdownTests {
     static var allTests: Linux.TestList<MarkdownTests> {
         return [
             ("testParsingMetadata", testParsingMetadata),
-            ("testDiscardingEmptyMetadataValues", testDiscardingEmptyMetadataValues),
+            ("testAllowingEmptyMetadataValues", testAllowingEmptyMetadataValues),
             ("testMergingOrphanMetadataValueIntoPreviousOne", testMergingOrphanMetadataValueIntoPreviousOne),
             ("testMissingMetadata", testMissingMetadata),
+            ("testFalseMetadata", testFalseMetadata),
+            ("testYAMLLikeMetadata", testYAMLLikeMetadata),
+            ("testJustMetadata", testJustMetadata),
+            ("testStartWithRuleAndOtherNonMetaData", testStartWithRuleAndOtherNonMetaData),
             ("testStartWithRule", testStartWithRule),
             ("testMetadataInWrongPlace", testMetadataInWrongPlace),
             ("testPlainTextTitle", testPlainTextTitle),
