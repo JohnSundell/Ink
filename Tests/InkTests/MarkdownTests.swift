@@ -127,9 +127,67 @@ final class MarkdownTests: XCTestCase {
         # Title
         """)
 
-        XCTAssertEqual(markdown.metadata, ["draft": "false", "lastmod": "\'2017-11-24T15:15:52-05:00\'", "description": "Privacy statement for --- Website Inc.", "nobc": "true", "tags": "", "keywords": "Website Inc.,privacy,gdpr", "date": "\'2018-11-19T13:10:52-05:00\'", "type": "webpage", "language": "en", "title": "Privacy"])
+        XCTAssertEqual(markdown.metadata, ["tags": "", "language": "en", "draft": "false", "keywords": "Website Inc.,privacy,gdpr", "date": "2018-11-19T13:10:52-05:00", "type": "webpage", "nobc": "true", "lastmod": "2017-11-24T15:15:52-05:00", "title": "Privacy", "description": "Privacy statement for --- Website Inc."])
         XCTAssertEqual(markdown.html, "<h1>Title</h1>")
     }
+    
+    func testMoreYAMLLikeMetadata() {
+           let markdown = MarkdownParser().parse("""
+           ---
+           draft: false
+           title: Privacy
+           description: >
+             Privacy statement for --- Website Inc.
+           language: en
+           wordsofwisdom: "We need to
+            test the long sentences
+            also"
+           keywords:
+             - Website Inc.
+             - privacy
+             - gdpr
+           date: '2018-11-19T13:10:52-05:00'
+           lastmod: '2017-11-24T15:15:52-05:00'
+           type: "webpage"
+           nobc: true
+           ---
+           # Title
+           """)
+
+           XCTAssertEqual(markdown.metadata, ["lastmod": "2017-11-24T15:15:52-05:00", "type": "webpage", "nobc": "true", "draft": "false", "keywords": "Website Inc.,privacy,gdpr", "date": "2018-11-19T13:10:52-05:00", "title": "Privacy", "description": "Privacy statement for --- Website Inc.", "wordsofwisdom": "We need to test the long sentences also", "language": "en"])
+           XCTAssertEqual(markdown.html, "<h1>Title</h1>")
+       }
+    
+    func testBadYAMLLikeMetadata() {
+              let markdown = MarkdownParser().parse("""
+              ---
+               - item before key
+                : no key
+
+              title: |
+                The best
+                - awesome -
+                Web Publisher
+                : The Sequel
+                   
+              description: >
+                Privacy statement for
+                     
+                --- Website Inc.
+              language: en
+              wordsofwisdom: "We need to
+                - handle asides in -
+               test the long sentences
+
+                    :hi:
+               also"
+              ---
+              # Title
+              """)
+
+              XCTAssertEqual(markdown.metadata, ["title": "  The best\n  - awesome -\n  Web Publisher\n  : The Sequel\n     ", "wordsofwisdom": "We need to - handle asides in - test the long sentences\n\n :hi: also", "language": "en", "description": "Privacy statement for  --- Website Inc."])
+              XCTAssertEqual(markdown.html, "<h1>Title</h1>")
+          }
     
     func testJustMetadata() {
         let markdown = MarkdownParser().parse("""
@@ -231,6 +289,8 @@ extension MarkdownTests {
             ("testMissingMetadata", testMissingMetadata),
             ("testFalseMetadata", testFalseMetadata),
             ("testYAMLLikeMetadata", testYAMLLikeMetadata),
+            ("testMoreYAMLLikeMetadata", testMoreYAMLLikeMetadata),
+            ("testBadYAMLLikeMetadata", testBadYAMLLikeMetadata),
             ("testJustMetadata", testJustMetadata),
             ("testStartWithRuleAndOtherNonMetaData", testStartWithRuleAndOtherNonMetaData),
             ("testStartWithRule", testStartWithRule),
