@@ -4,17 +4,17 @@
 *  MIT license, see LICENSE file for details
 */
 
-internal struct Reader {
+public struct Reader {
     private let string: String
     private(set) var currentIndex: String.Index
 
-    init(string: String) {
+    public init(string: String) {
         self.string = string
         self.currentIndex = string.startIndex
     }
 }
 
-extension Reader {
+public extension Reader {
     struct Error: Swift.Error {}
 
     var didReachEnd: Bool { currentIndex == endIndex }
@@ -159,7 +159,7 @@ extension Reader {
     }
 }
 
-private extension Reader {
+public extension Reader {
     func lookBehindAtPreviousCharacter() -> Character? {
         guard currentIndex != string.startIndex else { return nil }
         let previousIndex = string.index(before: currentIndex)
