@@ -247,6 +247,30 @@ final class TextFormattingTests: XCTestCase {
         XCTAssertEqual(html, properAnswer)
     }
     
+    // Hard line breaks are for separating inline content within a block.
+    // Neither syntax for hard line breaks works at the end of a paragraph or
+    // other block element:
+    //
+    //
+    // https://github.com/github/cmark-gfm/blob/master/test/spec.txt
+    // spec.txt lines 9798-9802
+    func testExample665() {
+        let markdownTest =
+        #####"""
+        foo\
+        """#####
+    
+        let html = MarkdownParser().html(from: markdownTest)
+        
+        
+      //<p>foo\</p>
+        let normalizedCM = #####"""
+        <p>foo\</p>
+        """#####
+    
+        XCTAssertEqual(html,normalizedCM)
+    }
+    
     func testCodeAreasPreserveBackslash() {
         // Derived from GitHub Flavored Markdown Spec lines 5860-5864
         // Backslash escapes do not work in code blocks, code spans, autolinks, or
@@ -360,6 +384,7 @@ extension TextFormattingTests {
             ("testEscapesThatOverrideMarkdown", testEscapesThatOverrideMarkdown),
             ("testEscapeOfBackslash", testEscapeOfBackslash),
             ("testCodeAreasPreserveBackslash", testCodeAreasPreserveBackslash),
+            ("testExample665", testExample665),
             ("testRawHTMLPreserveBackslash", testRawHTMLPreserveBackslash),
             ("testNullCharacterIsEscapedToHexFFFD", testNullCharacterIsEscapedToHexFFFD)
         ]

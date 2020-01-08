@@ -165,11 +165,11 @@ private extension FormattedText {
 
             addPendingTextIfNeeded(trimmingWhitespaces: true)
             handleUnterminatedStyleMarkers()
-            trimAnyPreviousText() // this is the removal of all trailing whitespace catch all.
+            trimAnyPreviousText(atEnd: true) // this is the removal of all trailing whitespace catch all.
         }
         
         /// Need a routine to trim the whitespace at the end of a paragraph block
-        private mutating func trimAnyPreviousText() {
+        private mutating func trimAnyPreviousText(atEnd: Bool = false) {
             while text.components.count > 0 {
                 if let lastPiece = text.components.last {
                     switch lastPiece {
@@ -188,6 +188,12 @@ private extension FormattedText {
                         } else { //a null string remove and recurse
                             _ = text.components.popLast()
                         }
+                    case .linebreak:
+                        if atEnd {
+                            _ = text.components.popLast() //line breaks are not allowed at the end of a block
+                            continue
+                        }
+                        return
                     default:
                         return
                     }
@@ -211,30 +217,32 @@ private extension FormattedText {
         }
 
         private mutating func parseNonTriggeringCharacter() {
-                    if reader.currentCharacter == "\\"  {
-                    
-                    if let nextChr = reader.nextCharacter {
-                        // only ASCII punctuation and the html special chars are escapable in CommonMark
-                        if escapedASCIIPunctuation(nextChr) {
-                            addPendingTextIfNeeded()
-                            // skip the backslash and the following char and use substitution instead
-                            skipCharacter() // skip past the backslash
-                            reader.advanceIndex() // include the escaped punctuation character as-is
-                        } else if nextChr.isNewline {
-                            // just skip the backslash and the newline
-                            addPendingTextIfNeeded()
-                            text.components.append(.linebreak)
-                            skipCharacter()
-                            skipCharacter()
-                        } else {
-                            // the backslash remains in all other cases and the next character can be processed
-                            reader.advanceIndex()
-                        }
+            if reader.currentCharacter == "\\"  {
+                
+                if let nextChr = reader.nextCharacter {
+                    // only ASCII punctuation and the html special chars are escapable in CommonMark
+                    if escapedASCIIPunctuation(nextChr) {
+                        addPendingTextIfNeeded()
+                        // skip the backslash and the following char and use substitution instead
+                        skipCharacter() // skip past the backslash
+                        reader.advanceIndex() // include the escaped punctuation character as-is
+                    } else if nextChr.isNewline {
+                        // just skip the backslash and the newline
+                        addPendingTextIfNeeded()
+                        text.components.append(.linebreak)
+                        skipCharacter()
+                        skipCharacter()
+                    } else {
+                        // the backslash remains in all other cases and the next character can be processed
+                        reader.advanceIndex()
                     }
                 } else {
-                        reader.advanceIndex()
+                    reader.advanceIndex() // just include the slash at the end of file
                 }
+            } else {
+                reader.advanceIndex()
             }
+        }
 
         private mutating func parseStyleMarker() throws {
             let marker = try TextStyleMarker.readOrRewind(using: &reader)
