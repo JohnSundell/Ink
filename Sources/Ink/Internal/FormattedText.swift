@@ -92,7 +92,7 @@ private extension FormattedText {
 
         mutating func parse() {
             var sequentialSpaceCount = 0
-
+            
             while !reader.didReachEnd {
                 do {
                     if let terminator = terminator, reader.previousCharacter != "\\" {
@@ -102,53 +102,30 @@ private extension FormattedText {
                     }
 
                     if reader.currentCharacter.isNewline {
-                        addPendingTextIfNeeded()
-
-                        guard let nextCharacter = reader.nextCharacter else {
-                            break
-                        }
-
                         guard !(sequentialSpaceCount >= 2) else {
+                            addPendingTextIfNeeded()
+                            trimAnyPreviousText() // commonmark removes all whitespace before the break
                             text.components.append(.linebreak)
                             skipCharacter()
                             continue
                         }
-
-                        guard !nextCharacter.isAny(of: ["\n", "#", "<", "`"]) else {
+                        guard let nextCharacter = reader.nextCharacter else {
                             break
                         }
-
-                        if !nextCharacter.isWhitespace {
-                            text.components.append(.text(" "))
+                        guard !nextCharacter.isAny(of: ["\n", "#", "<", "`"]) else {
+                            addPendingTextIfNeeded()
+                            break
                         }
-
-                        skipCharacter()
+                        reader.advanceIndex()
                         continue
                     }
 
                     if reader.currentCharacter == " " {
-                        if sequentialSpaceCount >= 1 {
-                            // This code is here to allow a backslash-space to be preserved whitespace
-                            skipCharacter()
-                            sequentialSpaceCount += 1
-                            continue
-                        }
-                        addPendingTextIfNeeded()
+                        reader.advanceIndex()
                         sequentialSpaceCount += 1
+                        continue
                     } else {
                         sequentialSpaceCount = 0
-                    }
-
-                    if reader.currentCharacter.isSameLineWhitespace {
-                        guard let nextCharacter = reader.nextCharacter else {
-                            break
-                        }
-
-                        guard !nextCharacter.isWhitespace else {
-                            addPendingTextIfNeeded()
-                            skipCharacter()
-                            continue
-                        }
                     }
 
                     guard !reader.currentCharacter.isAny(of: .allStyleMarkers) else {
@@ -188,6 +165,34 @@ private extension FormattedText {
 
             addPendingTextIfNeeded(trimmingWhitespaces: true)
             handleUnterminatedStyleMarkers()
+            trimAnyPreviousText() // this is the removal of all trailing whitespace catch all.
+        }
+        
+        /// Need a routine to trim the whitespace at the end of a paragraph block
+        private mutating func trimAnyPreviousText() {
+            while text.components.count > 0 {
+                if let lastPiece = text.components.last {
+                    switch lastPiece {
+                    case .text (let txt):
+                        if let item = txt.last {
+                            if item.isWhitespace { //test first to save time, need to remove the trailing whitespace
+                                let trimmedText = txt.trimmingTrailingWhitespaces()
+                                _ = text.components.popLast()
+                                if trimmedText.count == 0  { //it is all whitespace, go around again.
+                                    continue
+                                }
+                                let trimmedItem: Component = .text(txt.trimmingTrailingWhitespaces())
+                                text.components.append(trimmedItem)
+                            }
+                            return
+                        } else { //a null string remove and recurse
+                            _ = text.components.popLast()
+                        }
+                    default:
+                        return
+                    }
+                }
+            }
         }
 
         private mutating func addPendingTextIfNeeded(trimmingWhitespaces trimWhitespaces: Bool = false) {

@@ -32,7 +32,7 @@ final class LinkTests: XCTestCase {
         [ΑΓΩ]: /φου
         """)
 
-        XCTAssertEqual(html, #"<p><a href="/url">Title</a> <a href="/φου">Title</a></p>"#)
+        XCTAssertEqual(html, #"<p><a href="/url">Title</a>\#n<a href="/φου">Title</a></p>"#)
     }
 
     func testNumericLinkWithReference() {

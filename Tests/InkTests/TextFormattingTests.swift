@@ -27,6 +27,11 @@ final class TextFormattingTests: XCTestCase {
         XCTAssertEqual(html, "<p>Hello, world!</p>")
     }
     
+    func testParagraphWhitespaceRemoval() {
+           let html = MarkdownParser().html(from: "Hello,  world!\n        How is it going?   ")
+           XCTAssertEqual(html, "<p>Hello,  world!\n        How is it going?</p>")
+       }
+    
     func testItalicText() {
         let html = MarkdownParser().html(from: "Hello, *world*!")
         XCTAssertEqual(html, "<p>Hello, <em>world</em>!</p>")
@@ -148,7 +153,7 @@ final class TextFormattingTests: XCTestCase {
         \\*Not italic\\*
         """)
 
-        XCTAssertEqual(html, "<p># Not a title *Not italic*</p>")
+        XCTAssertEqual(html, "<p># Not a title\n*Not italic*</p>")
     }
 
     func testDoubleSpacedHardLinebreak() {
@@ -214,7 +219,15 @@ final class TextFormattingTests: XCTestCase {
         let html = MarkdownParser().html(from: inputString)
         
         let properAnswer = #####"""
-        <p>*not emphasized* &lt;br/&gt; not a tag [not a link](/foo) `not code` 1. not a list * not a list # not a heading [foo]: /url &quot;not a reference&quot; &amp;ouml; not a character entity</p>
+        <p>*not emphasized*
+        &lt;br/&gt; not a tag
+        [not a link](/foo)
+        `not code`
+        1. not a list
+        * not a list
+        # not a heading
+        [foo]: /url &quot;not a reference&quot;
+        &amp;ouml; not a character entity</p>
         """#####
         XCTAssertEqual(html, properAnswer)
     }
@@ -316,6 +329,7 @@ extension TextFormattingTests {
             ("testParagraph", testParagraph),
             ("testParagraphEndsWithNewline", testParagraphEndsWithNewline),
             ("testParagraphEndsWithWhitespace", testParagraphEndsWithWhitespace),
+            ("testParagraphWhitespaceRemoval", testParagraphWhitespaceRemoval),
             ("testItalicText", testItalicText),
             ("testBoldText", testBoldText),
             ("testItalicBoldText", testItalicBoldText),
