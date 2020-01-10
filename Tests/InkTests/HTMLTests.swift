@@ -111,6 +111,121 @@ final class HTMLTests: XCTestCase {
 
         XCTAssertEqual(html, "<p>Hello &amp; welcome to &lt;Ink&gt;</p>")
     }
+
+    func testMarkdownHeadingInsideHTML() {
+        let html = MarkdownParser().html(from: """
+        <div>
+
+        ## Heading
+
+        </div>
+        """)
+
+        XCTAssertEqual(html, "<div><h2>Heading</h2></div>")
+    }
+
+    func testMarkdownImageInsideHTML() {
+        let html = MarkdownParser().html(from: """
+        <div>
+
+        ![test image](https://test.com/test.jpg)
+
+        </div>
+        """)
+
+        XCTAssertEqual(html, "<div><img src=\"https://test.com/test.jpg\" alt=\"test image\"/></div>")
+    }
+
+    func testMarkdownListInsideHTML() {
+        let html = MarkdownParser().html(from: """
+        <div>
+
+        - One
+        - Two
+        - Three
+
+        </div>
+        """)
+
+        XCTAssertEqual(html, "<div><ul><li>One</li><li>Two</li><li>Three</li></ul></div>")
+    }
+
+    func testMarkdownBeforeHTML() {
+        let html = MarkdownParser().html(from: """
+        <div>
+
+        # Heading1
+
+        <h2>Heading2</h2></div>
+        """)
+
+        XCTAssertEqual(html, "<div><h1>Heading1</h1><h2>Heading2</h2></div>")
+    }
+
+    func testMarkdownAfterHTML() {
+        let html = MarkdownParser().html(from: """
+        <div><h2>Heading2</h2>
+
+        # Heading1
+        </div>
+        """)
+
+        XCTAssertEqual(html, "<div><h2>Heading2</h2><h1>Heading1</h1></div>")
+    }
+
+
+    func testMultipleMarkdownInsideHTML() {
+        let html = MarkdownParser().html(from: """
+        <div>
+
+        ![](image1.jpg)
+        ![](image2.jpg)
+
+        </div>
+        """)
+
+        XCTAssertEqual(html, "<div><img src=\"image1.jpg\"/><img src=\"image2.jpg\"/></div>")
+    }
+
+    func testHTMLWithDoubleNewline() {
+        let src = """
+        <div>
+
+        <h1>Heading</h1>
+
+        </div>
+        """
+        let html = MarkdownParser().html(from: src)
+
+        XCTAssertEqual(html, src)
+    }
+
+    func testParagraphInsideHTML() {
+        let html = MarkdownParser().html(from: """
+            <div>
+
+            *Emphasized* text.
+
+            </div>
+            """)
+        XCTAssertEqual(html, """
+            <div><p><em>Emphasized</em> text.</p></div>
+            """)
+    }
+
+    func testModifiersAppliedToMarkdownInsideHTML() {
+        var parser = MarkdownParser()
+        parser.addModifier(Modifier(target: .headings, closure: { input in return input.html+"<hr>"}))
+        let html = parser.html(from: """
+            <div>
+
+            # Heading
+
+            </div>
+            """)
+        XCTAssertEqual(html, "<div><h1>Heading</h1><hr></div>")
+    }
+
 }
 
 extension HTMLTests {
@@ -127,7 +242,16 @@ extension HTMLTests {
             ("testInlineSelfClosingHTMLElement", testInlineSelfClosingHTMLElement),
             ("testTopLevelHTMLLineBreak", testTopLevelHTMLLineBreak),
             ("testHTMLComment", testHTMLComment),
-            ("testHTMLEntities", testHTMLEntities)
+            ("testHTMLEntities", testHTMLEntities),
+            ("testMarkdownHeadingInsideHTML", testMarkdownHeadingInsideHTML),
+            ("testMarkdownImageInsideHTML", testMarkdownImageInsideHTML),
+            ("testMarkdownListInsideHTML", testMarkdownListInsideHTML),
+            ("testMarkdownBeforeHTML", testMarkdownBeforeHTML),
+            ("testMarkdownAfterHTML", testMarkdownAfterHTML),
+            ("testMultipleMarkdownInsideHTML", testMultipleMarkdownInsideHTML),
+            ("testHTMLWithDoubleNewline", testHTMLWithDoubleNewline),
+            ("testParagraphInsideHTML", testParagraphInsideHTML),
+            ("testModifiersAppliedToMarkdownInsideHTML", testModifiersAppliedToMarkdownInsideHTML),
         ]
     }
 }
