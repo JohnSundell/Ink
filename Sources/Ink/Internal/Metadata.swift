@@ -42,6 +42,26 @@ internal struct Metadata: Readable {
 
         throw Reader.Error()
     }
+
+    func applyingModifiers(_ modifiers: ModifierCollection) -> Self {
+        var modified = self
+
+        modifiers.applyModifiers(for: .metadataKeys) { modifier in
+            for (key, value) in modified.values {
+                let newKey = modifier.closure((key, Substring(key)))
+                modified.values[key] = nil
+                modified.values[newKey] = value
+            }
+        }
+
+        modifiers.applyModifiers(for: .metadataValues) { modifier in
+            modified.values = modified.values.mapValues { value in
+                modifier.closure((value, Substring(value)))
+            }
+        }
+
+        return modified
+    }
 }
 
 private extension Metadata {
