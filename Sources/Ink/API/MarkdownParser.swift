@@ -53,7 +53,7 @@ public struct MarkdownParser {
             do {
                 if metadata == nil, fragments.isEmpty, reader.currentCharacter == "-" {
                     if let parsedMetadata = try? Metadata.readOrRewind(using: &reader) {
-                        metadata = parsedMetadata
+                        metadata = parsedMetadata.applyingModifiers(modifiers)
                         continue
                     }
                 }
