@@ -205,12 +205,28 @@ private extension FormattedText {
                 return
             }
 
-            if let escaped = reader.currentCharacter.escaped {
+            switch reader.currentCharacter {
+            case "\\":
                 addPendingTextIfNeeded()
-                text.components.append(.text(Substring(escaped)))
                 skipCharacter()
-            } else {
-                reader.advanceIndex()
+            case "&":
+                let ampersandIndex = reader.currentIndex
+
+                do {
+                    try reader.read(until: ";", allowWhitespace: false)
+                    addPendingTextIfNeeded()
+                } catch {
+                    reader.moveToIndex(ampersandIndex)
+                    fallthrough
+                }
+            default:
+                if let escaped = reader.currentCharacter.escaped {
+                    addPendingTextIfNeeded()
+                    text.components.append(.text(Substring(escaped)))
+                    skipCharacter()
+                } else {
+                    reader.advanceIndex()
+                }
             }
         }
 
