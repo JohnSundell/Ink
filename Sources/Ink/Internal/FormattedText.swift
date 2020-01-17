@@ -199,12 +199,6 @@ private extension FormattedText {
         }
 
         private mutating func parseNonTriggeringCharacter() {
-            guard reader.currentCharacter != "\\" else {
-                addPendingTextIfNeeded()
-                skipCharacter()
-                return
-            }
-
             switch reader.currentCharacter {
             case "\\":
                 addPendingTextIfNeeded()
