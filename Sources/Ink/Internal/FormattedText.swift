@@ -199,18 +199,28 @@ private extension FormattedText {
         }
 
         private mutating func parseNonTriggeringCharacter() {
-            guard reader.currentCharacter != "\\" else {
+            switch reader.currentCharacter {
+            case "\\":
                 addPendingTextIfNeeded()
                 skipCharacter()
-                return
-            }
+            case "&":
+                let ampersandIndex = reader.currentIndex
 
-            if let escaped = reader.currentCharacter.escaped {
-                addPendingTextIfNeeded()
-                text.components.append(.text(Substring(escaped)))
-                skipCharacter()
-            } else {
-                reader.advanceIndex()
+                do {
+                    try reader.read(until: ";", allowWhitespace: false)
+                    addPendingTextIfNeeded()
+                } catch {
+                    reader.moveToIndex(ampersandIndex)
+                    fallthrough
+                }
+            default:
+                if let escaped = reader.currentCharacter.escaped {
+                    addPendingTextIfNeeded()
+                    text.components.append(.text(Substring(escaped)))
+                    skipCharacter()
+                } else {
+                    reader.advanceIndex()
+                }
             }
         }
 

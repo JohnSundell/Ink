@@ -36,6 +36,7 @@ extension Reader {
     @discardableResult
     mutating func read(until character: Character,
                        required: Bool = true,
+                       allowWhitespace: Bool = true,
                        allowLineBreaks: Bool = false) throws -> Substring {
         let startIndex = currentIndex
 
@@ -44,6 +45,10 @@ extension Reader {
                 let result = string[startIndex..<currentIndex]
                 advanceIndex()
                 return result
+            }
+
+            if !allowWhitespace, currentCharacter.isNewline {
+                break
             }
 
             if !allowLineBreaks, currentCharacter.isNewline {
