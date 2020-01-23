@@ -13,6 +13,11 @@ final class LinkTests: XCTestCase {
         XCTAssertEqual(html, #"<p><a href="url">Title</a></p>"#)
     }
 
+	func testLinkWithURLAndTitle() {
+        let html = MarkdownParser().html(from: "[Title](url \"Swift by Sundell\")")
+        XCTAssertEqual(html, #"<p><a href="url" title="Swift by Sundell">Title</a></p>"#)
+    }
+
     func testLinkWithReference() {
         let html = MarkdownParser().html(from: """
         [Title][url]
@@ -21,6 +26,36 @@ final class LinkTests: XCTestCase {
         """)
 
         XCTAssertEqual(html, #"<p><a href="swiftbysundell.com">Title</a></p>"#)
+    }
+
+	func testLinkWithReferenceAndDoubleQuoteTitle() {
+        let html = MarkdownParser().html(from: """
+        [Title][url]
+
+        [url]: swiftbysundell.com "Powered by Publish"
+        """)
+
+        XCTAssertEqual(html, #"<p><a href="swiftbysundell.com" title="Powered by Publish">Title</a></p>"#)
+    }
+
+	func testLinkWithReferenceAndSingleQuoteTitle() {
+        let html = MarkdownParser().html(from: """
+        [Title][url]
+
+        [url]: swiftbysundell.com 'Powered by Publish'
+        """)
+
+        XCTAssertEqual(html, #"<p><a href="swiftbysundell.com" title="Powered by Publish">Title</a></p>"#)
+    }
+
+	func testLinkWithReferenceAndParentheticalTitle() {
+        let html = MarkdownParser().html(from: """
+        [Title][url]
+
+        [url]: swiftbysundell.com (Powered by Publish)
+        """)
+
+        XCTAssertEqual(html, #"<p><a href="swiftbysundell.com" title="Powered by Publish">Title</a></p>"#)
     }
 
     func testCaseMismatchedLinkWithReference() {

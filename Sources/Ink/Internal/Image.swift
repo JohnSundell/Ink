@@ -23,7 +23,12 @@ internal struct Image: Fragment {
             alt = " alt=\"\(alt)\""
         }
 
-        return "<img src=\"\(url)\"\(alt)/>"
+		var titleAttribute = ""
+		if let title = link.title {
+			titleAttribute = " title=\"\(title)\""
+		}
+
+        return "<img src=\"\(url)\"\(alt)\(titleAttribute)/>"
     }
 
     func plainText() -> String {
