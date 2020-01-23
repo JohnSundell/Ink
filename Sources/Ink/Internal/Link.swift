@@ -9,7 +9,7 @@ internal struct Link: Fragment {
 
     var target: Target
     var text: FormattedText
-	var title: Substring?
+    var title: Substring?
 
     static func read(using reader: inout Reader) throws -> Link {
         try reader.read("[")
@@ -20,16 +20,16 @@ internal struct Link: Fragment {
 
         if reader.currentCharacter == "(" {
             reader.advanceIndex()
-			let url = try reader.readCharacters(matching: \.isLegalInURL)
+            let url = try reader.readCharacters(matching: \.isLegalInURL)
 
-			guard !reader.didReachEnd else { throw Reader.Error() }
-			var titleText: Substring? = nil
-			if reader.currentCharacter.isSameLineWhitespace {
-				try reader.readWhitespaces()
-				try reader.read("\"")
-				titleText = try reader.read(until: "\"")
-			}
-			try reader.read(")")
+            guard !reader.didReachEnd else { throw Reader.Error() }
+            var titleText: Substring? = nil
+            if reader.currentCharacter.isSameLineWhitespace {
+                try reader.readWhitespaces()
+                try reader.read("\"")
+                titleText = try reader.read(until: "\"")
+            }
+            try reader.read(")")
             return Link(target: .url(url), text: text, title: titleText)
         } else {
             try reader.read("[")
@@ -41,13 +41,13 @@ internal struct Link: Fragment {
     func html(usingURLs urls: NamedURLCollection,
               modifiers: ModifierCollection) -> String {
         let url = target.url(from: urls)
-		let refTitle = target.title(from: urls)
+        let refTitle = target.title(from: urls)
         let linkText = text.html(usingURLs: urls, modifiers: modifiers)
-		let finalTitle = refTitle ?? title
-		var titleAttribute: String = ""
-		if let finalTitle = finalTitle {
-			titleAttribute = " title=\"\(finalTitle)\""
-		}
+        let finalTitle = refTitle ?? title
+        var titleAttribute: String = ""
+        if let finalTitle = finalTitle {
+            titleAttribute = " title=\"\(finalTitle)\""
+        }
         return "<a href=\"\(url)\"\(titleAttribute)>\(linkText)</a>"
     }
 
@@ -69,16 +69,16 @@ extension Link.Target {
         case .url(let url):
             return url
         case .reference(let name):
-			return urls.url(named: name)?.url ?? name
+            return urls.url(named: name)?.url ?? name
         }
     }
 
-	func title(from urls: NamedURLCollection) -> Substring? {
+    func title(from urls: NamedURLCollection) -> Substring? {
         switch self {
         case .url:
             return nil
         case .reference(let name):
-			return urls.url(named: name)?.title
+            return urls.url(named: name)?.title
         }
     }
 }

@@ -27,7 +27,7 @@ final class ImageTests: XCTestCase {
         XCTAssertEqual(html, #"<img src="url" alt="Alt text"/>"#)
     }
 
-	func testImageWithURLAndAltTextAndTitle() {
+    func testImageWithURLAndAltTextAndTitle() {
         let html = MarkdownParser().html(from: "![Alt text](url \"Swift by Sundell\")")
         XCTAssertEqual(html, #"<img src="url" alt="Alt text" title="Swift by Sundell"/>"#)
     }

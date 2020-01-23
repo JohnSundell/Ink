@@ -9,13 +9,13 @@ internal extension Character {
         isWhitespace && !isNewline
     }
 
-	var isLegalInURL: Bool {
-		self != ")" && self != " "
-	}
+    var isLegalInURL: Bool {
+        self != ")" && self != " "
+    }
 
-	var isSameLineNonWhitespace: Bool {
-		!isWhitespace && !isNewline
-	}
+    var isSameLineNonWhitespace: Bool {
+        !isWhitespace && !isNewline
+    }
 }
 
 internal extension Set where Element == Character {
@@ -24,15 +24,15 @@ internal extension Set where Element == Character {
 }
 
 internal enum TitleDelimeter: Character {
-	case doubleQuote = "\""
-	case singleQuote = "'"
-	case parenthetical = "("
-	var closing: Character {
-		switch self {
-		case .parenthetical:
-			return ")"
-		default:
-			return self.rawValue
-		}
-	}
+    case doubleQuote = "\""
+    case singleQuote = "'"
+    case parenthetical = "("
+    var closing: Character {
+        switch self {
+        case .parenthetical:
+            return ")"
+        default:
+            return self.rawValue
+        }
+    }
 }

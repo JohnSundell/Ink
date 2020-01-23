@@ -23,10 +23,10 @@ internal struct Image: Fragment {
             alt = " alt=\"\(alt)\""
         }
 
-		var titleAttribute = ""
-		if let title = link.title {
-			titleAttribute = " title=\"\(title)\""
-		}
+        var titleAttribute = ""
+        if let title = link.title {
+            titleAttribute = " title=\"\(title)\""
+        }
 
         return "<img src=\"\(url)\"\(alt)\(titleAttribute)/>"
     }
