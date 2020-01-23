@@ -47,7 +47,7 @@ extension Reader {
                 return result
             }
 
-            if !allowWhitespace, currentCharacter.isNewline {
+            if !allowWhitespace, currentCharacter.isSameLineWhitespace {
                 break
             }
 
