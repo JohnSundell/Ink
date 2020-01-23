@@ -18,9 +18,13 @@ internal struct URLDeclaration: Readable {
         var titleText: Substring? = nil
         let url = try reader.readCharacters(matching: \.isSameLineNonWhitespace)
 
-        if !reader.didReachEnd,
-            reader.currentCharacter.isSameLineWhitespace {
-            try reader.readWhitespaces()
+        if !reader.didReachEnd {
+			if reader.currentCharacter.isNewline {
+				reader.advanceIndex()
+			}
+			if reader.currentCharacter.isSameLineWhitespace {
+				try reader.readWhitespaces()
+			}
             if let delimeter = TitleDelimeter(rawValue: reader.currentCharacter) {
                 reader.advanceIndex()
                 titleText = try reader.read(until: delimeter.closing)

@@ -48,6 +48,17 @@ final class LinkTests: XCTestCase {
         XCTAssertEqual(html, #"<p><a href="swiftbysundell.com" title="Powered by Publish">Title</a></p>"#)
     }
 
+	func testLinkWithReferenceAndSingleQuoteTitleOnNextLine() {
+        let html = MarkdownParser().html(from: """
+        [Title][url]
+
+        [url]: swiftbysundell.com
+                      'Powered by Publish'
+        """)
+
+        XCTAssertEqual(html, #"<p><a href="swiftbysundell.com" title="Powered by Publish">Title</a></p>"#)
+    }
+
     func testLinkWithReferenceAndParentheticalTitle() {
         let html = MarkdownParser().html(from: """
         [Title][url]
