@@ -17,15 +17,18 @@ internal struct Image: Fragment {
     func html(usingURLs urls: NamedURLCollection,
               modifiers: ModifierCollection) -> String {
         let url = link.target.url(from: urls)
+        let refTitle = link.target.title(from: urls)
+
+        let finalTitle = refTitle ?? link.title
+        var titleAttribute: String = ""
+        if let finalTitle = finalTitle {
+            titleAttribute = " title=\"\(finalTitle)\""
+        }
+
         var alt = link.text.html(usingURLs: urls, modifiers: modifiers)
 
         if !alt.isEmpty {
             alt = " alt=\"\(alt)\""
-        }
-
-        var titleAttribute = ""
-        if let title = link.title {
-            titleAttribute = " title=\"\(title)\""
         }
 
         return "<img src=\"\(url)\"\(alt)\(titleAttribute)/>"

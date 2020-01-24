@@ -41,6 +41,25 @@ final class ImageTests: XCTestCase {
         XCTAssertEqual(html, #"<img src="swiftbysundell.com" alt="Alt text"/>"#)
     }
 
+    func testImageWithReferenceAndAltTextAndTitle() {
+        let html = MarkdownParser().html(from: """
+        ![Alt text][url]
+        [url]: swiftbysundell.com    'Swift by Sundell'
+        """)
+
+        XCTAssertEqual(html, #"<img src="swiftbysundell.com" alt="Alt text" title="Swift by Sundell"/>"#)
+    }
+
+    func testImageWithReferenceAndAltTextAndNewlineTitle() {
+        let html = MarkdownParser().html(from: """
+        ![Alt text][url]
+        [url]: swiftbysundell.com
+              (Swift by Sundell)
+        """)
+
+        XCTAssertEqual(html, #"<img src="swiftbysundell.com" alt="Alt text" title="Swift by Sundell"/>"#)
+    }
+
     func testImageWithinParagraph() {
         let html = MarkdownParser().html(from: "Text ![](url) text")
         XCTAssertEqual(html, #"<p>Text <img src="url"/> text</p>"#)
@@ -53,7 +72,10 @@ extension ImageTests {
             ("testImageWithURL", testImageWithURL),
             ("testImageWithReference", testImageWithReference),
             ("testImageWithURLAndAltText", testImageWithURLAndAltText),
+            ("testImageWithURLAndAltTextAndTitle", testImageWithURLAndAltTextAndTitle),
             ("testImageWithReferenceAndAltText", testImageWithReferenceAndAltText),
+            ("testImageWithReferenceAndAltTextAndTitle", testImageWithReferenceAndAltTextAndTitle),
+            ("testImageWithReferenceAndAltTextAndNewlineTitle", testImageWithReferenceAndAltTextAndNewlineTitle),
             ("testImageWithinParagraph", testImageWithinParagraph)
         ]
     }

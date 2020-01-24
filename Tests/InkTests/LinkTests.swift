@@ -42,18 +42,7 @@ final class LinkTests: XCTestCase {
         let html = MarkdownParser().html(from: """
         [Title][url]
 
-        [url]: swiftbysundell.com 'Powered by Publish'
-        """)
-
-        XCTAssertEqual(html, #"<p><a href="swiftbysundell.com" title="Powered by Publish">Title</a></p>"#)
-    }
-
-	func testLinkWithReferenceAndSingleQuoteTitleOnNextLine() {
-        let html = MarkdownParser().html(from: """
-        [Title][url]
-
-        [url]: swiftbysundell.com
-                      'Powered by Publish'
+        [url]: swiftbysundell.com  'Powered by Publish'
         """)
 
         XCTAssertEqual(html, #"<p><a href="swiftbysundell.com" title="Powered by Publish">Title</a></p>"#)
@@ -64,6 +53,17 @@ final class LinkTests: XCTestCase {
         [Title][url]
 
         [url]: swiftbysundell.com (Powered by Publish)
+        """)
+
+        XCTAssertEqual(html, #"<p><a href="swiftbysundell.com" title="Powered by Publish">Title</a></p>"#)
+    }
+
+    func testLinkWithReferenceAndNewlineTitle() {
+        let html = MarkdownParser().html(from: """
+        [Title][url]
+
+        [url]: swiftbysundell.com
+                      'Powered by Publish'
         """)
 
         XCTAssertEqual(html, #"<p><a href="swiftbysundell.com" title="Powered by Publish">Title</a></p>"#)
@@ -121,7 +121,12 @@ extension LinkTests {
     static var allTests: Linux.TestList<LinkTests> {
         return [
             ("testLinkWithURL", testLinkWithURL),
+            ("testLinkWithURLAndTitle", testLinkWithURLAndTitle),
             ("testLinkWithReference", testLinkWithReference),
+            ("testLinkWithReferenceAndDoubleQuoteTitle", testLinkWithReferenceAndDoubleQuoteTitle),
+            ("testLinkWithReferenceAndSingleQuoteTitle", testLinkWithReferenceAndSingleQuoteTitle),
+            ("testLinkWithReferenceAndParentheticalTitle", testLinkWithReferenceAndParentheticalTitle),
+            ("testLinkWithReferenceAndNewlineTitle", testLinkWithReferenceAndNewlineTitle),
             ("testCaseMismatchedLinkWithReference", testCaseMismatchedLinkWithReference),
             ("testNumericLinkWithReference", testNumericLinkWithReference),
             ("testBoldLinkWithInternalMarkers", testBoldLinkWithInternalMarkers),
