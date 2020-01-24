@@ -13,6 +13,11 @@ final class TextFormattingTests: XCTestCase {
         XCTAssertEqual(html, "<p>Hello, world!</p>")
     }
 
+    func testTwoParagraphs() {
+        let html = MarkdownParser().html(from: "Hello, world!\n\nHello again.")
+        XCTAssertEqual(html, "<p>Hello, world!</p><p>Hello again.</p>")
+    }
+
     func testItalicText() {
         let html = MarkdownParser().html(from: "Hello, *world*!")
         XCTAssertEqual(html, "<p>Hello, <em>world</em>!</p>")
@@ -154,6 +159,7 @@ extension TextFormattingTests {
     static var allTests: Linux.TestList<TextFormattingTests> {
         return [
             ("testParagraph", testParagraph),
+            ("testTwoParagraphs", testTwoParagraphs),
             ("testItalicText", testItalicText),
             ("testBoldText", testBoldText),
             ("testItalicBoldText", testItalicBoldText),
