@@ -168,12 +168,12 @@ Ink supports the following Markdown features:
 - Horizontal lines can be placed using either three asterisks (`***`) or three dashes (`---`) on a new line.
 - HTML can be inlined both at the root level, and within text paragraphs.
 - Blockquotes can be created by placing a greater-than arrow at the start of a line, like this: `> This is a blockquote`.
-- Tables can be created using text formatted with underscores `_` and pipes `|` like so:
+- Tables can be created using text formatted with underscores `_` (if you want headers) and pipes `|` like so:
 ```
-| Header                        | Header 2    |
-| ------------------------------ | ----------- |
-| Row 1                   | Column      | Column       |
-| Row 2                     | Column       | Column        |
+| Header | Header 2 |
+| ------ | -------- |
+| Row 1  | Cell 1   |
+| Row 2  | Cell 2   |
 ```
 
 Please note that, being a very young implementation, Ink does not fully support all Markdown specs, such as [CommonMark](https://commonmark.org). Ink definitely aims to cover as much ground as possible, and to include support for the most commonly used Markdown features, but if complete CommonMark compatibility is what you’re looking for — then you might want to check out tools like [CMark](https://github.com/commonmark/cmark).
