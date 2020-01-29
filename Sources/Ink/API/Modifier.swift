@@ -52,6 +52,6 @@ public extension Modifier {
         case links
         case lists
         case paragraphs
-		case text
+        case text
     }
 }
