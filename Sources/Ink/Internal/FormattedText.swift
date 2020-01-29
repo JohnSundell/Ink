@@ -32,7 +32,12 @@ internal struct FormattedText: Readable, HTMLConvertible, PlainTextConvertible {
             case .linebreak:
                 string.append("<br>")
             case .text(let text):
-                string.append(String(text))
+                let html = text.html(
+                    usingURLs: urls,
+                    rawString: text,
+                    applyingModifiers: modifiers
+                )
+                string.append(html)
             case .styleMarker(let marker):
                 let html = marker.html(usingURLs: urls, modifiers: modifiers)
                 string.append(html)

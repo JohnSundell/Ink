@@ -76,6 +76,42 @@ final class ModifierTests: XCTestCase {
 
         XCTAssertEqual(html, "<p>Code is cool:</p><pre><code>Code\n</code></pre>")
     }
+
+    func testTextModifier() {
+        var parser = MarkdownParser()
+
+        parser.addModifier(Modifier(target: .text) {
+            $0.html.uppercased()
+        })
+
+        let html = parser.html(from: "foo αγω éö")
+
+        XCTAssertEqual(html, "<p>FOO ΑΓΩ ÉÖ</p>")
+    }
+
+    func testTextModifierAffectsLinkText() {
+        var parser = MarkdownParser()
+
+        parser.addModifier(Modifier(target: .text) {
+            $0.html.uppercased()
+        })
+
+        let html = parser.html(from: "foo [αγω](test) éö")
+
+        XCTAssertEqual(html, #"<p>FOO <a href="test">ΑΓΩ</a> ÉÖ</p>"#)
+    }
+
+    func testTextModifierProtectsCodeAndHTML() {
+        var parser = MarkdownParser()
+
+        parser.addModifier(Modifier(target: .text) {
+            $0.html.uppercased()
+        })
+
+        let html = parser.html(from: "foo `αγω` éö <p>foo `αγω` éö</p>")
+
+        XCTAssertEqual(html, #"<p>FOO <code>αγω</code> ÉÖ</p><p>foo `αγω` éö</p>"#)
+    }
 }
 
 extension ModifierTests {
@@ -84,7 +120,10 @@ extension ModifierTests {
             ("testModifierInput", testModifierInput),
             ("testInitializingParserWithModifiers", testInitializingParserWithModifiers),
             ("testAddingModifiers", testAddingModifiers),
-            ("testMultipleModifiersForSameTarget", testMultipleModifiersForSameTarget)
+            ("testMultipleModifiersForSameTarget", testMultipleModifiersForSameTarget),
+            ("testTextModifier", testTextModifier),
+            ("testTextModifierAffectsLinkText", testTextModifierAffectsLinkText),
+            ("testTextModifierProtectsCodeAndHTML", testTextModifierProtectsCodeAndHTML),
         ]
     }
 }
