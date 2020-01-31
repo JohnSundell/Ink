@@ -16,7 +16,8 @@
 public struct Modifier {
     /// The type of input that each modifier is given, which both
     /// contains the HTML that was generated for a fragment, and
-    /// its raw Markdown representation.
+    /// its raw Markdown representation. Note that for metadata
+    /// targets, the two input arguments will be equivalent.
     public typealias Input = (html: String, markdown: Substring)
     /// The type of closure that Modifiers are based on. Each
     /// modifier is given a set of input, and is expected to return
@@ -39,6 +40,8 @@ public struct Modifier {
 
 public extension Modifier {
     enum Target {
+        case metadataKeys
+        case metadataValues
         case blockquotes
         case codeBlocks
         case headings

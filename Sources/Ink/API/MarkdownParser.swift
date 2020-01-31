@@ -5,7 +5,7 @@
 */
 
 ///
-/// A parser used to convert Markdown text into HTML
+/// A parser used to convert Markdown text into HTML.
 ///
 /// You can use an instance of this type to either convert
 /// a Markdown string into an HTML string, or into a `Markdown`
@@ -43,6 +43,7 @@ public struct MarkdownParser {
         var reader = Reader(string: markdown)
         var fragments = [ParsedFragment]()
         var urlsByName = [String : URL]()
+        var titleHeading: Heading?
         var metadata: Metadata?
 
         while !reader.didReachEnd {
@@ -52,7 +53,7 @@ public struct MarkdownParser {
             do {
                 if metadata == nil, fragments.isEmpty, reader.currentCharacter == "-" {
                     if let parsedMetadata = try? Metadata.readOrRewind(using: &reader) {
-                        metadata = parsedMetadata
+                        metadata = parsedMetadata.applyingModifiers(modifiers)
                         continue
                     }
                 }
@@ -68,6 +69,12 @@ public struct MarkdownParser {
 
                 let fragment = try makeFragment(using: type.readOrRewind, reader: &reader)
                 fragments.append(fragment)
+
+                if titleHeading == nil, let heading = fragment.fragment as? Heading {
+                    if heading.level == 1 {
+                        titleHeading = heading
+                    }
+                }
             } catch {
                 let paragraph = makeFragment(using: Paragraph.read, reader: &reader)
                 fragments.append(paragraph)
@@ -88,6 +95,7 @@ public struct MarkdownParser {
 
         return Markdown(
             html: html,
+            titleHeading: titleHeading,
             metadata: metadata?.values ?? [:]
         )
     }

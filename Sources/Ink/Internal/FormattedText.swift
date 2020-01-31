@@ -4,7 +4,7 @@
 *  MIT license, see LICENSE file for details
 */
 
-internal struct FormattedText: Readable, HTMLConvertible {
+internal struct FormattedText: Readable, HTMLConvertible, PlainTextConvertible {
     private var components = [Component]()
 
     static func read(using reader: inout Reader) -> Self {
@@ -27,10 +27,10 @@ internal struct FormattedText: Readable, HTMLConvertible {
 
     func html(usingURLs urls: NamedURLCollection,
               modifiers: ModifierCollection) -> String {
-        return components.reduce(into: "") { string, component in
+        components.reduce(into: "") { string, component in
             switch component {
             case .linebreak:
-                string.append("<br/>")
+                string.append("<br>")
             case .text(let text):
                 string.append(String(text))
             case .styleMarker(let marker):
@@ -44,6 +44,21 @@ internal struct FormattedText: Readable, HTMLConvertible {
                 )
 
                 string.append(html)
+            }
+        }
+    }
+
+    func plainText() -> String {
+        components.reduce(into: "") { string, component in
+            switch component {
+            case .linebreak:
+                string.append("\n")
+            case .text(let text):
+                string.append(String(text))
+            case .styleMarker:
+                break
+            case .fragment(let fragment, _):
+                string.append(fragment.plainText())
             }
         }
     }
@@ -81,7 +96,7 @@ private extension FormattedText {
 
             while !reader.didReachEnd {
                 do {
-                    if let terminator = terminator {
+                    if let terminator = terminator, reader.previousCharacter != "\\" {
                         guard reader.currentCharacter != terminator else {
                             break
                         }
@@ -176,9 +191,7 @@ private extension FormattedText {
             var string = reader.characters(in: endingTextRange)
 
             if trimWhitespaces {
-                while string.last?.isWhitespace == true {
-                    string = string.dropLast()
-                }
+                string = string.trimmingTrailingWhitespaces()
             }
 
             text.components.append(.text(string))
@@ -186,18 +199,28 @@ private extension FormattedText {
         }
 
         private mutating func parseNonTriggeringCharacter() {
-            guard reader.currentCharacter != "\\" else {
+            switch reader.currentCharacter {
+            case "\\":
                 addPendingTextIfNeeded()
                 skipCharacter()
-                return
-            }
+            case "&":
+                let ampersandIndex = reader.currentIndex
 
-            if let escaped = reader.currentCharacter.escaped {
-                addPendingTextIfNeeded()
-                text.components.append(.text(Substring(escaped)))
-                skipCharacter()
-            } else {
-                reader.advanceIndex()
+                do {
+                    try reader.read(until: ";", allowWhitespace: false)
+                    addPendingTextIfNeeded()
+                } catch {
+                    reader.moveToIndex(ampersandIndex)
+                    fallthrough
+                }
+            default:
+                if let escaped = reader.currentCharacter.escaped {
+                    addPendingTextIfNeeded()
+                    text.components.append(.text(Substring(escaped)))
+                    skipCharacter()
+                } else {
+                    reader.advanceIndex()
+                }
             }
         }
 

@@ -19,6 +19,12 @@ internal struct HorizontalLine: Fragment {
 
     func html(usingURLs urls: NamedURLCollection,
               modifiers: ModifierCollection) -> String {
-        return "<hr/>"
+        "<hr>"
+    }
+
+    func plainText() -> String {
+        // Since we want to strip all HTML from plain text output,
+        // there is nothing to return here, just an empty string.
+        ""
     }
 }
