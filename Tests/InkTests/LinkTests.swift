@@ -18,6 +18,12 @@ final class LinkTests: XCTestCase {
         XCTAssertEqual(html, #"<p><a href="url" title="Swift by Sundell">Title</a></p>"#)
     }
 
+    func testLinkWithoutURLAndTitle() {
+        let html = MarkdownParser().html(from: "[link]()")
+
+        XCTAssertEqual(html, #"<p><a href="">link</a></p>"#)
+    }
+
     func testLinkWithReference() {
         let html = MarkdownParser().html(from: """
         [Title][url]
@@ -110,10 +116,38 @@ final class LinkTests: XCTestCase {
         let html = MarkdownParser().html(from: "[Hello]")
         XCTAssertEqual(html, "<p>[Hello]</p>")
     }
-    
+
     func testLinkWithEscapedSquareBrackets() {
         let html = MarkdownParser().html(from: "[\\[Hello\\]](hello)")
         XCTAssertEqual(html, #"<p><a href="hello">[Hello]</a></p>"#)
+    }
+
+    func testLinkDestinationCannotIncludeLinkBreaks() {
+        let html = MarkdownParser().html(from: """
+        [link](foo
+        bar)
+        """)
+
+        XCTAssertEqual(html, #"<p>[link](foo bar)</p>"#)
+    }
+
+    func testLinkReferenceTitleMustEndLine() {
+        let html = MarkdownParser().html(from: """
+        [foo]: /url
+        "title" ok
+        """)
+
+        XCTAssertEqual(html, #"<p>"title" ok</p>"#)
+    }
+
+    func testInlineLinkHasPrecedenceOverReferenceLink() {
+        let html = MarkdownParser().html(from: """
+        [foo]()
+
+        [foo]: /url1
+        """)
+
+        XCTAssertEqual(html, #"<p><a href="">foo</a></p>"#)
     }
 }
 
@@ -122,6 +156,7 @@ extension LinkTests {
         return [
             ("testLinkWithURL", testLinkWithURL),
             ("testLinkWithURLAndTitle", testLinkWithURLAndTitle),
+            ("testLinkWithoutURLAndTitle", testLinkWithoutURLAndTitle),
             ("testLinkWithReference", testLinkWithReference),
             ("testLinkWithReferenceAndDoubleQuoteTitle", testLinkWithReferenceAndDoubleQuoteTitle),
             ("testLinkWithReferenceAndSingleQuoteTitle", testLinkWithReferenceAndSingleQuoteTitle),
@@ -133,7 +168,10 @@ extension LinkTests {
             ("testBoldLinkWithExternalMarkers", testBoldLinkWithExternalMarkers),
             ("testLinkWithUnderscores", testLinkWithUnderscores),
             ("testUnterminatedLink", testUnterminatedLink),
-            ("testLinkWithEscapedSquareBrackets", testLinkWithEscapedSquareBrackets)
+            ("testLinkWithEscapedSquareBrackets", testLinkWithEscapedSquareBrackets),
+            ("testLinkDestinationCannotIncludeLinkBreaks", testLinkDestinationCannotIncludeLinkBreaks),
+            ("testLinkReferenceTitleMustEndLine", testLinkReferenceTitleMustEndLine),
+            ("testInlineLinkHasPrecedenceOverReferenceLink", testInlineLinkHasPrecedenceOverReferenceLink)
         ]
     }
 }

@@ -26,8 +26,14 @@ internal struct URLDeclaration: Readable {
 				try reader.readWhitespaces()
 			}
             if let delimeter = TitleDelimeter(rawValue: reader.currentCharacter) {
+                let index = reader.currentIndex
                 reader.advanceIndex()
                 titleText = try reader.read(until: delimeter.closing)
+                reader.discardWhitespaces()
+                if !reader.didReachEnd && !reader.currentCharacter.isWhitespace {
+                    reader.moveToIndex(index)
+                    titleText = nil
+                }
             }
         }
         return URLDeclaration(name: name.lowercased(), url: url, title: titleText)

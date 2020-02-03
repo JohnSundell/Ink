@@ -10,7 +10,7 @@ internal extension Character {
     }
 
     var isLegalInURL: Bool {
-        self != ")" && self != " "
+        self != ")" && self != " " && self != "\n"
     }
 
     var isSameLineNonWhitespace: Bool {

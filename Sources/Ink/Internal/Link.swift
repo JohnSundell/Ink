@@ -20,7 +20,7 @@ internal struct Link: Fragment {
 
         if reader.currentCharacter == "(" {
             reader.advanceIndex()
-            let url = try reader.readCharacters(matching: \.isLegalInURL)
+            let url = try? reader.readCharacters(matching: \.isLegalInURL)
 
             guard !reader.didReachEnd else { throw Reader.Error() }
             var titleText: Substring? = nil
@@ -30,7 +30,7 @@ internal struct Link: Fragment {
                 titleText = try reader.read(until: "\"")
             }
             try reader.read(")")
-            return Link(target: .url(url), text: text, title: titleText)
+            return Link(target: .url(url ?? ""), text: text, title: titleText)
         } else {
             try reader.read("[")
             let reference = try reader.read(until: "]")
