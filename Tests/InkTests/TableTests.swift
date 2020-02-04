@@ -29,6 +29,19 @@ final class TableTests: XCTestCase {
         XCTAssertEqual(html, #"<table><tr><th>Language</th><th>Creator</th><th>Year</th></tr><tr><td>Swift</td><td>Apple</td><td>2014</td></tr><tr><td>Objective-C</td><td>Tom Love and Brad Cox</td><td>1984</td></tr></table>"#)
     }
 
+    func testTableSurroundedByText() {
+        let html = MarkdownParser().html(from: """
+        This is a paragraph
+
+        | Swift       | Apple                 |
+        | Objective-C | Tom Love and Brad Cox |
+
+        Another paragraph
+        """)
+
+        XCTAssertEqual(html, #"<p>This is a paragraph</p><table><tr><td>Swift</td><td>Apple</td></tr><tr><td>Objective-C</td><td>Tom Love and Brad Cox</td></tr></table><p>Another paragraph</p>"#)
+    }
+
     func testTableWithUnalignedColumns() {
         let html = MarkdownParser().html(from: """
         | Language                        | Creator    | Year |
@@ -64,6 +77,7 @@ extension TableTests {
         return [
             ("testTableWithoutHeader", testTableWithoutHeader),
             ("testTableWithHeader", testTableWithHeader),
+            ("testTableSurroundedByText", testTableSurroundedByText),
             ("testTableWithUnalignedColumns", testTableWithUnalignedColumns),
             ("testIncompleteTable", testIncompleteTable),
             ("testInvalidTable", testInvalidTable)

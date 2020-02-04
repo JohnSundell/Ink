@@ -12,45 +12,35 @@ struct Table: Fragment {
     private var code: String
 
     static func read(using reader: inout Reader) throws -> Table {
-        try reader.read("|")
-        reader.rewindIndex()
-
         var code = ""
 
-        outerWhile: while !reader.didReachEnd {
-            switch reader.currentCharacter {
-            case \.isNewline:
-                code += "</tr>"
-                reader.advanceIndex(by: 2)
-                break
-            case "|":
-                let line = reader.readUntilEndOfLine()
+        while !reader.didReachEnd {
+            guard reader.currentCharacter == "|" else { break }
 
-                guard line.split(separator: "|").count >= 2 else { throw Reader.Error() }
+            let line = reader.readUntilEndOfLine()
 
-                // If line only contains header-dashes, change first row from <td> to <th>
-                if String(line)
-                    .replacingOccurrences(of: " ", with: "")
-                    .replacingOccurrences(of: "|", with: "")
-                    .replacingOccurrences(of: "-", with: "")
-                    .isEmpty {
-                    code = code
-                             .replacingOccurrences(of: "<td>", with: "<th>")
-                             .replacingOccurrences(of: "</td>", with: "</th>")
-                    break
-                }
+            guard line.split(separator: "|").count >= 2 else { throw Reader.Error() }
 
-                let columns = line.split(separator: "|")
-                code += "<tr>"
-                columns.forEach { cell in
-                    let trimmedCell = cell.trimmingLeadingWhitespaces().trimmingTrailingWhitespaces()
-                    code += "<td>\(trimmedCell)</td>"
-                }
-
-                code += "</tr>"
-            default:
-                throw Reader.Error()
+            // If line only contains header-dashes, change first row from <td> to <th>
+            if String(line)
+                .replacingOccurrences(of: " ", with: "")
+                .replacingOccurrences(of: "|", with: "")
+                .replacingOccurrences(of: "-", with: "")
+                .isEmpty {
+                code = code
+                    .replacingOccurrences(of: "<td>", with: "<th>")
+                    .replacingOccurrences(of: "</td>", with: "</th>")
+                continue
             }
+
+            let columns = line.split(separator: "|")
+            code += "<tr>"
+            columns.forEach { cell in
+                let trimmedCell = cell.trimmingLeadingWhitespaces().trimmingTrailingWhitespaces()
+                code += "<td>\(trimmedCell)</td>"
+            }
+
+            code += "</tr>"
         }
 
         guard !code.isEmpty else { throw Reader.Error() }
