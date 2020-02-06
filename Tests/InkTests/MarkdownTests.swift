@@ -130,20 +130,3 @@ final class MarkdownTests: XCTestCase {
         XCTAssertEqual(markdown.title, "Title 2")
     }
 }
-
-extension MarkdownTests {
-    static var allTests: Linux.TestList<MarkdownTests> {
-        return [
-            ("testParsingMetadata", testParsingMetadata),
-            ("testDiscardingEmptyMetadataValues", testDiscardingEmptyMetadataValues),
-            ("testMergingOrphanMetadataValueIntoPreviousOne", testMergingOrphanMetadataValueIntoPreviousOne),
-            ("testMissingMetadata", testMissingMetadata),
-            ("testMetadataModifiers", testMetadataModifiers),
-            ("testPlainTextTitle", testPlainTextTitle),
-            ("testRemovingTrailingMarkersFromTitle", testRemovingTrailingMarkersFromTitle),
-            ("testConvertingFormattedTitleTextToPlainText", testConvertingFormattedTitleTextToPlainText),
-            ("testTreatingFirstHeadingAsTitle", testTreatingFirstHeadingAsTitle),
-            ("testOverridingTitle", testOverridingTitle)
-        ]
-    }
-}

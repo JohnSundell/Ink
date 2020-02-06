@@ -59,18 +59,3 @@ final class HeadingTests: XCTestCase {
         XCTAssertEqual(html, "<h1></h1>")
     }
 }
-
-extension HeadingTests {
-    static var allTests: Linux.TestList<HeadingTests> {
-        return [
-            ("testHeading", testHeading),
-            ("testHeadingsSeparatedBySingleNewline", testHeadingsSeparatedBySingleNewline),
-            ("testHeadingsWithLeadingNumbers", testHeadingsWithLeadingNumbers),
-            ("testHeadingWithPreviousWhitespace", testHeadingWithPreviousWhitespace),
-            ("testHeadingWithPreviousNewlineAndWhitespace", testHeadingWithPreviousNewlineAndWhitespace),
-            ("testInvalidHeaderLevel", testInvalidHeaderLevel),
-            ("testRemovingTrailingMarkersFromHeading", testRemovingTrailingMarkersFromHeading),
-            ("testHeadingWithOnlyTrailingMarkers", testHeadingWithOnlyTrailingMarkers)
-        ]
-    }
-}

@@ -112,22 +112,3 @@ final class HTMLTests: XCTestCase {
         XCTAssertEqual(html, "<p>Hello &amp; welcome to &lt;Ink&gt;</p>")
     }
 }
-
-extension HTMLTests {
-    static var allTests: Linux.TestList<HTMLTests> {
-        return [
-            ("testTopLevelHTML", testTopLevelHTML),
-            ("testNestedTopLevelHTML", testNestedTopLevelHTML),
-            ("testTopLevelHTMLWithPreviousNewline", testTopLevelHTMLWithPreviousNewline),
-            ("testIgnoringFormattingWithinTopLevelHTML", testIgnoringFormattingWithinTopLevelHTML),
-            ("testIgnoringTextFormattingWithinInlineHTML", testIgnoringTextFormattingWithinInlineHTML),
-            ("testIgnoringListsWithinInlineHTML", testIgnoringListsWithinInlineHTML),
-            ("testInlineParagraphTagEndingCurrentParagraph", testInlineParagraphTagEndingCurrentParagraph),
-            ("testTopLevelSelfClosingHTMLElement", testTopLevelSelfClosingHTMLElement),
-            ("testInlineSelfClosingHTMLElement", testInlineSelfClosingHTMLElement),
-            ("testTopLevelHTMLLineBreak", testTopLevelHTMLLineBreak),
-            ("testHTMLComment", testHTMLComment),
-            ("testHTMLEntities", testHTMLEntities)
-        ]
-    }
-}

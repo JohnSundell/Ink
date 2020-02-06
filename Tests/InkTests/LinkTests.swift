@@ -70,19 +70,3 @@ final class LinkTests: XCTestCase {
         XCTAssertEqual(html, #"<p><a href="hello">[Hello]</a></p>"#)
     }
 }
-
-extension LinkTests {
-    static var allTests: Linux.TestList<LinkTests> {
-        return [
-            ("testLinkWithURL", testLinkWithURL),
-            ("testLinkWithReference", testLinkWithReference),
-            ("testCaseMismatchedLinkWithReference", testCaseMismatchedLinkWithReference),
-            ("testNumericLinkWithReference", testNumericLinkWithReference),
-            ("testBoldLinkWithInternalMarkers", testBoldLinkWithInternalMarkers),
-            ("testBoldLinkWithExternalMarkers", testBoldLinkWithExternalMarkers),
-            ("testLinkWithUnderscores", testLinkWithUnderscores),
-            ("testUnterminatedLink", testUnterminatedLink),
-            ("testLinkWithEscapedSquareBrackets", testLinkWithEscapedSquareBrackets)
-        ]
-    }
-}

@@ -4,9 +4,7 @@
 *  MIT license, see LICENSE file for details
 */
 
-import XCTest
-import InkTests
+import Foundation
 
-var tests = [XCTestCaseEntry]()
-tests += InkTests.allTests()
-XCTMain(tests)
+print("To run tests on Linux, use 'swift test --enable-test-discovery'")
+exit(1)

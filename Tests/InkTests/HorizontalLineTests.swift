@@ -37,13 +37,3 @@ final class HorizontalLineTests: XCTestCase {
         XCTAssertEqual(html, "<p>Hello</p><hr><p>World</p>")
     }
 }
-
-extension HorizontalLineTests {
-    static var allTests: Linux.TestList<HorizontalLineTests> {
-        return [
-            ("testHorizonalLineWithDashes", testHorizonalLineWithDashes),
-            ("testHorizontalLineWithDashesAtTheStartOfString", testHorizontalLineWithDashesAtTheStartOfString),
-            ("testHorizontalLineWithAsterisks", testHorizontalLineWithAsterisks)
-        ]
-    }
-}

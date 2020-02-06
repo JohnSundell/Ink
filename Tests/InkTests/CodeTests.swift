@@ -85,17 +85,3 @@ final class CodeTests: XCTestCase {
         """)
     }
 }
-
-extension CodeTests {
-    static var allTests: Linux.TestList<CodeTests> {
-        return [
-            ("testInlineCode", testInlineCode),
-            ("testCodeBlockWithJustBackticks", testCodeBlockWithJustBackticks),
-            ("testCodeBlockWithBackticksAndLabel", testCodeBlockWithBackticksAndLabel),
-            ("testCodeBlockWithBackticksAndLabelNeedingTrimming", testCodeBlockWithBackticksAndLabelNeedingTrimming),
-            ("testCodeBlockManyBackticks", testCodeBlockManyBackticks),
-            ("testEncodingSpecialCharactersWithinCodeBlock", testEncodingSpecialCharactersWithinCodeBlock),
-            ("testIgnoringFormattingWithinCodeBlock", testIgnoringFormattingWithinCodeBlock)
-        ]
-    }
-}
