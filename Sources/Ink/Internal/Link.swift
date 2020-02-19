@@ -12,7 +12,7 @@ internal struct Link: Fragment {
 
     static func read(using reader: inout Reader) throws -> Link {
         try reader.read("[")
-        let text = FormattedText.read(using: &reader, terminator: "]")
+        let text = FormattedText.read(using: &reader, terminators: ["]"])
         try reader.read("]")
 
         guard !reader.didReachEnd else { throw Reader.Error() }

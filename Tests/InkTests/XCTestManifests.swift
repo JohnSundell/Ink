@@ -17,7 +17,7 @@ public func allTests() -> [Linux.TestCase] {
         Linux.makeTestCase(using: ListTests.allTests),
         Linux.makeTestCase(using: MarkdownTests.allTests),
         Linux.makeTestCase(using: ModifierTests.allTests),
-        Linux.makeTestCase(using: TextFormattingTests.allTests),
-        Linux.makeTestCase(using: TableTests.allTests)
+        Linux.makeTestCase(using: TableTests.allTests),
+        Linux.makeTestCase(using: TextFormattingTests.allTests)
     ]
 }
