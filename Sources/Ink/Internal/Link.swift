@@ -4,11 +4,34 @@
 *  MIT license, see LICENSE file for details
 */
 
+import Foundation
+
+
 internal struct Link: Fragment {
     var modifierTarget: Modifier.Target { .links }
 
     var target: Target
     var text: FormattedText
+    var attributes: [Attribute] = []
+
+    init(target: Target, text: FormattedText) {
+        self.target = target
+        self.text = text
+    }
+
+    init(url: Substring, text: FormattedText) {
+        let parts = url.unicodeScalars.split(whereSeparator: { CharacterSet.whitespaces.contains($0) })
+        if parts.count > 1 {
+            self.target = .url(String(parts.first!)[...])
+            self.attributes = parts
+                .dropFirst()
+                .map(String.init)
+                .compactMap(Attribute.init)
+        } else {
+            self.target = .url(url)
+        }
+        self.text = text
+    }
 
     static func read(using reader: inout Reader) throws -> Link {
         try reader.read("[")
@@ -20,7 +43,7 @@ internal struct Link: Fragment {
         if reader.currentCharacter == "(" {
             reader.advanceIndex()
             let url = try reader.read(until: ")")
-            return Link(target: .url(url), text: text)
+            return Link(url: url, text: text)
         } else {
             try reader.read("[")
             let reference = try reader.read(until: "]")
@@ -32,7 +55,15 @@ internal struct Link: Fragment {
               modifiers: ModifierCollection) -> String {
         let url = target.url(from: urls)
         let title = text.html(usingURLs: urls, modifiers: modifiers)
-        return "<a href=\"\(url)\">\(title)</a>"
+        var attr = attributes
+            .map({ $0.html(usingURLs: urls, modifiers: modifiers)})
+            .joined(separator: " ")
+
+        if !attr.isEmpty {
+            attr = " " + attr
+        }
+
+        return "<a href=\"\(url)\"\(attr)>\(title)</a>"
     }
 
     func plainText() -> String {

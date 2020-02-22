@@ -18,12 +18,19 @@ internal struct Image: Fragment {
               modifiers: ModifierCollection) -> String {
         let url = link.target.url(from: urls)
         var alt = link.text.html(usingURLs: urls, modifiers: modifiers)
+        var attr = link.attributes
+            .map({ $0.html(usingURLs: urls, modifiers: modifiers)})
+            .joined(separator: " ")
 
         if !alt.isEmpty {
             alt = " alt=\"\(alt)\""
         }
 
-        return "<img src=\"\(url)\"\(alt)/>"
+        if !attr.isEmpty {
+            attr = " " + attr
+        }
+
+        return "<img src=\"\(url)\"\(alt)\(attr)/>"
     }
 
     func plainText() -> String {
