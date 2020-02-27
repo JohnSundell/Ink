@@ -51,7 +51,7 @@ public extension Modifier {
         case inlineCode
         case links
         case lists
-        case tables
         case paragraphs
+        case tables
     }
 }
