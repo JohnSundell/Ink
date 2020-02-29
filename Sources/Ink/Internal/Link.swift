@@ -20,12 +20,11 @@ internal struct Link: Fragment {
     }
 
     init(url: Substring, text: FormattedText) {
-        let parts = url.unicodeScalars.split(whereSeparator: { CharacterSet.whitespaces.contains($0) })
+        let parts = url.components(separatedBy: CharacterSet.whitespaces)
         if parts.count > 1 {
             self.target = .url(String(parts.first!)[...])
             self.attributes = parts
                 .dropFirst()
-                .map(String.init)
                 .compactMap(Attribute.init)
         } else {
             self.target = .url(url)
