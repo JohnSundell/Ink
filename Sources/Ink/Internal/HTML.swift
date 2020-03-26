@@ -45,13 +45,14 @@ internal struct HTML: GroupFragment {
                 possibleMarkdown = false
             }
             
+            guard !reader.didReachEnd else { break }
+            
             // if two newlines are found together set possibleMarkdown flag
             if let previousCharacter = reader.previousCharacter {
                 if reader.currentCharacter.isNewline && previousCharacter.isNewline {
                     possibleMarkdown = true
                 }
             }
-            
             guard reader.currentCharacter == "<" else {
                 reader.advanceIndex()
                 continue
