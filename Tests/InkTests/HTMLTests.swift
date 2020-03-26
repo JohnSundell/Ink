@@ -200,6 +200,18 @@ final class HTMLTests: XCTestCase {
         XCTAssertEqual(html, src)
     }
 
+    func testUnclosedHTMLWithDoubleNewline() {
+        let src = """
+        <div>
+        *foo*
+
+        *bar*
+        """
+        let html = MarkdownParser().html(from: src)
+
+        XCTAssertEqual(html, "<div>\n*foo*<p><em>bar</em></p>")
+    }
+
     func testParagraphInsideHTML() {
         let html = MarkdownParser().html(from: """
         <div>
@@ -247,6 +259,7 @@ extension HTMLTests {
             ("testMarkdownAfterHTML", testMarkdownAfterHTML),
             ("testMultipleMarkdownInsideHTML", testMultipleMarkdownInsideHTML),
             ("testHTMLWithDoubleNewline", testHTMLWithDoubleNewline),
+            ("testUnclosedHTMLWithDoubleNewline", testUnclosedHTMLWithDoubleNewline),
             ("testParagraphInsideHTML", testParagraphInsideHTML),
             ("testModifiersAppliedToMarkdownInsideHTML", testModifiersAppliedToMarkdownInsideHTML),
         ]
