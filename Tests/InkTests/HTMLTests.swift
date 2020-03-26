@@ -202,30 +202,27 @@ final class HTMLTests: XCTestCase {
 
     func testParagraphInsideHTML() {
         let html = MarkdownParser().html(from: """
-            <div>
+        <div>
 
-            *Emphasized* text.
+        *Emphasized* text.
 
-            </div>
-            """)
-        XCTAssertEqual(html, """
-            <div><p><em>Emphasized</em> text.</p></div>
-            """)
+        </div>
+        """)
+        XCTAssertEqual(html, "<div><p><em>Emphasized</em> text.</p></div>")
     }
 
     func testModifiersAppliedToMarkdownInsideHTML() {
         var parser = MarkdownParser()
         parser.addModifier(Modifier(target: .headings, closure: { input in return input.html+"<hr>"}))
         let html = parser.html(from: """
-            <div>
+        <div>
 
-            # Heading
+        # Heading
 
-            </div>
-            """)
+        </div>
+        """)
         XCTAssertEqual(html, "<div><h1>Heading</h1><hr></div>")
     }
-
 }
 
 extension HTMLTests {
