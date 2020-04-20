@@ -4,8 +4,8 @@
 *  MIT license, see LICENSE file for details
 */
 
-import XCTest
 import Ink
+import XCTest
 
 final class TextFormattingTests: XCTestCase {
     func testParagraph() {
@@ -128,6 +128,52 @@ final class TextFormattingTests: XCTestCase {
         XCTAssertEqual(html, "<blockquote><p>One Two Three</p></blockquote>")
     }
 
+    func testMultiParagraphBlockquote() {
+        // https://spec.commonmark.org/0.29/#block-quotes Example 214
+        // According to the CommonMark spec, this should produce one blockquote element
+        // containing two paragraphs.
+        let html = MarkdownParser().html(
+            from: """
+                > foo
+                >
+                > bar
+                """)
+
+        XCTAssertEqual(
+            html,
+            "<blockquote><p>foo</p><p>bar</p></blockquote>"
+        )
+    }
+
+    func testMultiLineMultiParagraphBlockquote() {
+        // Related to Example 214 above, but this test ensures that multi-line paragraphs
+        // are preserved. Text borrowed from the swift.org homepage.
+        let html = MarkdownParser().html(
+            from: """
+                > Welcome to the Swift community. Together we are working to build a
+                > programming language to empower everyone to turn their ideas into apps
+                > on any platform.
+                >
+                > Announced in 2014, the Swift programming language has quickly become
+                > one of the fastest growing languages in history. Swift makes it easy to
+                > write software that is incredibly fast and safe by design. Our goals
+                > for Swift are ambitious: we want to make programming simple things
+                > easy, and difficult things possible.
+                """)
+
+        XCTAssertEqual(
+            html,
+            "<blockquote><p>Welcome to the Swift community. Together we are working " +
+            "to build a programming language to empower everyone to turn their ideas " +
+            "into apps on any platform.</p><p>Announced in 2014, the Swift " +
+            "programming language has quickly become one of the fastest growing " +
+            "languages in history. Swift makes it easy to write software that is " +
+            "incredibly fast and safe by design. Our goals for Swift are ambitious: " +
+            "we want to make programming simple things easy, and difficult things " +
+            "possible.</p></blockquote>"
+        )
+    }
+
     func testEscapingSymbolsWithBackslash() {
         let html = MarkdownParser().html(from: """
         \\# Not a title
@@ -176,6 +222,8 @@ extension TextFormattingTests {
             ("testEncodingSpecialCharacters", testEncodingSpecialCharacters),
             ("testSingleLineBlockquote", testSingleLineBlockquote),
             ("testMultiLineBlockquote", testMultiLineBlockquote),
+            ("testMultiParagraphBlockquote", testMultiParagraphBlockquote),
+            ("testMultiLineMultiParagraphBlockquote", testMultiLineMultiParagraphBlockquote),
             ("testEscapingSymbolsWithBackslash", testEscapingSymbolsWithBackslash),
             ("testDoubleSpacedHardLinebreak", testDoubleSpacedHardLinebreak),
             ("testEscapedHardLinebreak", testEscapedHardLinebreak)
