@@ -128,6 +128,16 @@ final class TextFormattingTests: XCTestCase {
         XCTAssertEqual(html, "<blockquote><p>One Two Three</p></blockquote>")
     }
 
+    func testH1InBlockquote() {
+        // https://spec.commonmark.org/0.29/#block-quotes Example 198
+        let html = MarkdownParser().html(from: """
+            > # Foo
+            > bar
+            > baz
+            """)
+        XCTAssertEqual(html, "<blockquote><h1>Foo</h1><p>bar baz</p></blockquote>")
+    }
+
     func testMultiParagraphBlockquote() {
         // https://spec.commonmark.org/0.29/#block-quotes Example 214
         // According to the CommonMark spec, this should produce one blockquote element
@@ -162,15 +172,16 @@ final class TextFormattingTests: XCTestCase {
                 """)
 
         XCTAssertEqual(
-            html,
-            "<blockquote><p>Welcome to the Swift community. Together we are working " +
-            "to build a programming language to empower everyone to turn their ideas " +
-            "into apps on any platform.</p><p>Announced in 2014, the Swift " +
-            "programming language has quickly become one of the fastest growing " +
-            "languages in history. Swift makes it easy to write software that is " +
-            "incredibly fast and safe by design. Our goals for Swift are ambitious: " +
-            "we want to make programming simple things easy, and difficult things " +
-            "possible.</p></blockquote>"
+            html, """
+            <blockquote><p>Welcome to the Swift community. Together we are working \
+            to build a programming language to empower everyone to turn their ideas \
+            into apps on any platform.</p><p>Announced in 2014, the Swift \
+            programming language has quickly become one of the fastest growing \
+            languages in history. Swift makes it easy to write software that is \
+            incredibly fast and safe by design. Our goals for Swift are ambitious: \
+            we want to make programming simple things easy, and difficult things \
+            possible.</p></blockquote>
+            """
         )
     }
 
@@ -224,6 +235,7 @@ extension TextFormattingTests {
             ("testMultiLineBlockquote", testMultiLineBlockquote),
             ("testMultiParagraphBlockquote", testMultiParagraphBlockquote),
             ("testMultiLineMultiParagraphBlockquote", testMultiLineMultiParagraphBlockquote),
+            ("testH1InBlockquote", testH1InBlockquote),
             ("testEscapingSymbolsWithBackslash", testEscapingSymbolsWithBackslash),
             ("testDoubleSpacedHardLinebreak", testDoubleSpacedHardLinebreak),
             ("testEscapedHardLinebreak", testEscapedHardLinebreak)

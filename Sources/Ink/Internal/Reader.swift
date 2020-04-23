@@ -162,6 +162,18 @@ extension Reader {
     mutating func moveToIndex(_ index: String.Index) {
         currentIndex = index
     }
+
+    func lookAheadAtCharacters(_ count: Int) -> Substring? {
+        // Returns a substring of the next n characters without advancing the current
+        // index.
+        guard !didReachEnd else { return nil }
+        if let endIndex = string.index(currentIndex,
+                                       offsetBy: count,
+                                       limitedBy: string.endIndex) {
+            return string[currentIndex..<endIndex]
+        }
+        return nil
+    }
 }
 
 private extension Reader {

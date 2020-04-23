@@ -13,6 +13,12 @@ internal struct Paragraph: Fragment {
         return Paragraph(text: .read(using: &reader))
     }
 
+    static func read(using reader: inout Reader, ignorePrefix: String) -> Paragraph {
+        return Paragraph(text: .read(using: &reader,
+                                     terminator: nil,
+                                     ignorePrefix: ignorePrefix))
+    }
+
     func html(usingURLs urls: NamedURLCollection,
               modifiers: ModifierCollection) -> String {
         let body = text.html(usingURLs: urls, modifiers: modifiers)

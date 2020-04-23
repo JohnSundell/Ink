@@ -18,8 +18,10 @@ internal struct FormattedText: Readable, HTMLConvertible, PlainTextConvertible {
     }
 
     static func read(using reader: inout Reader,
-                     terminator: Character?) -> Self {
-        var parser = Parser(reader: reader, terminator: terminator)
+                     terminator: Character?,
+                     ignorePrefix: String? = nil) -> Self {
+        var parser = Parser(
+            reader: reader, terminator: terminator, ignorePrefix: ignorePrefix)
         parser.parse()
         reader = parser.reader
         return parser.text
@@ -80,14 +82,16 @@ private extension FormattedText {
     struct Parser {
         var reader: Reader
         let terminator: Character?
+        let ignorePrefix: String?
         var text = FormattedText()
         var pendingTextRange: Range<String.Index>
         var activeStyles = Set<TextStyle>()
         var activeStyleMarkers = [TextStyleMarker]()
 
-        init(reader: Reader, terminator: Character?) {
+        init(reader: Reader, terminator: Character?, ignorePrefix: String?) {
             self.reader = reader
             self.terminator = terminator
+            self.ignorePrefix = ignorePrefix
             self.pendingTextRange = reader.currentIndex..<reader.endIndex
         }
 
@@ -104,6 +108,21 @@ private extension FormattedText {
 
                     if reader.currentCharacter.isNewline {
                         addPendingTextIfNeeded()
+
+                        // Look ahead to see if the next line has a prefix to ignore.
+                        if let ignorePrefix = ignorePrefix {
+                            if let nextPrefix = reader.lookAheadAtCharacters(
+                                ignorePrefix.count + 1
+                            ) {
+                                // The look ahead includes the current newline character,
+                                // so drop it when comparing.
+                                if nextPrefix.dropFirst() == ignorePrefix {
+                                    for _ in 0..<ignorePrefix.count {
+                                        skipCharacter()
+                                    }
+                                }
+                            }
+                        }
 
                         guard let nextCharacter = reader.nextCharacter else {
                             break
