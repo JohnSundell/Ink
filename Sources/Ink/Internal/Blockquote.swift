@@ -38,6 +38,9 @@ internal struct Blockquote: Fragment {
                     blockquote.items.append(heading)
                     // Heading does not consume the trailing newline.
                     reader.advanceIndex()
+                case "-", "*", "+", \.isNumber:
+                    let list = try List.read(using: &reader, ignorePrefix: ">")
+                    blockquote.items.append(list)
                 case \.isNewline:
                     reader.advanceIndex()
                 default:
