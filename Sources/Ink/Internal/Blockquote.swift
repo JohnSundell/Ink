@@ -10,27 +10,42 @@ internal struct Blockquote: Fragment {
     private var items = [Fragment]()
 
     static func read(using reader: inout Reader) throws -> Blockquote {
-        // This is the Blockquote object we will return.
+        try read(using: &reader, ignorePrefix: nil)
+    }
+
+    static func read(using reader: inout Reader, ignorePrefix: String?) throws -> Blockquote {
         var blockquote = Blockquote()
-        // This gets us to the first blockquote in the document.
         try reader.read(">")
 
         // Ensures that currentCharacter refers to the first angle bracket.
         reader.rewindIndex()
+        // These defaults were chosen arbitrarily to avoid activating the ignore case
+        // when not needed.
+        let ignoreFirstChar = ignorePrefix?.first ?? "ñ"
+        let ignorePrefixString = ignorePrefix ?? ""
         while !reader.didReachEnd {
+            let previousCharacter = reader.previousCharacter ?? "\n"
+            let lookAhead = reader.lookAheadAtCharacters(ignorePrefixString.count) ?? "⫝"
             // The nested switch can advance the reader, causing currentCharacter to
             // change by the time control returns to the outer switch; best to lock down
             // the first character.
             let firstChar = reader.currentCharacter
             switch firstChar {
-            case ">":
-                // Everything now depends on the first non-space character after the
-                // angle bracket.
-                while !reader.didReachEnd && (
-                    reader.currentCharacter == ">" || reader.currentCharacter == " "
-                ) {
+            case ignoreFirstChar where previousCharacter.isNewline && lookAhead == ignorePrefixString:
+                for _ in 0..<ignorePrefixString.count {
                     reader.advanceIndex()
                 }
+                do {
+                    try reader.readWhitespaces()
+                } catch is Reader.Error { }
+            case ">":
+                // Move past the angle bracket.
+                reader.advanceIndex()
+                // Check the first non-space character after the angle bracket for block-
+                // level elements.
+                do {
+                    try reader.readWhitespaces()
+                } catch is Reader.Error { }  // Not a problem if there is no whitespace.
                 let nextChar = reader.currentCharacter
                 switch nextChar {
                 case "#":
@@ -41,6 +56,11 @@ internal struct Blockquote: Fragment {
                 case "-", "*", "+", \.isNumber:
                     let list = try List.read(using: &reader, ignorePrefix: ">")
                     blockquote.items.append(list)
+                case ">":
+                    reader.rewindIndex()
+                    reader.rewindIndex()
+                    let innerBlockquote = try Blockquote.read(using: &reader, ignorePrefix: ">")
+                    blockquote.items.append(innerBlockquote)
                 case \.isNewline:
                     reader.advanceIndex()
                 default:
@@ -48,6 +68,7 @@ internal struct Blockquote: Fragment {
                         Paragraph.read(using: &reader, ignorePrefix: ">"))
                 }
             case \.isNewline:
+                reader.advanceIndex()
                 return blockquote
             default:
                 break

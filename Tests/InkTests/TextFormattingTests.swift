@@ -128,14 +128,11 @@ final class TextFormattingTests: XCTestCase {
         XCTAssertEqual(html, "<blockquote><p>One Two Three</p></blockquote>")
     }
 
-    func testH1InBlockquote() {
-        // https://spec.commonmark.org/0.29/#block-quotes Example 198
+    func testNestedBlockquote() {
         let html = MarkdownParser().html(from: """
-            > # Foo
-            > bar
-            > baz
+            > > Foo
             """)
-        XCTAssertEqual(html, "<blockquote><h1>Foo</h1><p>bar baz</p></blockquote>")
+        XCTAssertEqual(html, "<blockquote><blockquote><p>Foo</p></blockquote></blockquote>")
     }
 
     func testUnorderedListInBlockquote() {
@@ -144,6 +141,16 @@ final class TextFormattingTests: XCTestCase {
             > * Second Item
             """)
         XCTAssertEqual(html, "<blockquote><ul><li>First Item</li><li>Second Item</li></ul></blockquote>")
+    }
+
+    func testH1InBlockquote() {
+        // https://spec.commonmark.org/0.29/#block-quotes Example 198
+        let html = MarkdownParser().html(from: """
+            > # Foo
+            > bar
+            > baz
+            """)
+        XCTAssertEqual(html, "<blockquote><h1>Foo</h1><p>bar baz</p></blockquote>")
     }
 
     func testMultiParagraphBlockquote() {
@@ -241,6 +248,7 @@ extension TextFormattingTests {
             ("testEncodingSpecialCharacters", testEncodingSpecialCharacters),
             ("testSingleLineBlockquote", testSingleLineBlockquote),
             ("testMultiLineBlockquote", testMultiLineBlockquote),
+            ("testNestedBlockquote", testNestedBlockquote),
             ("testH1InBlockquote", testH1InBlockquote),
             ("testUnorderedListInBlockquote", testUnorderedListInBlockquote),
             ("testMultiParagraphBlockquote", testMultiParagraphBlockquote),
