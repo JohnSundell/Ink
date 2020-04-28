@@ -26,7 +26,7 @@ internal struct Heading: Fragment {
         )
 
         let tagName = "h\(level)"
-        return "<\(tagName)>\(body)</\(tagName)>"
+        return "<\(tagName) id=\"\(body)\">\(body)</\(tagName)>"
     }
 
     func plainText() -> String {
