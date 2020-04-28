@@ -48,19 +48,20 @@ internal struct List: Fragment {
             list.items.append(lastItem)
         }
 
-        // These defaults were chosen arbitrarily to avoid activating the ignore case
-        // when not needed.
-        let ignoreFirstChar = ignorePrefix?.first ?? "ñ"
-        let ignorePrefixString = ignorePrefix ?? ""
         while !reader.didReachEnd {
-            let previousCharacter = reader.previousCharacter ?? "\n"
-            let lookAhead = reader.lookAheadAtCharacters(ignorePrefixString.count) ?? "⫝"
-            switch reader.currentCharacter {
-            case ignoreFirstChar where previousCharacter.isNewline && lookAhead == ignorePrefixString:
-                for _ in 0..<ignorePrefixString.count {
-                    reader.advanceIndex()
+
+            if let ignorePrefix = ignorePrefix {
+                if let lookAhead = reader.lookAheadAtCharacters(ignorePrefix.count) {
+                    if lookAhead == ignorePrefix {
+                        for _ in 0..<ignorePrefix.count {
+                            reader.advanceIndex()
+                        }
+                        reader.discardWhitespaces()
+                    }
                 }
-                try reader.readWhitespaces()
+            }
+
+            switch reader.currentCharacter {
             case \.isNewline:
                 return list
             case \.isWhitespace:

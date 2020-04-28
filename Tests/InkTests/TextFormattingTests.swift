@@ -118,16 +118,6 @@ final class TextFormattingTests: XCTestCase {
         XCTAssertEqual(html, "<blockquote><p>Hello, world!</p></blockquote>")
     }
 
-    func testMultiLineBlockquote() {
-        let html = MarkdownParser().html(from: """
-        > One
-        > Two
-        > Three
-        """)
-
-        XCTAssertEqual(html, "<blockquote><p>One Two Three</p></blockquote>")
-    }
-
     func testNestedBlockquote() {
         let html = MarkdownParser().html(from: """
             > > Foo
@@ -151,6 +141,30 @@ final class TextFormattingTests: XCTestCase {
             > baz
             """)
         XCTAssertEqual(html, "<blockquote><h1>Foo</h1><p>bar baz</p></blockquote>")
+    }
+
+    func testBlankLineInBlockquoteSeparates() {
+        // https://spec.commonmark.org/0.29/#block-quotes Example 212
+        // According to the CommonMark spec, this should produce two blockquote elements.
+        let html = MarkdownParser().html(from: """
+            > foo
+
+            > bar
+            """)
+        XCTAssertEqual(html, "<blockquote><p>foo</p></blockquote><blockquote><p>bar</p></blockquote>")
+    }
+
+    func testMultiLineBlockquote() {
+        // https://spec.commonmark.org/0.29/#block-quotes Example 213
+        // According to the CommonMark spec, this should produce one blockquote element
+        // with one paragraph.
+        let html = MarkdownParser().html(from: """
+        > One
+        > Two
+        > Three
+        """)
+
+        XCTAssertEqual(html, "<blockquote><p>One Two Three</p></blockquote>")
     }
 
     func testMultiParagraphBlockquote() {
@@ -251,6 +265,7 @@ extension TextFormattingTests {
             ("testNestedBlockquote", testNestedBlockquote),
             ("testH1InBlockquote", testH1InBlockquote),
             ("testUnorderedListInBlockquote", testUnorderedListInBlockquote),
+            ("testBlankLineInBlockquoteSeparates", testBlankLineInBlockquoteSeparates),
             ("testMultiParagraphBlockquote", testMultiParagraphBlockquote),
             ("testMultiLineMultiParagraphBlockquote", testMultiLineMultiParagraphBlockquote),
             ("testEscapingSymbolsWithBackslash", testEscapingSymbolsWithBackslash),

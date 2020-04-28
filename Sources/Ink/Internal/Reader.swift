@@ -18,10 +18,12 @@ extension Reader {
     struct Error: Swift.Error {}
 
     var didReachEnd: Bool { currentIndex == endIndex }
+    var didReachBegining: Bool { currentIndex == startIndex }
     var previousCharacter: Character? { lookBehindAtPreviousCharacter() }
     var currentCharacter: Character { string[currentIndex] }
     var nextCharacter: Character? { lookAheadAtNextCharacter() }
     var endIndex: String.Index { string.endIndex }
+    var startIndex: String.Index { string.startIndex }
 
     func characters(in range: Range<String.Index>) -> Substring {
         return string[range]
@@ -157,6 +159,21 @@ extension Reader {
 
     mutating func rewindIndex() {
         currentIndex = string.index(before: currentIndex)
+    }
+
+    mutating func rewindUntilBeginningOfLine() {
+        guard !currentCharacter.isNewline else { return }
+        while !didReachBegining {
+            if let prevChar = previousCharacter {
+                if !prevChar.isNewline {
+                    rewindIndex()
+                } else {
+                    return
+                }
+            } else {
+                return
+            }
+        }
     }
 
     mutating func moveToIndex(_ index: String.Index) {
