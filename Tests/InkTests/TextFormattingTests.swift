@@ -4,8 +4,8 @@
 *  MIT license, see LICENSE file for details
 */
 
-import XCTest
 import Ink
+import XCTest
 
 final class TextFormattingTests: XCTestCase {
     func testParagraph() {
@@ -118,7 +118,46 @@ final class TextFormattingTests: XCTestCase {
         XCTAssertEqual(html, "<blockquote><p>Hello, world!</p></blockquote>")
     }
 
+    func testNestedBlockquote() {
+        let html = MarkdownParser().html(from: """
+            > > Foo
+            """)
+        XCTAssertEqual(html, "<blockquote><blockquote><p>Foo</p></blockquote></blockquote>")
+    }
+
+    func testUnorderedListInBlockquote() {
+        let html = MarkdownParser().html(from: """
+            > * First Item
+            > * Second Item
+            """)
+        XCTAssertEqual(html, "<blockquote><ul><li>First Item</li><li>Second Item</li></ul></blockquote>")
+    }
+
+    func testH1InBlockquote() {
+        // https://spec.commonmark.org/0.29/#block-quotes Example 198
+        let html = MarkdownParser().html(from: """
+            > # Foo
+            > bar
+            > baz
+            """)
+        XCTAssertEqual(html, "<blockquote><h1>Foo</h1><p>bar baz</p></blockquote>")
+    }
+
+    func testBlankLineInBlockquoteSeparates() {
+        // https://spec.commonmark.org/0.29/#block-quotes Example 212
+        // According to the CommonMark spec, this should produce two blockquote elements.
+        let html = MarkdownParser().html(from: """
+            > foo
+
+            > bar
+            """)
+        XCTAssertEqual(html, "<blockquote><p>foo</p></blockquote><blockquote><p>bar</p></blockquote>")
+    }
+
     func testMultiLineBlockquote() {
+        // https://spec.commonmark.org/0.29/#block-quotes Example 213
+        // According to the CommonMark spec, this should produce one blockquote element
+        // with one paragraph.
         let html = MarkdownParser().html(from: """
         > One
         > Two
@@ -126,6 +165,53 @@ final class TextFormattingTests: XCTestCase {
         """)
 
         XCTAssertEqual(html, "<blockquote><p>One Two Three</p></blockquote>")
+    }
+
+    func testMultiParagraphBlockquote() {
+        // https://spec.commonmark.org/0.29/#block-quotes Example 214
+        // According to the CommonMark spec, this should produce one blockquote element
+        // containing two paragraphs.
+        let html = MarkdownParser().html(
+            from: """
+                > foo
+                >
+                > bar
+                """)
+
+        XCTAssertEqual(
+            html,
+            "<blockquote><p>foo</p><p>bar</p></blockquote>"
+        )
+    }
+
+    func testMultiLineMultiParagraphBlockquote() {
+        // Related to Example 214 above, but this test ensures that multi-line paragraphs
+        // are preserved. Text borrowed from the swift.org homepage.
+        let html = MarkdownParser().html(
+            from: """
+                > Welcome to the Swift community. Together we are working to build a
+                > programming language to empower everyone to turn their ideas into apps
+                > on any platform.
+                >
+                > Announced in 2014, the Swift programming language has quickly become
+                > one of the fastest growing languages in history. Swift makes it easy to
+                > write software that is incredibly fast and safe by design. Our goals
+                > for Swift are ambitious: we want to make programming simple things
+                > easy, and difficult things possible.
+                """)
+
+        XCTAssertEqual(
+            html, """
+            <blockquote><p>Welcome to the Swift community. Together we are working \
+            to build a programming language to empower everyone to turn their ideas \
+            into apps on any platform.</p><p>Announced in 2014, the Swift \
+            programming language has quickly become one of the fastest growing \
+            languages in history. Swift makes it easy to write software that is \
+            incredibly fast and safe by design. Our goals for Swift are ambitious: \
+            we want to make programming simple things easy, and difficult things \
+            possible.</p></blockquote>
+            """
+        )
     }
 
     func testEscapingSymbolsWithBackslash() {
@@ -176,6 +262,12 @@ extension TextFormattingTests {
             ("testEncodingSpecialCharacters", testEncodingSpecialCharacters),
             ("testSingleLineBlockquote", testSingleLineBlockquote),
             ("testMultiLineBlockquote", testMultiLineBlockquote),
+            ("testNestedBlockquote", testNestedBlockquote),
+            ("testH1InBlockquote", testH1InBlockquote),
+            ("testUnorderedListInBlockquote", testUnorderedListInBlockquote),
+            ("testBlankLineInBlockquoteSeparates", testBlankLineInBlockquoteSeparates),
+            ("testMultiParagraphBlockquote", testMultiParagraphBlockquote),
+            ("testMultiLineMultiParagraphBlockquote", testMultiLineMultiParagraphBlockquote),
             ("testEscapingSymbolsWithBackslash", testEscapingSymbolsWithBackslash),
             ("testDoubleSpacedHardLinebreak", testDoubleSpacedHardLinebreak),
             ("testEscapedHardLinebreak", testEscapedHardLinebreak)

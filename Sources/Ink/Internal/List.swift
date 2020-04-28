@@ -15,8 +15,13 @@ internal struct List: Fragment {
         try read(using: &reader, indentationLength: 0)
     }
 
+    static func read(using reader: inout Reader, ignorePrefix: String? = nil) throws -> List {
+        try read(using: &reader, indentationLength: 0, ignorePrefix: ignorePrefix)
+    }
+
     private static func read(using reader: inout Reader,
-                             indentationLength: Int) throws -> List {
+                             indentationLength: Int,
+                             ignorePrefix: String? = nil) throws -> List {
         let startIndex = reader.currentIndex
         let isOrdered = reader.currentCharacter.isNumber
 
@@ -44,6 +49,18 @@ internal struct List: Fragment {
         }
 
         while !reader.didReachEnd {
+
+            if let ignorePrefix = ignorePrefix {
+                if let lookAhead = reader.lookAheadAtCharacters(ignorePrefix.count) {
+                    if lookAhead == ignorePrefix {
+                        for _ in 0..<ignorePrefix.count {
+                            reader.advanceIndex()
+                        }
+                        reader.discardWhitespaces()
+                    }
+                }
+            }
+
             switch reader.currentCharacter {
             case \.isNewline:
                 return list
