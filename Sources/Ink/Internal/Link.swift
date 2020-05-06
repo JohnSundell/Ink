@@ -19,7 +19,15 @@ internal struct Link: Fragment {
 
         if reader.currentCharacter == "(" {
             reader.advanceIndex()
-            let url = try reader.read(until: ")")
+            reader.discardWhitespaces()
+            var url = try reader.read(until: ")")
+            var parenCount = url.filter { $0 == "(" }.count
+            while parenCount > 0 {
+                parenCount -= 1
+                let urlExtra = try reader.read(until: ")")
+                parenCount += urlExtra.filter { $0 == "(" }.count
+                url += ")" + urlExtra
+            }
             return Link(target: .url(url), text: text)
         } else {
             try reader.read("[")

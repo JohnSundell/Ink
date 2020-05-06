@@ -13,6 +13,11 @@ final class LinkTests: XCTestCase {
         XCTAssertEqual(html, #"<p><a href="url">Title</a></p>"#)
     }
 
+    func testLinkWithURLIncludingParentheses() {
+        let html = MarkdownParser().html(from: "[Title](https://en.wikipedia.org/wiki/String_(computer_science))")
+        XCTAssertEqual(html, #"<p><a href="https://en.wikipedia.org/wiki/String_(computer_science)">Title</a></p>"#)
+    }
+
     func testLinkWithReference() {
         let html = MarkdownParser().html(from: """
         [Title][url]
@@ -75,6 +80,7 @@ extension LinkTests {
     static var allTests: Linux.TestList<LinkTests> {
         return [
             ("testLinkWithURL", testLinkWithURL),
+            ("testLinkWithURLIncludingParentheses", testLinkWithURLIncludingParentheses),
             ("testLinkWithReference", testLinkWithReference),
             ("testCaseMismatchedLinkWithReference", testCaseMismatchedLinkWithReference),
             ("testNumericLinkWithReference", testNumericLinkWithReference),
