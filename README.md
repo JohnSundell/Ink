@@ -168,7 +168,7 @@ Ink supports the following Markdown features:
 - Horizontal lines can be placed using either three asterisks (`***`) or three dashes (`---`) on a new line.
 - HTML can be inlined both at the root level, and within text paragraphs.
 - Blockquotes can be created by placing a greater-than arrow at the start of a line, like this: `> This is a blockquote`.
-- Tables can be created using text formatted with underscores `_` (if you want headers) and pipes `|` like so:
+- Tables can be created using the following syntax (the line consisting of dashes (`-`) can be omitted to create a table without a header row):
 ```
 | Header | Header 2 |
 | ------ | -------- |
