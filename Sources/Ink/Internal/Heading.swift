@@ -14,7 +14,7 @@ internal struct Heading: Fragment {
         let level = reader.readCount(of: "#")
         try require(level > 0 && level < 7)
         try reader.readWhitespaces()
-        let text = FormattedText.read(using: &reader, terminator: "\n")
+        let text = FormattedText.read(using: &reader, terminators: ["\n"])
 
         return Heading(level: level, text: text)
     }

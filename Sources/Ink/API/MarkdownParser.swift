@@ -127,6 +127,7 @@ private extension MarkdownParser {
              "*" where character == nextCharacter:
             return HorizontalLine.self
         case "-", "*", "+", \.isNumber: return List.self
+        case "|": return Table.self
         default: return Paragraph.self
         }
     }

@@ -8,18 +8,18 @@ internal struct FormattedText: Readable, HTMLConvertible, PlainTextConvertible {
     private var components = [Component]()
 
     static func read(using reader: inout Reader) -> Self {
-        read(using: &reader, terminator: nil)
+        read(using: &reader, terminators: [])
     }
 
     static func readLine(using reader: inout Reader) -> Self {
-        let text = read(using: &reader, terminator: "\n")
+        let text = read(using: &reader, terminators: ["\n"])
         if !reader.didReachEnd { reader.advanceIndex() }
         return text
     }
 
     static func read(using reader: inout Reader,
-                     terminator: Character?) -> Self {
-        var parser = Parser(reader: reader, terminator: terminator)
+                     terminators: Set<Character>) -> Self {
+        var parser = Parser(reader: reader, terminators: terminators)
         parser.parse()
         reader = parser.reader
         return parser.text
@@ -79,15 +79,15 @@ private extension FormattedText {
 
     struct Parser {
         var reader: Reader
-        let terminator: Character?
+        let terminators: Set<Character>
         var text = FormattedText()
         var pendingTextRange: Range<String.Index>
         var activeStyles = Set<TextStyle>()
         var activeStyleMarkers = [TextStyleMarker]()
 
-        init(reader: Reader, terminator: Character?) {
+        init(reader: Reader, terminators: Set<Character>) {
             self.reader = reader
-            self.terminator = terminator
+            self.terminators = terminators
             self.pendingTextRange = reader.currentIndex..<reader.endIndex
         }
 
@@ -96,8 +96,8 @@ private extension FormattedText {
 
             while !reader.didReachEnd {
                 do {
-                    if let terminator = terminator, reader.previousCharacter != "\\" {
-                        guard reader.currentCharacter != terminator else {
+                    if !terminators.isEmpty, reader.previousCharacter != "\\" {
+                        guard !terminators.contains(reader.currentCharacter) else {
                             break
                         }
                     }
