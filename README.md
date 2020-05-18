@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-    <img src="https://img.shields.io/badge/Swift-5.1-orange.svg" />
+    <img src="https://img.shields.io/badge/Swift-5.2-orange.svg" />
     <a href="https://swift.org/package-manager">
         <img src="https://img.shields.io/badge/swiftpm-compatible-brightgreen.svg?style=flat" alt="Swift Package Manager" />
     </a>
@@ -86,6 +86,12 @@ Ink was designed to be as fast and efficient as possible, to enable hundreds of 
 
 1. Ink aims to get as close to `O(N)` complexity as possible, by minimizing the amount of times it needs to read the Markdown strings that are passed to it, and by optimizing its HTML rendering to be completely linear. While *true* `O(N)` complexity is impossible to achieve when it comes to Markdown parsing, because of its very flexible syntax, the goal is to come as close to that target as possible.
 2. A high degree of memory efficiency is achieved thanks to Swift’s powerful `String` API, which Ink makes full use of — by using string indexes, ranges and substrings, rather than performing unnecessary string copying between its various operations.
+
+## System requirements
+
+To be able to successfully use Ink, make sure that your system has Swift version 5.2 (or later) installed. If you’re using a Mac, also make sure that `xcode-select` is pointed at an Xcode installation that includes the required version of Swift, and that you’re running macOS Catalina (10.15) or later.
+
+Please note that Ink **does not** officially support any form of beta software, including beta versions of Xcode and macOS, or unreleased versions of Swift.
 
 ## Installation
 
