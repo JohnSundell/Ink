@@ -9,7 +9,7 @@ import Foundation
 struct Table: Fragment {
     var modifierTarget: Modifier.Target { .tables }
 
-    private var header: [Row]? // There can be multiple header rows in a table.
+    private var headers: [Row]? // There can be multiple header rows in a table.
     private var rows = [Row]()
     private var columnCount = 0
     private var columnAlignments = [ColumnAlignment]()
@@ -37,8 +37,8 @@ struct Table: Fragment {
         var html = ""
         let render: () -> String = { "<table>\(html)</table>" }
 
-        if let header = header {
-            for row in header {
+        if let headers = headers {
+            for row in headers {
                 let rowHTML = self.html(
                     forRow: row,
                     cellElementName: "th",
@@ -73,8 +73,8 @@ struct Table: Fragment {
     func plainText() -> String {
         var text = ""
         
-        if let header = header {
-            for row in header {
+        if let headers = headers {
+            for row in headers {
                 if !text.isEmpty { text.append("\n") }
                 text.append(plainText(forRow: row))
             }
@@ -163,7 +163,7 @@ private extension Table {
         
         var headers = [Row]()
         headers.append(contentsOf: rows[0..<alignmentRow])
-        header = headers
+        self.headers = headers
         columnAlignments = alignments
         rows.removeSubrange(0...alignmentRow)
     }
