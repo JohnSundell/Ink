@@ -53,15 +53,15 @@ internal struct List: Fragment {
                     continue
                 }
 
+                let fallbackIndex = reader.currentIndex
                 let itemIndentationLength = try reader.readWhitespaces().count
 
                 if itemIndentationLength < indentationLength {
+                    reader.moveToIndex(fallbackIndex)
                     return list
                 } else if itemIndentationLength == indentationLength {
                     continue
                 }
-
-                let fallbackIndex = reader.currentIndex
 
                 do {
                     let nestedList = try List.read(
@@ -72,6 +72,22 @@ internal struct List: Fragment {
                     var lastItem = list.items.removeLast()
                     lastItem.nestedList = nestedList
                     list.items.append(lastItem)
+
+                    if !reader.didReachEnd {
+                        switch (indentationLength, reader.currentCharacter) {
+                        case (0, _): continue
+                        case (_, \.isWhitespace):
+                            let fallbackIndex = reader.currentIndex
+                            let itemIndentationLength = try reader.readWhitespaces().count
+                            if itemIndentationLength == indentationLength {
+                                continue
+                            } else {
+                                reader.moveToIndex(fallbackIndex)
+                                return list
+                            }
+                        case (_, _): return list
+                        }
+                    }
                 } catch {
                     reader.moveToIndex(fallbackIndex)
                     try addTextToLastItem()
@@ -114,6 +130,14 @@ internal struct List: Fragment {
                 reader.advanceIndex()
                 try reader.readWhitespaces()
                 list.items.append(Item(text: .readLine(using: &reader)))
+
+                if !reader.didReachEnd {
+                    switch (indentationLength, reader.currentCharacter) {
+                    case (0, _): continue
+                    case (_, \.isWhitespace): continue
+                    case (_, _): return list
+                    }
+                }
             default:
                 try addTextToLastItem()
             }
