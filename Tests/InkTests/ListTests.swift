@@ -228,7 +228,7 @@ final class ListTests: XCTestCase {
         XCTAssertEqual(html, expectedComponents.joined())
     }
 
-    func testUnorderedListWithDoubleGrowNestedList() {
+    func testUnorderedListWithTripleGrowNestedList() {
         let html = MarkdownParser().html(from: """
         - A
             - A1
@@ -345,7 +345,7 @@ extension ListTests {
             ("testUnorderedListWithNestedListSnakeCase", testUnorderedListWithNestedListSnakeCase),
             ("testUnorderedListWithNestedListWithTwoLevelsGap", testUnorderedListWithNestedListWithTwoLevelsGap),
             ("testUnorderedListWithFourLevelsNestedList", testUnorderedListWithFourLevelsNestedList),
-            ("testUnorderedListWithDoubleGrowNestedList", testUnorderedListWithDoubleGrowNestedList),
+            ("testUnorderedListWithTripleGrowNestedList", testUnorderedListWithTripleGrowNestedList),
             ("testUnorderedListWithDoubleSymmetricGrowNestedList", testUnorderedListWithDoubleSymmetricGrowNestedList),
             ("testUnorderedListWithInvalidMarker", testUnorderedListWithInvalidMarker)
         ]
