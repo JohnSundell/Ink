@@ -236,9 +236,9 @@ final class ListTests: XCTestCase {
                     - A111
                 - A12
                     - A121
-            - B1
-                - B11
-                    - B111
+            - A2
+                - A21
+                    - A211
         """)
 
         let expectedComponents: [String] = [
@@ -259,17 +259,59 @@ final class ListTests: XCTestCase {
                                 "</li>",
                             "</ul>",
                         "</li>",
-                        "<li>B1",
+                        "<li>A2",
                             "<ul>",
-                                "<li>B11",
+                                "<li>A21",
                                     "<ul>",
-                                        "<li>B111</li>",
+                                        "<li>A211</li>",
                                     "</ul>",
                                 "</li>",
                             "</ul>",
                         "</li>",
                     "</ul>",
                 "</li>",
+            "</ul>"
+        ]
+
+        XCTAssertEqual(html, expectedComponents.joined())
+    }
+
+    func testUnorderedListWithDoubleSymmetricGrowNestedList() {
+        let html = MarkdownParser().html(from: """
+        - A
+            - A1
+                - A11
+                    - A111
+                - A12
+                    - A121
+                - A13
+            - A2
+        - B
+        """)
+
+        let expectedComponents: [String] = [
+            "<ul>",
+                "<li>A",
+                    "<ul>",
+                        "<li>A1",
+                            "<ul>",
+                                "<li>A11",
+                                    "<ul>",
+                                        "<li>A111</li>",
+                                    "</ul>",
+                                "</li>",
+                                "<li>A12",
+                                    "<ul>",
+                                        "<li>A121</li>",
+                                    "</ul>",
+                                "</li>",
+                                "<li>A13</li>",
+                            "</ul>",
+                        "</li>",
+                        "<li>A2</li>",
+                    "</ul>",
+                "</li>",
+                "<li>B</li>",
             "</ul>"
         ]
 
@@ -304,6 +346,7 @@ extension ListTests {
             ("testUnorderedListWithNestedListWithTwoLevelsGap", testUnorderedListWithNestedListWithTwoLevelsGap),
             ("testUnorderedListWithFourLevelsNestedList", testUnorderedListWithFourLevelsNestedList),
             ("testUnorderedListWithDoubleGrowNestedList", testUnorderedListWithDoubleGrowNestedList),
+            ("testUnorderedListWithDoubleSymmetricGrowNestedList", testUnorderedListWithDoubleSymmetricGrowNestedList),
             ("testUnorderedListWithInvalidMarker", testUnorderedListWithInvalidMarker)
         ]
     }
