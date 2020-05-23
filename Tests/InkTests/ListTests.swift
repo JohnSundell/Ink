@@ -124,6 +124,49 @@ final class ListTests: XCTestCase {
         XCTAssertEqual(html, expectedComponents.joined())
     }
 
+    func testUnorderedListWithFourLevelsNestedList() {
+        let html = MarkdownParser().html(from: """
+        - A
+            - A1
+                - A11
+                    - A111
+            - B1
+                - B11
+            - C1
+                - C11
+        """)
+
+        let expectedComponents: [String] = [
+            "<ul>",
+                "<li>A",
+                    "<ul>",
+                        "<li>A1",
+                            "<ul>",
+                                "<li>A11",
+                                    "<ul>",
+                                        "<li>A111</li>",
+                                    "</ul>",
+                                "</li>",
+                            "</ul>",
+                        "</li>",
+                        "<li>B1",
+                            "<ul>",
+                                "<li>B11</li>",
+                            "</ul>",
+                        "</li>",
+                        "<li>C1",
+                            "<ul>",
+                                "<li>C11</li>",
+                            "</ul>",
+                        "</li>",
+                    "</ul>",
+                "</li>",
+            "</ul>"
+        ]
+
+        XCTAssertEqual(html, expectedComponents.joined())
+    }
+
     func testUnorderedListWithInvalidMarker() {
         let html = MarkdownParser().html(from: """
         - One
@@ -148,6 +191,7 @@ extension ListTests {
             ("testMixedList", testMixedList),
             ("testUnorderedListWithMultiLineItem", testUnorderedListWithMultiLineItem),
             ("testUnorderedListWithNestedList", testUnorderedListWithNestedList),
+            ("testUnorderedListWithFourLevelsNestedList", testUnorderedListWithFourLevelsNestedList),
             ("testUnorderedListWithInvalidMarker", testUnorderedListWithInvalidMarker)
         ]
     }
