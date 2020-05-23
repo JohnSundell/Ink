@@ -228,6 +228,54 @@ final class ListTests: XCTestCase {
         XCTAssertEqual(html, expectedComponents.joined())
     }
 
+    func testUnorderedListWithDoubleGrowNestedList() {
+        let html = MarkdownParser().html(from: """
+        - A
+            - A1
+                - A11
+                    - A111
+                - A12
+                    - A121
+            - B1
+                - B11
+                    - B111
+        """)
+
+        let expectedComponents: [String] = [
+            "<ul>",
+                "<li>A",
+                    "<ul>",
+                        "<li>A1",
+                            "<ul>",
+                                "<li>A11",
+                                    "<ul>",
+                                        "<li>A111</li>",
+                                    "</ul>",
+                                "</li>",
+                                "<li>A12",
+                                    "<ul>",
+                                        "<li>A121</li>",
+                                    "</ul>",
+                                "</li>",
+                            "</ul>",
+                        "</li>",
+                        "<li>B1",
+                            "<ul>",
+                                "<li>B11",
+                                    "<ul>",
+                                        "<li>B111</li>",
+                                    "</ul>",
+                                "</li>",
+                            "</ul>",
+                        "</li>",
+                    "</ul>",
+                "</li>",
+            "</ul>"
+        ]
+
+        XCTAssertEqual(html, expectedComponents.joined())
+    }
+
     func testUnorderedListWithInvalidMarker() {
         let html = MarkdownParser().html(from: """
         - One
@@ -255,6 +303,7 @@ extension ListTests {
             ("testUnorderedListWithNestedListSnakeCase", testUnorderedListWithNestedListSnakeCase),
             ("testUnorderedListWithNestedListWithTwoLevelsGap", testUnorderedListWithNestedListWithTwoLevelsGap),
             ("testUnorderedListWithFourLevelsNestedList", testUnorderedListWithFourLevelsNestedList),
+            ("testUnorderedListWithDoubleGrowNestedList", testUnorderedListWithDoubleGrowNestedList),
             ("testUnorderedListWithInvalidMarker", testUnorderedListWithInvalidMarker)
         ]
     }
