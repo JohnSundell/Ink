@@ -98,6 +98,7 @@ internal struct HTML: GroupFragment {
         switch character {
         case "#": return Heading.self
         case "!": return Image.self
+        case "[": return Link.self
         case ">": return Blockquote.self
         case "`": return CodeBlock.self
         case "-" where character == nextCharacter,
