@@ -4,9 +4,8 @@
 *  MIT license, see LICENSE file for details
 */
 
-internal struct Declaration: Readable {
-    var name: String
-    var url: URL
+internal enum Declaration: Readable {
+    case url(name: String, url: URL)
 
     static func read(using reader: inout Reader) throws -> Self {
         try reader.read("[")
@@ -15,6 +14,6 @@ internal struct Declaration: Readable {
         try reader.readWhitespaces()
         let url = reader.readUntilEndOfLine()
 
-        return Declaration(name: name.lowercased(), url: url)
+        return .url(name: name.lowercased(), url: url)
     }
 }

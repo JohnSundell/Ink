@@ -60,7 +60,10 @@ public struct MarkdownParser {
 
                 guard reader.currentCharacter != "[" else {
                     let declaration = try Declaration.readOrRewind(using: &reader)
-                    urlsByName[declaration.name] = declaration.url
+                    switch declaration {
+                    case .url(let name, let url):
+                        urlsByName[name] = url
+                    }
                     continue
                 }
 
