@@ -43,6 +43,7 @@ public struct MarkdownParser {
         var reader = Reader(string: markdown)
         var fragments = [ParsedFragment]()
         var urlsByName = [String : URL]()
+        var footnotes = [Footnote]()
         var titleHeading: Heading?
         var metadata: Metadata?
 
@@ -63,6 +64,8 @@ public struct MarkdownParser {
                     switch declaration {
                     case .url(let name, let url):
                         urlsByName[name] = url
+                    case .footnote(let footnote):
+                        footnotes.append(footnote)
                     }
                     continue
                 }
@@ -85,6 +88,12 @@ public struct MarkdownParser {
         }
 
         let urls = NamedURLCollection(urlsByName: urlsByName)
+
+        if footnotes.count > 0 {
+            let footnoteList = FootnoteList(footnotes: footnotes)
+            let fragment = ParsedFragment(fragment: footnoteList, rawString: "")
+            fragments.append(fragment)
+        }
 
         let html = fragments.reduce(into: "") { result, wrapper in
             let html = wrapper.fragment.html(

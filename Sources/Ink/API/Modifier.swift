@@ -53,5 +53,7 @@ public extension Modifier {
         case lists
         case paragraphs
         case tables
+        case footnotes
+        case footnoteLists
     }
 }
