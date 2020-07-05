@@ -59,7 +59,7 @@ public struct MarkdownParser {
                 }
 
                 guard reader.currentCharacter != "[" else {
-                    let declaration = try URLDeclaration.readOrRewind(using: &reader)
+                    let declaration = try Declaration.readOrRewind(using: &reader)
                     urlsByName[declaration.name] = declaration.url
                     continue
                 }

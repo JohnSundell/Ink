@@ -4,7 +4,7 @@
 *  MIT license, see LICENSE file for details
 */
 
-internal struct URLDeclaration: Readable {
+internal struct Declaration: Readable {
     var name: String
     var url: URL
 
@@ -15,6 +15,6 @@ internal struct URLDeclaration: Readable {
         try reader.readWhitespaces()
         let url = reader.readUntilEndOfLine()
 
-        return URLDeclaration(name: name.lowercased(), url: url)
+        return Declaration(name: name.lowercased(), url: url)
     }
 }
