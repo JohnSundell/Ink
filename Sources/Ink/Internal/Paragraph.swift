@@ -4,7 +4,7 @@
 *  MIT license, see LICENSE file for details
 */
 
-internal struct Paragraph: Fragment {
+internal struct Paragraph: ReadableFragment {
     var modifierTarget: Modifier.Target { .paragraphs }
 
     private var text: FormattedText

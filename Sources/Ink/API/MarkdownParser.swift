@@ -107,7 +107,7 @@ private extension MarkdownParser {
         var rawString: Substring
     }
 
-    func makeFragment(using closure: (inout Reader) throws -> Fragment,
+    func makeFragment(using closure: (inout Reader) throws -> ReadableFragment,
                       reader: inout Reader) rethrows -> ParsedFragment {
         let startIndex = reader.currentIndex
         let fragment = try closure(&reader)
@@ -116,7 +116,7 @@ private extension MarkdownParser {
     }
 
     func fragmentType(for character: Character,
-                      nextCharacter: Character?) -> Fragment.Type {
+                      nextCharacter: Character?) -> ReadableFragment.Type {
         switch character {
         case "#": return Heading.self
         case "!": return Image.self

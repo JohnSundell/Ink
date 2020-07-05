@@ -328,7 +328,7 @@ private extension FormattedText {
             pendingTextRange = reader.currentIndex..<reader.endIndex
         }
 
-        private func nextFragmentType() -> Fragment.Type? {
+        private func nextFragmentType() -> ReadableFragment.Type? {
             switch reader.currentCharacter {
             case "`": return InlineCode.self
             case "[": return Link.self

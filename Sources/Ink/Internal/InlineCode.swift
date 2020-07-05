@@ -4,7 +4,7 @@
 *  MIT license, see LICENSE file for details
 */
 
-struct InlineCode: Fragment {
+struct InlineCode: ReadableFragment {
     var modifierTarget: Modifier.Target { .inlineCode }
 
     private var code: String

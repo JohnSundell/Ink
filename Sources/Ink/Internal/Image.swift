@@ -4,7 +4,7 @@
 *  MIT license, see LICENSE file for details
 */
 
-internal struct Image: Fragment {
+internal struct Image: ReadableFragment {
     var modifierTarget: Modifier.Target { .images }
 
     private var link: Link

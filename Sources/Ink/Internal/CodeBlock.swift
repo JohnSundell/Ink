@@ -4,7 +4,7 @@
 *  MIT license, see LICENSE file for details
 */
 
-internal struct CodeBlock: Fragment {
+internal struct CodeBlock: ReadableFragment {
     var modifierTarget: Modifier.Target { .codeBlocks }
 
     private static let marker: Character = "`"

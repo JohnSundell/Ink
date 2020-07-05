@@ -4,7 +4,7 @@
 *  MIT license, see LICENSE file for details
 */
 
-internal struct Heading: Fragment {
+internal struct Heading: ReadableFragment {
     var modifierTarget: Modifier.Target { .headings }
     var level: Int
 

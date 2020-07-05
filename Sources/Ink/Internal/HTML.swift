@@ -4,7 +4,7 @@
 *  MIT license, see LICENSE file for details
 */
 
-internal struct HTML: Fragment {
+internal struct HTML: ReadableFragment {
     var modifierTarget: Modifier.Target { .html }
 
     private var string: Substring

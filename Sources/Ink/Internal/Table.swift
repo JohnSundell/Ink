@@ -6,7 +6,7 @@
 
 import Foundation
 
-struct Table: Fragment {
+struct Table: ReadableFragment {
     var modifierTarget: Modifier.Target { .tables }
 
     private var header: Row?

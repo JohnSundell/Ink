@@ -4,7 +4,7 @@
 *  MIT license, see LICENSE file for details
 */
 
-internal struct Blockquote: Fragment {
+internal struct Blockquote: ReadableFragment {
     var modifierTarget: Modifier.Target { .blockquotes }
 
     private var text: FormattedText

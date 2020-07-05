@@ -4,7 +4,7 @@
 *  MIT license, see LICENSE file for details
 */
 
-internal struct List: Fragment {
+internal struct List: ReadableFragment {
     var modifierTarget: Modifier.Target { .lists }
 
     private var listMarker: Character

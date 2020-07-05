@@ -4,7 +4,7 @@
 *  MIT license, see LICENSE file for details
 */
 
-internal struct HorizontalLine: Fragment {
+internal struct HorizontalLine: ReadableFragment {
     var modifierTarget: Modifier.Target { .horizontalLines }
 
     static func read(using reader: inout Reader) throws -> HorizontalLine {
