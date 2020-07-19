@@ -9,11 +9,13 @@ internal struct Blockquote: ReadableFragment {
 
     private var text: FormattedText
 
-    static func read(using reader: inout Reader) throws -> Blockquote {
+    static func read(using reader: inout Reader,
+                     references: inout NamedReferenceCollection) throws -> Blockquote {
         try reader.read(">")
         try reader.readWhitespaces()
 
-        var text = FormattedText.readLine(using: &reader)
+        var text = FormattedText.readLine(using: &reader,
+                                          references: &references)
 
         while !reader.didReachEnd {
             switch reader.currentCharacter {
@@ -25,15 +27,16 @@ internal struct Blockquote: ReadableFragment {
                 break
             }
 
-            text.append(FormattedText.readLine(using: &reader))
+            text.append(FormattedText.readLine(using: &reader,
+                                               references: &references))
         }
 
         return Blockquote(text: text)
     }
 
-    func html(usingURLs urls: NamedURLCollection,
+    func html(usingReferences references: NamedReferenceCollection,
               modifiers: ModifierCollection) -> String {
-        let body = text.html(usingURLs: urls, modifiers: modifiers)
+        let body = text.html(usingReferences: references, modifiers: modifiers)
         return "<blockquote><p>\(body)</p></blockquote>"
     }
 

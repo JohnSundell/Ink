@@ -7,7 +7,8 @@
 internal struct Metadata: Readable {
     var values = [String : String]()
 
-    static func read(using reader: inout Reader) throws -> Metadata {
+    static func read(using reader: inout Reader,
+                     references: inout NamedReferenceCollection) throws -> Metadata {
         try require(reader.readCount(of: "-") == 3)
         try reader.read("\n")
 

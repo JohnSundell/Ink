@@ -11,11 +11,15 @@ internal struct List: ReadableFragment {
     private var kind: Kind
     private var items = [Item]()
 
-    static func read(using reader: inout Reader) throws -> List {
-        try read(using: &reader, indentationLength: 0)
+    static func read(using reader: inout Reader,
+                     references: inout NamedReferenceCollection) throws -> List {
+        try read(using: &reader,
+                 references: &references,
+                 indentationLength: 0)
     }
 
     private static func read(using reader: inout Reader,
+                             references: inout NamedReferenceCollection,
                              indentationLength: Int) throws -> List {
         let startIndex = reader.currentIndex
         let isOrdered = reader.currentCharacter.isNumber
@@ -37,7 +41,8 @@ internal struct List: ReadableFragment {
 
         func addTextToLastItem() throws {
             try require(!list.items.isEmpty)
-            let text = FormattedText.readLine(using: &reader)
+            let text = FormattedText.readLine(using: &reader,
+                                              references: &references)
             var lastItem = list.items.removeLast()
             lastItem.text.append(text, separator: " ")
             list.items.append(lastItem)
@@ -65,8 +70,9 @@ internal struct List: ReadableFragment {
 
                 do {
                     let nestedList = try List.read(
-                        using: &reader, indentationLength:
-                        itemIndentationLength
+                        using: &reader,
+                        references: &references,
+                        indentationLength: itemIndentationLength
                     )
 
                     var lastItem = list.items.removeLast()
@@ -95,7 +101,8 @@ internal struct List: ReadableFragment {
 
                     try reader.readWhitespaces()
 
-                    list.items.append(Item(text: .readLine(using: &reader)))
+                    list.items.append(Item(text: .readLine(using: &reader,
+                                                           references: &references)))
                 } catch {
                     reader.moveToIndex(startIndex)
                     try addTextToLastItem()
@@ -113,7 +120,8 @@ internal struct List: ReadableFragment {
 
                 reader.advanceIndex()
                 try reader.readWhitespaces()
-                list.items.append(Item(text: .readLine(using: &reader)))
+                list.items.append(Item(text: .readLine(using: &reader,
+                                                       references: &references)))
             default:
                 try addTextToLastItem()
             }
@@ -122,7 +130,7 @@ internal struct List: ReadableFragment {
         return list
     }
 
-    func html(usingURLs urls: NamedURLCollection,
+    func html(usingReferences references: NamedReferenceCollection,
               modifiers: ModifierCollection) -> String {
         let tagName: String
         let startAttribute: String
@@ -142,7 +150,7 @@ internal struct List: ReadableFragment {
         }
 
         let body = items.reduce(into: "") { html, item in
-            html.append(item.html(usingURLs: urls, modifiers: modifiers))
+            html.append(item.html(usingReferences: references, modifiers: modifiers))
         }
 
         return "<\(tagName)\(startAttribute)>\(body)</\(tagName)>"
@@ -168,10 +176,10 @@ private extension List {
         var text: FormattedText
         var nestedList: List? = nil
 
-        func html(usingURLs urls: NamedURLCollection,
+        func html(usingReferences references: NamedReferenceCollection,
                   modifiers: ModifierCollection) -> String {
-            let textHTML = text.html(usingURLs: urls, modifiers: modifiers)
-            let listHTML = nestedList?.html(usingURLs: urls, modifiers: modifiers)
+            let textHTML = text.html(usingReferences: references, modifiers: modifiers)
+            let listHTML = nestedList?.html(usingReferences: references, modifiers: modifiers)
             return "<li>\(textHTML)\(listHTML ?? "")</li>"
         }
     }

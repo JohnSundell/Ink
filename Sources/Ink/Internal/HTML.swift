@@ -9,7 +9,8 @@ internal struct HTML: ReadableFragment {
 
     private var string: Substring
 
-    static func read(using reader: inout Reader) throws -> HTML {
+    static func read(using reader: inout Reader,
+                     references: inout NamedReferenceCollection) throws -> HTML {
         let startIndex = reader.currentIndex
         let rootElement = try reader.readHTMLElement()
 
@@ -51,7 +52,7 @@ internal struct HTML: ReadableFragment {
         return HTML(string: html)
     }
 
-    func html(usingURLs urls: NamedURLCollection,
+    func html(usingReferences references: NamedReferenceCollection,
               modifiers: ModifierCollection) -> String {
         String(string)
     }

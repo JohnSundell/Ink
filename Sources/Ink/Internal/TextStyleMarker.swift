@@ -13,13 +13,16 @@ internal final class TextStyleMarker: Readable, HTMLConvertible {
     var prefix: Character?
     var suffix: Character?
 
-    private init(style: TextStyle, rawMarkers: String, characterRange: Range<String.Index>) {
+    private init(style: TextStyle,
+                 rawMarkers: String,
+                 characterRange: Range<String.Index>) {
         self.style = style
         self.rawMarkers = rawMarkers
         self.characterRange = characterRange
     }
 
-    static func read(using reader: inout Reader) throws -> Self {
+    static func read(using reader: inout Reader,
+                     references: inout NamedReferenceCollection) throws -> Self {
         let startIndex = reader.currentIndex
 
         if reader.currentCharacter.isAny(of: .boldItalicStyleMarkers) {
@@ -55,7 +58,7 @@ internal final class TextStyleMarker: Readable, HTMLConvertible {
         )
     }
 
-    func html(usingURLs urls: NamedURLCollection,
+    func html(usingReferences references: NamedReferenceCollection,
               modifiers: ModifierCollection) -> String {
         guard isValid else { return rawMarkers }
 

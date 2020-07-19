@@ -5,15 +5,16 @@
 */
 
 internal protocol HTMLConvertible {
-    func html(usingURLs urls: NamedURLCollection,
+    func html(usingReferences references: NamedReferenceCollection,
               modifiers: ModifierCollection) -> String
 }
 
 extension HTMLConvertible where Self: Modifiable {
-    func html(usingURLs urls: NamedURLCollection,
+    func html(usingReferences references: NamedReferenceCollection,
               rawString: Substring,
               applyingModifiers modifiers: ModifierCollection) -> String {
-        var html = self.html(usingURLs: urls, modifiers: modifiers)
+        var html = self.html(usingReferences: references,
+                             modifiers: modifiers)
 
         modifiers.applyModifiers(for: modifierTarget) { modifier in
             html = modifier.closure((html, rawString))

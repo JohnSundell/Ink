@@ -14,7 +14,8 @@ struct Table: ReadableFragment {
     private var columnCount = 0
     private var columnAlignments = [ColumnAlignment]()
 
-    static func read(using reader: inout Reader) throws -> Table {
+    static func read(using reader: inout Reader,
+                     references: inout NamedReferenceCollection) throws -> Table {
         var table = Table()
 
         while !reader.didReachEnd, !reader.currentCharacter.isNewline {
@@ -22,7 +23,7 @@ struct Table: ReadableFragment {
                 break
             }
 
-            let row = try reader.readTableRow()
+            let row = try reader.readTableRow(references: &references)
             table.rows.append(row)
             table.columnCount = max(table.columnCount, row.count)
         }
@@ -32,7 +33,7 @@ struct Table: ReadableFragment {
         return table
     }
 
-    func html(usingURLs urls: NamedURLCollection,
+    func html(usingReferences references: NamedReferenceCollection,
               modifiers: ModifierCollection) -> String {
         var html = ""
         let render: () -> String = { "<table>\(html)</table>" }
@@ -41,7 +42,7 @@ struct Table: ReadableFragment {
             let rowHTML = self.html(
                 forRow: header,
                 cellElementName: "th",
-                urls: urls,
+                references: references,
                 modifiers: modifiers
             )
 
@@ -58,7 +59,7 @@ struct Table: ReadableFragment {
             let rowHTML = self.html(
                 forRow: row,
                 cellElementName: "td",
-                urls: urls,
+                references: references,
                 modifiers: modifiers
             )
 
@@ -145,13 +146,13 @@ private extension Table {
 
     func html(forRow row: Row,
               cellElementName: String,
-              urls: NamedURLCollection,
+              references: NamedReferenceCollection,
               modifiers: ModifierCollection) -> String {
         var html = "<tr>"
 
         for index in 0..<columnCount {
             let cell = index < row.count ? row[index] : nil
-            let contents = cell?.html(usingURLs: urls, modifiers: modifiers)
+            let contents = cell?.html(usingReferences: references, modifiers: modifiers)
 
             html.append(htmlForCell(
                 at: index,
@@ -190,13 +191,14 @@ private extension Table {
 }
 
 private extension Reader {
-    mutating func readTableRow() throws -> Table.Row {
+    mutating func readTableRow(references: inout NamedReferenceCollection) throws -> Table.Row {
         try readTableDelimiter()
         var row = Table.Row()
 
         while !didReachEnd {
             let cell = FormattedText.read(
                 using: &self,
+                references: &references,
                 terminators: Table.delimiters
             )
 

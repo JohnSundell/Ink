@@ -10,19 +10,23 @@ internal struct Heading: ReadableFragment {
 
     private var text: FormattedText
 
-    static func read(using reader: inout Reader) throws -> Heading {
+    static func read(using reader: inout Reader,
+                     references: inout NamedReferenceCollection) throws -> Heading {
         let level = reader.readCount(of: "#")
         try require(level > 0 && level < 7)
         try reader.readWhitespaces()
-        let text = FormattedText.read(using: &reader, terminators: ["\n"])
+        let text = FormattedText.read(using: &reader,
+                                      references: &references,
+                                      terminators: ["\n"])
 
-        return Heading(level: level, text: text)
+        return Heading(level: level,
+                       text: text)
     }
 
-    func html(usingURLs urls: NamedURLCollection,
+    func html(usingReferences references: NamedReferenceCollection,
               modifiers: ModifierCollection) -> String {
         let body = stripTrailingMarkers(
-            from: text.html(usingURLs: urls, modifiers: modifiers)
+            from: text.html(usingReferences: references, modifiers: modifiers)
         )
 
         let tagName = "h\(level)"

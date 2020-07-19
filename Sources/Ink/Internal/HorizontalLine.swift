@@ -7,7 +7,8 @@
 internal struct HorizontalLine: ReadableFragment {
     var modifierTarget: Modifier.Target { .horizontalLines }
 
-    static func read(using reader: inout Reader) throws -> HorizontalLine {
+    static func read(using reader: inout Reader,
+                     references: inout NamedReferenceCollection) throws -> HorizontalLine {
         guard reader.currentCharacter.isAny(of: ["-", "*"]) else {
             throw Reader.Error()
         }
@@ -17,7 +18,7 @@ internal struct HorizontalLine: ReadableFragment {
         return HorizontalLine()
     }
 
-    func html(usingURLs urls: NamedURLCollection,
+    func html(usingReferences references: NamedReferenceCollection,
               modifiers: ModifierCollection) -> String {
         "<hr>"
     }

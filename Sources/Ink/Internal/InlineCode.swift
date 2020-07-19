@@ -9,7 +9,8 @@ struct InlineCode: ReadableFragment {
 
     private var code: String
 
-    static func read(using reader: inout Reader) throws -> InlineCode {
+    static func read(using reader: inout Reader,
+                     references: inout NamedReferenceCollection) throws -> InlineCode {
         try reader.read("`")
         var code = ""
 
@@ -34,7 +35,7 @@ struct InlineCode: ReadableFragment {
         throw Reader.Error()
     }
 
-    func html(usingURLs urls: NamedURLCollection,
+    func html(usingReferences references: NamedReferenceCollection,
               modifiers: ModifierCollection) -> String {
         return "<code>\(code)</code>"
     }

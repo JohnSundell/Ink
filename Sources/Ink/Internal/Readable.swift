@@ -5,11 +5,13 @@
 */
 
 internal protocol Readable {
-    static func read(using reader: inout Reader) throws -> Self
+    static func read(using reader: inout Reader,
+                     references: inout NamedReferenceCollection) throws -> Self
 }
 
 extension Readable {
-    static func readOrRewind(using reader: inout Reader) throws -> Self {
+    static func readOrRewind(using reader: inout Reader,
+                             references: inout NamedReferenceCollection) throws -> Self {
         guard reader.previousCharacter != "\\" else {
             throw Reader.Error()
         }
@@ -17,7 +19,8 @@ extension Readable {
         let previousReader = reader
 
         do {
-            return try read(using: &reader)
+            return try read(using: &reader,
+                            references: &references)
         } catch {
             reader = previousReader
             throw error

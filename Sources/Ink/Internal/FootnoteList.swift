@@ -7,21 +7,32 @@
 internal struct FootnoteList: Fragment {
     var modifierTarget: Modifier.Target { .footnoteLists }
 
-    private var footnotes = [Footnote]()
+    private let footnotes: [Footnote]
+    private let footnoteDeclarations: [FootnoteDeclaration]
 
-    init(footnotes: [Footnote]) {
+    init(footnotes: [Footnote],
+         footnoteDeclarations: [FootnoteDeclaration]) {
         self.footnotes = footnotes
+        self.footnoteDeclarations = footnoteDeclarations
     }
 
-    func html(usingURLs urls: NamedURLCollection,
+    func html(usingReferences references: NamedReferenceCollection,
               modifiers: ModifierCollection) -> String {
+        guard footnotes.count > 0 else { return "" }
+        let footnoteDeclarations = self.footnoteDeclarations.reduce(into: [String:FootnoteDeclaration]()) {
+            $0[$1.name] = $1
+        }
         let body = footnotes.reduce(into: "") { html, footnote in
-            html.append(footnote.html(usingURLs: urls, modifiers: modifiers))
+            let name = footnote.lowercased()
+            let footnoteDeclaration = footnoteDeclarations[name] ?? FootnoteDeclaration(name: name,
+                                                                                        contents: FormattedText.text(name[...]))
+            html.append(footnoteDeclaration.html(usingReferences: references,
+                                                 modifiers: modifiers))
         }
         return "<ol>\(body)</ol>"
     }
 
     func plainText() -> String {
-        footnotes.map(\.contents).joined(separator: "\n")
+        footnotes.map(\.name).joined(separator: "\n")
     }
 }

@@ -9,15 +9,17 @@ internal struct Image: ReadableFragment {
 
     private var link: Link
 
-    static func read(using reader: inout Reader) throws -> Image {
+    static func read(using reader: inout Reader,
+                     references: inout NamedReferenceCollection) throws -> Image {
         try reader.read("!")
-        return try Image(link: .read(using: &reader))
+        return try Image(link: .read(using: &reader,
+                                     references: &references))
     }
 
-    func html(usingURLs urls: NamedURLCollection,
+    func html(usingReferences references: NamedReferenceCollection,
               modifiers: ModifierCollection) -> String {
-        let url = link.target.url(from: urls)
-        var alt = link.text.html(usingURLs: urls, modifiers: modifiers)
+        let url = link.target.url(from: references)
+        var alt = link.text.html(usingReferences: references, modifiers: modifiers)
 
         if !alt.isEmpty {
             alt = " alt=\"\(alt)\""

@@ -69,18 +69,6 @@ final class LinkTests: XCTestCase {
         let html = MarkdownParser().html(from: "[\\[Hello\\]](hello)")
         XCTAssertEqual(html, #"<p><a href="hello">[Hello]</a></p>"#)
     }
-
-    func testFootnote() {
-        let html = MarkdownParser().html(from: """
-                                               an interesting point[^1]
-                                               
-                                               [^1]: an interesting aside
-                                               """)
-
-        XCTAssertEqual(html, """
-                             <p>an interesting point<sup id="fnref:1"><a href="#fn:1">1</a></sup></p><ol><li id="fn:1"><p>an interesting aside<a href="#fnref:1">↩</a></p></li></ol>
-                             """)
-    }
 }
 
 extension LinkTests {
@@ -95,7 +83,6 @@ extension LinkTests {
             ("testLinkWithUnderscores", testLinkWithUnderscores),
             ("testUnterminatedLink", testUnterminatedLink),
             ("testLinkWithEscapedSquareBrackets", testLinkWithEscapedSquareBrackets),
-            ("testFootnote", testFootnote)
         ]
     }
 }

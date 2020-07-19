@@ -12,7 +12,8 @@ internal struct CodeBlock: ReadableFragment {
     private var language: Substring
     private var code: String
 
-    static func read(using reader: inout Reader) throws -> CodeBlock {
+    static func read(using reader: inout Reader,
+                     references: inout NamedReferenceCollection) throws -> CodeBlock {
         let startingMarkerCount = reader.readCount(of: marker)
         try require(startingMarkerCount >= 3)
         reader.discardWhitespaces()
@@ -47,7 +48,7 @@ internal struct CodeBlock: ReadableFragment {
         return CodeBlock(language: language, code: code)
     }
 
-    func html(usingURLs urls: NamedURLCollection,
+    func html(usingReferences references: NamedReferenceCollection,
               modifiers: ModifierCollection) -> String {
         let languageClass = language.isEmpty ? "" : " class=\"language-\(language)\""
         return "<pre><code\(languageClass)>\(code)</code></pre>"

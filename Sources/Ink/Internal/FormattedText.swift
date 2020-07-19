@@ -7,25 +7,37 @@
 internal struct FormattedText: Readable, HTMLConvertible, PlainTextConvertible {
     private var components = [Component]()
 
-    static func read(using reader: inout Reader) -> Self {
-        read(using: &reader, terminators: [])
+    static func read(using reader: inout Reader,
+                     references: inout NamedReferenceCollection) -> Self {
+        read(using: &reader,
+             references: &references,
+             terminators: [])
     }
 
-    static func readLine(using reader: inout Reader) -> Self {
-        let text = read(using: &reader, terminators: ["\n"])
+    static func readLine(using reader: inout Reader,
+                         references: inout NamedReferenceCollection) -> Self {
+        let text = read(using: &reader,
+                        references: &references,
+                        terminators: ["\n"])
         if !reader.didReachEnd { reader.advanceIndex() }
         return text
     }
 
     static func read(using reader: inout Reader,
+                     references: inout NamedReferenceCollection,
                      terminators: Set<Character>) -> Self {
-        var parser = Parser(reader: reader, terminators: terminators)
-        parser.parse()
+        var parser = Parser(reader: reader,
+                            terminators: terminators)
+        parser.parse(references: &references)
         reader = parser.reader
         return parser.text
     }
 
-    func html(usingURLs urls: NamedURLCollection,
+    static func text(_ text: Substring) -> Self {
+        FormattedText(components: [.text(text)])
+    }
+
+    func html(usingReferences references: NamedReferenceCollection,
               modifiers: ModifierCollection) -> String {
         components.reduce(into: "") { string, component in
             switch component {
@@ -34,11 +46,11 @@ internal struct FormattedText: Readable, HTMLConvertible, PlainTextConvertible {
             case .text(let text):
                 string.append(String(text))
             case .styleMarker(let marker):
-                let html = marker.html(usingURLs: urls, modifiers: modifiers)
+                let html = marker.html(usingReferences: references, modifiers: modifiers)
                 string.append(html)
             case .fragment(let fragment, let rawString):
                 let html = fragment.html(
-                    usingURLs: urls,
+                    usingReferences: references,
                     rawString: rawString,
                     applyingModifiers: modifiers
                 )
@@ -63,7 +75,8 @@ internal struct FormattedText: Readable, HTMLConvertible, PlainTextConvertible {
         }
     }
 
-    mutating func append(_ text: FormattedText, separator: Substring = "") {
+    mutating func append(_ text: FormattedText,
+                         separator: Substring = "") {
         let separator = separator.isEmpty ? [] : [Component.text(separator)]
         components += separator + text.components
     }
@@ -85,13 +98,14 @@ private extension FormattedText {
         var activeStyles = Set<TextStyle>()
         var activeStyleMarkers = [TextStyleMarker]()
 
-        init(reader: Reader, terminators: Set<Character>) {
+        init(reader: Reader,
+             terminators: Set<Character>) {
             self.reader = reader
             self.terminators = terminators
             self.pendingTextRange = reader.currentIndex..<reader.endIndex
         }
 
-        mutating func parse() {
+        mutating func parse(references: inout NamedReferenceCollection) {
             var sequentialSpaceCount = 0
 
             while !reader.didReachEnd {
@@ -147,7 +161,7 @@ private extension FormattedText {
 
                     guard !reader.currentCharacter.isAny(of: .allStyleMarkers) else {
                         addPendingTextIfNeeded()
-                        try parseStyleMarker()
+                        try parseStyleMarker(references: &references)
                         continue
                     }
 
@@ -170,7 +184,11 @@ private extension FormattedText {
                     addPendingTextIfNeeded()
 
                     let startIndex = reader.currentIndex
-                    let fragment = try type.readOrRewind(using: &reader)
+                    let fragment = try type.readOrRewind(using: &reader,
+                                                         references: &references)
+                    if let footnote = fragment as? Footnote {
+                        references.append(footnote: footnote)
+                    }
                     let rawString = reader.characters(in: startIndex..<reader.currentIndex)
                     text.components.append(.fragment(fragment, rawString: rawString))
                     pendingTextRange = reader.currentIndex..<reader.endIndex
@@ -224,8 +242,9 @@ private extension FormattedText {
             }
         }
 
-        private mutating func parseStyleMarker() throws {
-            let marker = try TextStyleMarker.readOrRewind(using: &reader)
+        private mutating func parseStyleMarker(references: inout NamedReferenceCollection) throws {
+            let marker = try TextStyleMarker.readOrRewind(using: &reader,
+                                                          references: &references)
 
             if activeStyles.contains(marker.style) {
                 closeStyle(with: marker)
@@ -331,7 +350,13 @@ private extension FormattedText {
         private func nextFragmentType() -> ReadableFragment.Type? {
             switch reader.currentCharacter {
             case "`": return InlineCode.self
-            case "[": return Link.self
+            case "[":
+                switch reader.nextCharacter {
+                case "^":
+                    return Footnote.self
+                default:
+                    return Link.self
+                }
             case "!": return Image.self
             case "<": return HTML.self
             default: return nil
