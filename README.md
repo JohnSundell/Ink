@@ -181,6 +181,7 @@ Ink supports the following Markdown features:
 | Row 1  | Cell 1   |
 | Row 2  | Cell 2   |
 ```
+- Inline equations can be created by enclosing the equation with dollar signs, like `$f(\mathbf{r},t)$`. Display mode equations can be created by enclosing the equation with two dollar signs, like `$$\braket{\psi\vert\psi}$$`. Note that Ink does not render math equations. You need another library for that, like [KaTeX](https://katex.org) or [MathJax](https://www.mathjax.org).
 
 Please note that, being a very young implementation, Ink does not fully support all Markdown specs, such as [CommonMark](https://commonmark.org). Ink definitely aims to cover as much ground as possible, and to include support for the most commonly used Markdown features, but if complete CommonMark compatibility is what you’re looking for — then you might want to check out tools like [CMark](https://github.com/commonmark/cmark).
 

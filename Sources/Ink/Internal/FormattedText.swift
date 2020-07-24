@@ -334,6 +334,7 @@ private extension FormattedText {
             case "[": return Link.self
             case "!": return Image.self
             case "<": return HTML.self
+            case "$": return Math.self
             default: return nil
             }
         }
