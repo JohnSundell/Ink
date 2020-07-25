@@ -67,7 +67,7 @@ final class LinkTests: XCTestCase {
     
     func testLinkWithEscapedSquareBrackets() {
         let html = MarkdownParser().html(from: "[\\[Hello\\]](hello)")
-        XCTAssertEqual(html, #"<p><a href="hello">[Hello]</a></p>"#)
+        XCTAssertEqual(html, #"<p><a href="hello"><span class="math display">Hello</span></a></p>"#)
     }
 }
 
