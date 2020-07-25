@@ -11,22 +11,34 @@ internal struct Math: Fragment {
     private var tex: String
     
     static func read(using reader: inout Reader) throws -> Math {
-        let startingDollarCount = reader.readCount(of: "$")
-        let displayMode = startingDollarCount > 1 ? true : false
-        
+        reader.advanceIndex()
+        let displayMode: Bool
+        let closingCharacter: Character
+        if reader.currentCharacter == "[" {
+            displayMode = true
+            closingCharacter = "]"
+        } else {
+            displayMode = false
+            closingCharacter = ")"
+        }
+        reader.advanceIndex()
         var tex = ""
         
         while !reader.didReachEnd {
             switch reader.currentCharacter {
             case \.isNewline :
                 throw Reader.Error()
-            case "$":
-                if displayMode {
-                    reader.advanceIndex(by: 2)
-                } else {
-                    reader.advanceIndex()
+            case "\\" :
+                guard let nextCharacter = reader.nextCharacter else {
+                    throw Reader.Error()
                 }
-                return Math(displayMode: displayMode, tex: tex)
+                
+                if nextCharacter == closingCharacter {
+                    reader.advanceIndex(by: 2)
+                    return Math(displayMode: displayMode, tex: tex)
+                }
+                
+                fallthrough
             default:
                 if let escaped = reader.currentCharacter.escaped {
                     tex.append(escaped)
