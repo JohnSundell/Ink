@@ -26,7 +26,7 @@ internal struct Link: Fragment {
         
         guard !reader.didReachEnd else { throw Reader.Error() }
         if double{
-            return Link(target: .url(URL(text.plainText())), text: text)
+            return Link(target: .url(URL("markdown://"+text.plainText())), text: text)
         }
         else if reader.currentCharacter == "(" {
             reader.advanceIndex()

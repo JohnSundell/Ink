@@ -19,7 +19,7 @@ extension Reader {
 
     var didReachEnd: Bool { currentIndex == endIndex }
     var previousCharacter: Character? { lookBehindAtPreviousCharacter() }
-    var currentCharacter: Character { string[currentIndex] }
+    var currentCharacter: Character { if currentIndex>=endIndex{return Character.init("ƒ")} else {return string[currentIndex]} }
     var nextCharacter: Character? { lookAheadAtNextCharacter() }
     var endIndex: String.Index { string.endIndex }
 
