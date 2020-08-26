@@ -8,6 +8,37 @@ import XCTest
 import Ink
 
 final class HTMLTests: XCTestCase {
+	
+	func testMissingTagHTMLParsing() {
+    let html = MarkdownParser().parse("""
+        <p align="center">
+            <img src="Logo.png" width="278" max-width="90%" alt=“Ink” />
+        </p>
+
+        <p align="center">
+            <img src="https://img.shields.io/badge/Swift-5.2-orange.svg" />
+            <a href="https://swift.org/package-manager">
+                <img src="https://img.shields.io/badge/swiftpm-compatible-brightgreen.svg?style=flat" alt="Swift Package Manager" />
+            </a>
+             <img src="https://img.shields.io/badge/platforms-mac+linux-brightgreen.svg?style=flat" alt="Mac + Linux" />
+            <a href="https://twitter.com/johnsundell">
+                <img src="https://img.shields.io/badge/twitter-@johnsundell-blue.svg?style=flat" alt="Twitter: @johnsundell" />
+            </a>
+        </p>
+
+
+        # Hellow
+        ## Hellowww
+        * a
+        * b
+        * c
+
+        <p
+    """)
+    
+    XCTAssertNotNil(html)
+  }
+
     func testTopLevelHTML() {
         let html = MarkdownParser().html(from: """
         Hello
