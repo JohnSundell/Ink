@@ -22,24 +22,33 @@ internal struct Math: Fragment {
             closingCharacter = ")"
         }
         reader.advanceIndex()
+        reader.discardWhitespacesAndNewlines()
+        
         var tex = ""
+        // TeX math mode does not care about the whitespace count/type.
+        var previousCharacterIsSpace = false
         
         while !reader.didReachEnd {
-            switch reader.currentCharacter {
-            case \.isNewline :
+            guard let nextCharacter = reader.nextCharacter else {
                 throw Reader.Error()
-            case "\\" :
-                guard let nextCharacter = reader.nextCharacter else {
-                    throw Reader.Error()
-                }
-                
+            }
+            
+            switch reader.currentCharacter {
+            case \.isWhitespace:
+                previousCharacterIsSpace = true
+                reader.discardWhitespacesAndNewlines()
+            case "\\":
                 if nextCharacter == closingCharacter {
                     reader.advanceIndex(by: 2)
                     return Math(displayMode: displayMode, tex: tex)
                 }
-                
                 fallthrough
             default:
+                if previousCharacterIsSpace {
+                    tex.append(" ")
+                    previousCharacterIsSpace = false
+                }
+                
                 if let escaped = reader.currentCharacter.escaped {
                     tex.append(escaped)
                 } else {
@@ -58,8 +67,13 @@ internal struct Math: Fragment {
     }
     
     func plainText() -> String {
-        tex
-        
+        let plainTex: String
+        if displayMode {
+            plainTex = "\\[\(tex)\\]"
+        } else {
+            plainTex = "\\(\(tex)\\)"
+        }
+        return plainTex
     }
 }
 
