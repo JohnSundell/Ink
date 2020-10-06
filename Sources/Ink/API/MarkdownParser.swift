@@ -67,7 +67,9 @@ public struct MarkdownParser {
                 let type = fragmentType(for: reader.currentCharacter,
                                         nextCharacter: reader.nextCharacter)
 
-                #if swift(>=5.3)
+                #if swift(>=5.4)
+                #warning("review compiler crash work-around below")
+                #elseif swift(>=5.3)
                 // inline function call to work around https://bugs.swift.org/browse/SR-13645
                 let fragment: ParsedFragment = try {
                     let startIndex = reader.currentIndex
