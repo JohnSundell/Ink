@@ -67,7 +67,19 @@ public struct MarkdownParser {
                 let type = fragmentType(for: reader.currentCharacter,
                                         nextCharacter: reader.nextCharacter)
 
+                #if swift(>=5.4)
+                #warning("review compiler crash work-around below")
+                #elseif swift(>=5.3) && os(Linux)
+                // inline function call to work around https://bugs.swift.org/browse/SR-13645
+                let fragment: ParsedFragment = try {
+                    let startIndex = reader.currentIndex
+                    let fragment = try type.readOrRewind(using: &reader)
+                    let rawString = reader.characters(in: startIndex..<reader.currentIndex)
+                    return ParsedFragment(fragment: fragment, rawString: rawString)
+                }()
+                #else
                 let fragment = try makeFragment(using: type.readOrRewind, reader: &reader)
+                #endif
                 fragments.append(fragment)
 
                 if titleHeading == nil, let heading = fragment.fragment as? Heading {
