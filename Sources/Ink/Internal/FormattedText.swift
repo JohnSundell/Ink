@@ -333,7 +333,7 @@ private extension FormattedText {
             case "`": return InlineCode.self
             case "[": return Link.self
             case "!": return Image.self
-            case "<": return HTML.self
+            case "<": return reader.safeMode ? SafedHTML.self : HTML.self
             default: return nil
             }
         }

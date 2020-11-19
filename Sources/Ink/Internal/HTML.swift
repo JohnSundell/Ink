@@ -63,6 +63,24 @@ internal struct HTML: Fragment {
     }
 }
 
+internal struct SafedHTML : Fragment {
+    private var element: Reader.HTMLElement
+    
+    static func read(using reader: inout Reader) throws -> SafedHTML {
+        return try SafedHTML( element: reader.readHTMLElement())
+    }
+    
+    var modifierTarget: Modifier.Target { .safedHtml }
+    
+    func html(usingURLs urls: NamedURLCollection, modifiers: ModifierCollection) -> String {
+        return "&lt;\(element.name)\(element.isSelfClosing ? "/":"")&gt;"
+    }
+    
+    func plainText() -> String {
+        return "<\(element.name)\(element.isSelfClosing ? "/":"")>"
+    }
+}
+
 private extension Reader {
     typealias HTMLElement = (name: Substring, isSelfClosing: Bool)
 

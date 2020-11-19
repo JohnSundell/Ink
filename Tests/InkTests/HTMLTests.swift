@@ -111,6 +111,17 @@ final class HTMLTests: XCTestCase {
 
         XCTAssertEqual(html, "<p>Hello &amp; welcome to &lt;Ink&gt;</p>")
     }
+    
+    func testHTMLSafeMode() {
+        let html = MarkdownParser(safeMode:true).html(from: "Hello<h2>World</h2>.<br/>Be safe.")
+        XCTAssertEqual(html, "<p>Hello&lt;h2&gt;World&lt;/h2&gt;.&lt;br/&gt;Be safe.</p>")
+    }
+
+    func testHTMLSafeModeFirst() {
+        let html = MarkdownParser(safeMode:true).html(from: "<h2>Hello</h2><br/>World.")
+        XCTAssertEqual(html, "&lt;h2&gt;<p>Hello&lt;/h2&gt;&lt;br/&gt;World.</p>")
+    }
+
 }
 
 extension HTMLTests {
@@ -127,7 +138,9 @@ extension HTMLTests {
             ("testInlineSelfClosingHTMLElement", testInlineSelfClosingHTMLElement),
             ("testTopLevelHTMLLineBreak", testTopLevelHTMLLineBreak),
             ("testHTMLComment", testHTMLComment),
-            ("testHTMLEntities", testHTMLEntities)
+            ("testHTMLEntities", testHTMLEntities),
+            ("testHTMLSafeMode", testHTMLSafeMode),
+            ("testHTMLSafeModeFirst", testHTMLSafeModeFirst)
         ]
     }
 }
