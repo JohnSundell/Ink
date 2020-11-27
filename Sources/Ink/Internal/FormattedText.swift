@@ -109,13 +109,13 @@ private extension FormattedText {
                             break
                         }
 
-                        guard reader.previousCharacter != "\\" && !(sequentialSpaceCount >= 2) else {
+                        guard reader.previousCharacter != "\\" && sequentialSpaceCount < 2 else {
                             text.components.append(.linebreak)
                             skipCharacter()
                             continue
                         }
 
-                        guard !nextCharacter.isAny(of: ["\n", "#", "<", "`"]) else {
+                        guard !nextCharacter.isAny(of: ["\n", "#", "<", "`", "-"]) else {
                             break
                         }
 
