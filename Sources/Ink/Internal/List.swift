@@ -12,7 +12,15 @@ internal struct List: Fragment {
     private var items = [Item]()
 
     static func read(using reader: inout Reader) throws -> List {
-        try read(using: &reader, indentationLength: 0)
+        // Calculate initial indentation
+        var indentationLength = 0
+        while reader.previousCharacter?.isSameLineWhitespace == true {
+            indentationLength += 1
+            reader.rewindIndex()
+        }
+        reader.advanceIndex(by: indentationLength)
+        
+        return try read(using: &reader, indentationLength: indentationLength)
     }
 
     private static func read(using reader: inout Reader,
