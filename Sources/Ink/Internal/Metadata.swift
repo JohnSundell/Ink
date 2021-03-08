@@ -48,7 +48,7 @@ internal struct Metadata: Readable {
 
         modifiers.applyModifiers(for: .metadataKeys) { modifier in
             for (key, value) in modified.values {
-                let newKey = modifier.closure((key, Substring(key)))
+                let newKey = modifier.closure((key, key, Substring(key)))
                 modified.values[key] = nil
                 modified.values[newKey] = value
             }
@@ -56,7 +56,7 @@ internal struct Metadata: Readable {
 
         modifiers.applyModifiers(for: .metadataValues) { modifier in
             modified.values = modified.values.mapValues { value in
-                modifier.closure((value, Substring(value)))
+                modifier.closure((value, value, Substring(value)))
             }
         }
 

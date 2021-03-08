@@ -18,7 +18,7 @@ public struct Modifier {
     /// contains the HTML that was generated for a fragment, and
     /// its raw Markdown representation. Note that for metadata
     /// targets, the two input arguments will be equivalent.
-    public typealias Input = (html: String, markdown: Substring)
+    public typealias Input = (html: String, plainText: String?, markdown: Substring)
     /// The type of closure that Modifiers are based on. Each
     /// modifier is given a set of input, and is expected to return
     /// an HTML string after performing its modifications.
