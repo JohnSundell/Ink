@@ -15,6 +15,8 @@ public struct Markdown {
     /// The HTML representation of the Markdown, ready to
     /// be rendered in a web browser.
     public var html: String
+    /// The Plain Text representation of the Markdown
+    public var plainText: String
     /// The inferred title of the document, from any top-level
     /// heading found when parsing. If the Markdown text contained
     /// two top-level headings, then this property will contain
@@ -32,9 +34,11 @@ public struct Markdown {
     private var titleStorage = TitleStorage()
 
     internal init(html: String,
+                  plainText: String,
                   titleHeading: Heading?,
                   metadata: [String : String]) {
         self.html = html
+        self.plainText = plainText
         self.titleHeading = titleHeading
         self.metadata = metadata
     }
