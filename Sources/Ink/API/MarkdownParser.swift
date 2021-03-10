@@ -111,7 +111,7 @@ public struct MarkdownParser {
 
         let plainText = fragments.reduce(into: "", { result, wrapper in
             let plainText = wrapper.fragment.plainText()
-            result.append(plainText)
+            result.append("\(plainText)\n")
         })
 
         return Markdown(

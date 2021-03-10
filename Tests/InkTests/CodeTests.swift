@@ -14,7 +14,7 @@ final class CodeTests: XCTestCase {
         let plainText = MarkdownParser().plainText(from: markdown)
 
         XCTAssertEqual(html, "<p>Hello <code>inline.code()</code></p>")
-        XCTAssertEqual(plainText, "Hello inline.code()")
+        XCTAssertEqual(plainText, "Hello inline.code()\n")
     }
 
     func testCodeBlockWithJustBackticks() {
