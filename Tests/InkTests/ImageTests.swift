@@ -27,6 +27,11 @@ final class ImageTests: XCTestCase {
         XCTAssertEqual(html, #"<img src="url" alt="Alt text"/>"#)
     }
 
+    func testImageWithURLAndAltTextAndTitle() {
+        let html = MarkdownParser().html(from: "![Alt text](url \"Swift by Sundell\")")
+        XCTAssertEqual(html, #"<img src="url" alt="Alt text" title="Swift by Sundell"/>"#)
+    }
+
     func testImageWithReferenceAndAltText() {
         let html = MarkdownParser().html(from: """
         ![Alt text][url]
@@ -34,6 +39,25 @@ final class ImageTests: XCTestCase {
         """)
 
         XCTAssertEqual(html, #"<img src="swiftbysundell.com" alt="Alt text"/>"#)
+    }
+
+    func testImageWithReferenceAndAltTextAndTitle() {
+        let html = MarkdownParser().html(from: """
+        ![Alt text][url]
+        [url]: swiftbysundell.com    'Swift by Sundell'
+        """)
+
+        XCTAssertEqual(html, #"<img src="swiftbysundell.com" alt="Alt text" title="Swift by Sundell"/>"#)
+    }
+
+    func testImageWithReferenceAndAltTextAndNewlineTitle() {
+        let html = MarkdownParser().html(from: """
+        ![Alt text][url]
+        [url]: swiftbysundell.com
+              (Swift by Sundell)
+        """)
+
+        XCTAssertEqual(html, #"<img src="swiftbysundell.com" alt="Alt text" title="Swift by Sundell"/>"#)
     }
 
     func testImageWithinParagraph() {
@@ -48,7 +72,10 @@ extension ImageTests {
             ("testImageWithURL", testImageWithURL),
             ("testImageWithReference", testImageWithReference),
             ("testImageWithURLAndAltText", testImageWithURLAndAltText),
+            ("testImageWithURLAndAltTextAndTitle", testImageWithURLAndAltTextAndTitle),
             ("testImageWithReferenceAndAltText", testImageWithReferenceAndAltText),
+            ("testImageWithReferenceAndAltTextAndTitle", testImageWithReferenceAndAltTextAndTitle),
+            ("testImageWithReferenceAndAltTextAndNewlineTitle", testImageWithReferenceAndAltTextAndNewlineTitle),
             ("testImageWithinParagraph", testImageWithinParagraph)
         ]
     }

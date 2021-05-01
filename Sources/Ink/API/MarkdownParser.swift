@@ -42,7 +42,7 @@ public struct MarkdownParser {
     public func parse(_ markdown: String) -> Markdown {
         var reader = Reader(string: markdown)
         var fragments = [ParsedFragment]()
-        var urlsByName = [String : URL]()
+        var urlsByName = [String : URLDeclaration]()
         var titleHeading: Heading?
         var metadata: Metadata?
 
@@ -60,7 +60,7 @@ public struct MarkdownParser {
 
                 guard reader.currentCharacter != "[" else {
                     let declaration = try URLDeclaration.readOrRewind(using: &reader)
-                    urlsByName[declaration.name] = declaration.url
+                    urlsByName[declaration.name] = declaration
                     continue
                 }
 

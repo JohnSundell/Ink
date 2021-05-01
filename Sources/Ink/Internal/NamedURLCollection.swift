@@ -5,13 +5,13 @@
 */
 
 internal struct NamedURLCollection {
-    private let urlsByName: [String : URL]
+    private let urlsByName: [String : URLDeclaration]
 
-    init(urlsByName: [String : URL]) {
+    init(urlsByName: [String : URLDeclaration]) {
         self.urlsByName = urlsByName
     }
 
-    func url(named name: Substring) -> URL? {
+    func url(named name: Substring) -> URLDeclaration? {
         urlsByName[name.lowercased()]
     }
 }
