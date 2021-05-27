@@ -101,7 +101,7 @@ Ink is distributed using the [Swift Package Manager](https://swift.org/package-m
 let package = Package(
     ...
     dependencies: [
-        .package(url: "https://github.com/johnsundell/ink.git", from: "0.1.0")
+        .package(url: "https://github.com/johnsundell/Ink.git", from: "0.1.0")
     ],
     ...
 )
