@@ -115,7 +115,7 @@ private extension FormattedText {
                             continue
                         }
 
-                        guard !nextCharacter.isAny(of: ["\n", "#", "<", "`"]) else {
+                        guard !nextCharacter.isAny(of: ["\n", "#", "<", "`", "-", ">"]) else {
                             break
                         }
 

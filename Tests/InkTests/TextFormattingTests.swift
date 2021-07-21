@@ -148,6 +148,15 @@ final class TextFormattingTests: XCTestCase {
 
         XCTAssertEqual(html, "<p>Line 1<br>Line 2</p>")
     }
+
+    func testBlockquoteWithoutExtraNewLine() {
+        let html = MarkdownParser().html(from: """
+        Check this quote:
+        > The quick brown fox jumped over the lazy dog.
+        """)
+
+        XCTAssertEqual(html, "<p>Check this quote:</p><blockquote><p>The quick brown fox jumped over the lazy dog.</p></blockquote>")
+    }
 }
 
 extension TextFormattingTests {
@@ -178,7 +187,8 @@ extension TextFormattingTests {
             ("testMultiLineBlockquote", testMultiLineBlockquote),
             ("testEscapingSymbolsWithBackslash", testEscapingSymbolsWithBackslash),
             ("testDoubleSpacedHardLinebreak", testDoubleSpacedHardLinebreak),
-            ("testEscapedHardLinebreak", testEscapedHardLinebreak)
+            ("testEscapedHardLinebreak", testEscapedHardLinebreak),
+            ("testBlockquoteWithoutExtraNewLine", testBlockquoteWithoutExtraNewLine)
         ]
     }
 }
