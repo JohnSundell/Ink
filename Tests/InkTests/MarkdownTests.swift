@@ -66,6 +66,19 @@ final class MarkdownTests: XCTestCase {
         XCTAssertEqual(markdown.metadata, [:])
         XCTAssertEqual(markdown.html, "<h1>Title</h1>")
     }
+    
+    func testMultilineMetadataWithColonInValue(){
+        let markdown = MarkdownParser().parse("""
+        ---
+        a: 1
+          b:2
+        ---
+        # Title
+        """)
+
+        XCTAssertEqual(markdown.metadata, ["a": "1 b:2"])
+        XCTAssertEqual(markdown.html, "<h1>Title</h1>")
+    }
 
     func testMetadataModifiers() {
         let parser = MarkdownParser(modifiers: [
@@ -138,6 +151,7 @@ extension MarkdownTests {
             ("testDiscardingEmptyMetadataValues", testDiscardingEmptyMetadataValues),
             ("testMergingOrphanMetadataValueIntoPreviousOne", testMergingOrphanMetadataValueIntoPreviousOne),
             ("testMissingMetadata", testMissingMetadata),
+            ("testMultilineMetadataWithColonInValue", testMultilineMetadataWithColonInValue),
             ("testMetadataModifiers", testMetadataModifiers),
             ("testPlainTextTitle", testPlainTextTitle),
             ("testRemovingTrailingMarkersFromTitle", testRemovingTrailingMarkersFromTitle),

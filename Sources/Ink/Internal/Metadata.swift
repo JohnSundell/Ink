@@ -15,23 +15,32 @@ internal struct Metadata: Readable {
         var lastKey: String?
 
         while !reader.didReachEnd {
+            let whiteSpaceCount = reader.readCount(of: " ")
             reader.discardWhitespacesAndNewlines()
 
             guard reader.currentCharacter != "-" else {
                 try require(reader.readCount(of: "-") == 3)
                 return metadata
             }
-
+            
+            guard whiteSpaceCount != 2 else{
+                if let lastKey = lastKey {
+                    let restOfValue = trim(reader.readUntilEndOfLine())
+                    metadata.values[lastKey]?.append(" " + restOfValue)
+                }
+                continue
+            }
+            
             let key = try trim(reader.read(until: ":", required: false))
-
-            guard reader.previousCharacter == ":" else {
+            
+            guard reader.previousCharacter == ":" else{
                 if let lastKey = lastKey {
                     metadata.values[lastKey]?.append(" " + key)
                 }
-
                 continue
             }
 
+            
             let value = trim(reader.readUntilEndOfLine())
 
             if !value.isEmpty {
