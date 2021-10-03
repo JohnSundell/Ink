@@ -51,9 +51,7 @@ To define metadata values within a Markdown document, use the following syntax:
 ```
 ---
 keyA: valueA
-keyB: a value can be
-  split into multiple lines by using two spaces
-  at the beggining of the follwing lines
+keyB: "a value must be wrapped in quotes to have a : in it"
 keyC: valueC
 ---
 

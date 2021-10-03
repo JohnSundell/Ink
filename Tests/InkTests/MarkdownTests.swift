@@ -67,16 +67,68 @@ final class MarkdownTests: XCTestCase {
         XCTAssertEqual(markdown.html, "<h1>Title</h1>")
     }
     
-    func testMultilineMetadataWithColonInValue(){
+    func testMultilineQuotedMetadataWithColonInValue(){
         let markdown = MarkdownParser().parse("""
         ---
-        a: 1
-          b:2
+        a: "1
+        b:2"
         ---
         # Title
         """)
 
         XCTAssertEqual(markdown.metadata, ["a": "1 b:2"])
+        XCTAssertEqual(markdown.html, "<h1>Title</h1>")
+    }
+    
+    func testMultilineQuotedMetadataWithEscapedQuotesInValue(){
+        let markdown = MarkdownParser().parse("""
+        ---
+        a: "1
+        \"b\"2"
+        ---
+        # Title
+        """)
+
+        XCTAssertEqual(markdown.metadata, ["a": "1 \"b\"2"])
+        XCTAssertEqual(markdown.html, "<h1>Title</h1>")
+    }
+    
+    func testMultilineSingleQuotedMetadataWithDoubleQuotesInValue(){
+        let markdown = MarkdownParser().parse("""
+        ---
+        a: '1
+        "b"2'
+        ---
+        # Title
+        """)
+
+        XCTAssertEqual(markdown.metadata, ["a": "1 \"b\"2"])
+        XCTAssertEqual(markdown.html, "<h1>Title</h1>")
+    }
+    
+    func testSingleLineValueWithQuotes(){
+        let markdown = MarkdownParser().parse("""
+        ---
+        a: "1"
+        b: '2'
+        ---
+        # Title
+        """)
+
+        XCTAssertEqual(markdown.metadata, ["a": "1", "b": "2"])
+        XCTAssertEqual(markdown.html, "<h1>Title</h1>")
+    }
+    
+    func testOrphanMetadataValueWithDashAtBeginning(){
+        let markdown = MarkdownParser().parse("""
+        ---
+        a: 1
+        -2
+        ---
+        # Title
+        """)
+
+        XCTAssertEqual(markdown.metadata, ["a": "1 -2"])
         XCTAssertEqual(markdown.html, "<h1>Title</h1>")
     }
 
@@ -151,7 +203,10 @@ extension MarkdownTests {
             ("testDiscardingEmptyMetadataValues", testDiscardingEmptyMetadataValues),
             ("testMergingOrphanMetadataValueIntoPreviousOne", testMergingOrphanMetadataValueIntoPreviousOne),
             ("testMissingMetadata", testMissingMetadata),
-            ("testMultilineMetadataWithColonInValue", testMultilineMetadataWithColonInValue),
+            ("testMultilineQuotedMetadataWithColonInValue", testMultilineQuotedMetadataWithColonInValue),
+            ("testMultilineQuotedMetadataWithEscapedQuotesInValue", testMultilineQuotedMetadataWithEscapedQuotesInValue),("testMultilineSingleQuotedMetadataWithDoubleQuotesInValue", testMultilineSingleQuotedMetadataWithDoubleQuotesInValue),
+            ("testSingleLineValueWithQuotes", testSingleLineValueWithQuotes),
+            ("testOrphanMetadataValueWithDashAtBeginning", testOrphanMetadataValueWithDashAtBeginning),
             ("testMetadataModifiers", testMetadataModifiers),
             ("testPlainTextTitle", testPlainTextTitle),
             ("testRemovingTrailingMarkersFromTitle", testRemovingTrailingMarkersFromTitle),
