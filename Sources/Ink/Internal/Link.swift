@@ -19,7 +19,7 @@ internal struct Link: Fragment {
 
         if reader.currentCharacter == "(" {
             reader.advanceIndex()
-            let url = try reader.read(until: ")")
+            let url = try reader.read(until: ")", balanceAgainst: "(")
             return Link(target: .url(url), text: text)
         } else {
             try reader.read("[")
