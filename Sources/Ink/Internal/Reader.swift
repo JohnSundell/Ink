@@ -37,11 +37,13 @@ extension Reader {
     mutating func read(until character: Character,
                        required: Bool = true,
                        allowWhitespace: Bool = true,
-                       allowLineBreaks: Bool = false) throws -> Substring {
+                       allowLineBreaks: Bool = false,
+                       balanceAgainst balancingCharacter: Character? = nil) throws -> Substring {
         let startIndex = currentIndex
+        var characterBalance = 0
 
         while !didReachEnd {
-            guard currentCharacter != character else {
+            guard currentCharacter != character || characterBalance > 0 else {
                 let result = string[startIndex..<currentIndex]
                 advanceIndex()
                 return result
@@ -53,6 +55,16 @@ extension Reader {
 
             if !allowLineBreaks, currentCharacter.isNewline {
                 break
+            }
+
+            if let balancingCharacter = balancingCharacter {
+                if currentCharacter == balancingCharacter {
+                    characterBalance += 1
+                }
+
+                if currentCharacter == character {
+                    characterBalance -= 1
+                }
             }
 
             advanceIndex()
