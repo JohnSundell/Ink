@@ -124,6 +124,200 @@ final class ListTests: XCTestCase {
         XCTAssertEqual(html, expectedComponents.joined())
     }
 
+    func testUnorderedListWithNestedListWithTwoLevelsGap() {
+        let html = MarkdownParser().html(from: """
+        - A
+        - B
+            - B1
+                - B11
+        - C
+        """)
+
+        let expectedComponents: [String] = [
+            "<ul>",
+                "<li>A</li>",
+                "<li>B",
+                    "<ul>",
+                        "<li>B1",
+                            "<ul>",
+                                "<li>B11</li>",
+                            "</ul>",
+                        "</li>",
+                    "</ul>",
+                "</li>",
+                "<li>C</li>",
+            "</ul>"
+        ]
+
+        XCTAssertEqual(html, expectedComponents.joined())
+    }
+
+    func testUnorderedListWithNestedListSnakeCase() {
+           let html = MarkdownParser().html(from: """
+           - A
+               - A1
+           - B
+               - B1
+           - C
+               - C1
+           """)
+
+           let expectedComponents: [String] = [
+               "<ul>",
+                   "<li>A",
+                       "<ul>",
+                           "<li>A1</li>",
+                       "</ul>",
+                   "</li>",
+                   "<li>B",
+                       "<ul>",
+                           "<li>B1</li>",
+                       "</ul>",
+                   "</li>",
+                   "<li>C",
+                       "<ul>",
+                           "<li>C1</li>",
+                       "</ul>",
+                   "</li>",
+               "</ul>"
+           ]
+
+           XCTAssertEqual(html, expectedComponents.joined())
+       }
+
+    func testUnorderedListWithFourLevelsNestedList() {
+        let html = MarkdownParser().html(from: """
+        - A
+            - A1
+                - A11
+                    - A111
+            - B1
+                - B11
+            - C1
+                - C11
+        """)
+
+        let expectedComponents: [String] = [
+            "<ul>",
+                "<li>A",
+                    "<ul>",
+                        "<li>A1",
+                            "<ul>",
+                                "<li>A11",
+                                    "<ul>",
+                                        "<li>A111</li>",
+                                    "</ul>",
+                                "</li>",
+                            "</ul>",
+                        "</li>",
+                        "<li>B1",
+                            "<ul>",
+                                "<li>B11</li>",
+                            "</ul>",
+                        "</li>",
+                        "<li>C1",
+                            "<ul>",
+                                "<li>C11</li>",
+                            "</ul>",
+                        "</li>",
+                    "</ul>",
+                "</li>",
+            "</ul>"
+        ]
+
+        XCTAssertEqual(html, expectedComponents.joined())
+    }
+
+    func testUnorderedListWithTripleGrowNestedList() {
+        let html = MarkdownParser().html(from: """
+        - A
+            - A1
+                - A11
+                    - A111
+                - A12
+                    - A121
+            - A2
+                - A21
+                    - A211
+        """)
+
+        let expectedComponents: [String] = [
+            "<ul>",
+                "<li>A",
+                    "<ul>",
+                        "<li>A1",
+                            "<ul>",
+                                "<li>A11",
+                                    "<ul>",
+                                        "<li>A111</li>",
+                                    "</ul>",
+                                "</li>",
+                                "<li>A12",
+                                    "<ul>",
+                                        "<li>A121</li>",
+                                    "</ul>",
+                                "</li>",
+                            "</ul>",
+                        "</li>",
+                        "<li>A2",
+                            "<ul>",
+                                "<li>A21",
+                                    "<ul>",
+                                        "<li>A211</li>",
+                                    "</ul>",
+                                "</li>",
+                            "</ul>",
+                        "</li>",
+                    "</ul>",
+                "</li>",
+            "</ul>"
+        ]
+
+        XCTAssertEqual(html, expectedComponents.joined())
+    }
+
+    func testUnorderedListWithDoubleSymmetricGrowNestedList() {
+        let html = MarkdownParser().html(from: """
+        - A
+            - A1
+                - A11
+                    - A111
+                - A12
+                    - A121
+                - A13
+            - A2
+        - B
+        """)
+
+        let expectedComponents: [String] = [
+            "<ul>",
+                "<li>A",
+                    "<ul>",
+                        "<li>A1",
+                            "<ul>",
+                                "<li>A11",
+                                    "<ul>",
+                                        "<li>A111</li>",
+                                    "</ul>",
+                                "</li>",
+                                "<li>A12",
+                                    "<ul>",
+                                        "<li>A121</li>",
+                                    "</ul>",
+                                "</li>",
+                                "<li>A13</li>",
+                            "</ul>",
+                        "</li>",
+                        "<li>A2</li>",
+                    "</ul>",
+                "</li>",
+                "<li>B</li>",
+            "</ul>"
+        ]
+
+        XCTAssertEqual(html, expectedComponents.joined())
+    }
+
     func testUnorderedListWithInvalidMarker() {
         let html = MarkdownParser().html(from: """
         - One
@@ -170,6 +364,12 @@ extension ListTests {
             ("testUnorderedListWithInvalidMarker", testUnorderedListWithInvalidMarker),
             ("testOrderedIndentedList", testUnorderedIndentedList),
             ("testUnorderedIndentedList", testUnorderedIndentedList),
+            ("testUnorderedListWithNestedListSnakeCase", testUnorderedListWithNestedListSnakeCase),
+            ("testUnorderedListWithNestedListWithTwoLevelsGap", testUnorderedListWithNestedListWithTwoLevelsGap),
+            ("testUnorderedListWithFourLevelsNestedList", testUnorderedListWithFourLevelsNestedList),
+            ("testUnorderedListWithTripleGrowNestedList", testUnorderedListWithTripleGrowNestedList),
+            ("testUnorderedListWithDoubleSymmetricGrowNestedList", testUnorderedListWithDoubleSymmetricGrowNestedList),
+            ("testUnorderedListWithInvalidMarker", testUnorderedListWithInvalidMarker)
         ]
     }
 }
