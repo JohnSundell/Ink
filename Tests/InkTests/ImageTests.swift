@@ -10,30 +10,49 @@ import Ink
 final class ImageTests: XCTestCase {
     func testImageWithURL() {
         let html = MarkdownParser().html(from: "![](url)")
-        XCTAssertEqual(html, #"<img src="url"/>"#)
+        XCTAssertEqual(html, #"<p><img src="url"/></p>"#)
+    }
+
+    func testImagesCreateParagraphs() {
+        let html = MarkdownParser().html(from: "![](url)\n\n![](url)")
+        XCTAssertEqual(html, #"<p><img src="url"/></p><p><img src="url"/></p>"#)
     }
 
     func testImageWithReference() {
         let html = MarkdownParser().html(from: """
         ![][url]
+
         [url]: https://swiftbysundell.com
         """)
 
-        XCTAssertEqual(html, #"<img src="https://swiftbysundell.com"/>"#)
+        XCTAssertEqual(html, #"<p><img src="https://swiftbysundell.com"/></p>"#)
     }
 
     func testImageWithURLAndAltText() {
         let html = MarkdownParser().html(from: "![Alt text](url)")
-        XCTAssertEqual(html, #"<img src="url" alt="Alt text"/>"#)
+        XCTAssertEqual(html, #"<p><img src="url" alt="Alt text"/></p>"#)
     }
 
     func testImageWithReferenceAndAltText() {
         let html = MarkdownParser().html(from: """
         ![Alt text][url]
+
         [url]: swiftbysundell.com
         """)
 
-        XCTAssertEqual(html, #"<img src="swiftbysundell.com" alt="Alt text"/>"#)
+        XCTAssertEqual(html, #"<p><img src="swiftbysundell.com" alt="Alt text"/></p>"#)
+    }
+
+    func testImageWithReferenceAndMoreTextLater() {
+        let html = MarkdownParser().html(from: """
+        ![Alt text][url]
+
+        More text
+
+        [url]: swiftbysundell.com
+        """)
+
+        XCTAssertEqual(html, #"<p><img src="swiftbysundell.com" alt="Alt text"/></p><p>More text</p>"#)
     }
 
     func testImageWithinParagraph() {
@@ -46,9 +65,11 @@ extension ImageTests {
     static var allTests: Linux.TestList<ImageTests> {
         return [
             ("testImageWithURL", testImageWithURL),
+            ("testImagesCreateParagraphs", testImagesCreateParagraphs),
             ("testImageWithReference", testImageWithReference),
             ("testImageWithURLAndAltText", testImageWithURLAndAltText),
             ("testImageWithReferenceAndAltText", testImageWithReferenceAndAltText),
+            ("testImageWithReferenceAndMoreTextLater", testImageWithReferenceAndMoreTextLater),
             ("testImageWithinParagraph", testImageWithinParagraph)
         ]
     }

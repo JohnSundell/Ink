@@ -129,7 +129,6 @@ private extension MarkdownParser {
                       nextCharacter: Character?) -> Fragment.Type {
         switch character {
         case "#": return Heading.self
-        case "!": return Image.self
         case "<": return HTML.self
         case ">": return Blockquote.self
         case "`": return CodeBlock.self
