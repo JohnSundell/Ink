@@ -133,6 +133,25 @@ final class ListTests: XCTestCase {
 
         XCTAssertEqual(html, "<ul><li>One -Two</li><li>Three</li></ul>")
     }
+    
+    func testOrderedIndentedList() {
+        let html = MarkdownParser().html(from: """
+          1. One
+          2. Two
+        """)
+
+        XCTAssertEqual(html, #"<ol><li>One</li><li>Two</li></ol>"#)
+    }
+    
+    func testUnorderedIndentedList() {
+        let html = MarkdownParser().html(from: """
+          - One
+          - Two
+          - Three
+        """)
+
+        XCTAssertEqual(html, "<ul><li>One</li><li>Two</li><li>Three</li></ul>")
+    }
 }
 
 extension ListTests {
@@ -148,7 +167,9 @@ extension ListTests {
             ("testMixedList", testMixedList),
             ("testUnorderedListWithMultiLineItem", testUnorderedListWithMultiLineItem),
             ("testUnorderedListWithNestedList", testUnorderedListWithNestedList),
-            ("testUnorderedListWithInvalidMarker", testUnorderedListWithInvalidMarker)
+            ("testUnorderedListWithInvalidMarker", testUnorderedListWithInvalidMarker),
+            ("testOrderedIndentedList", testUnorderedIndentedList),
+            ("testUnorderedIndentedList", testUnorderedIndentedList),
         ]
     }
 }

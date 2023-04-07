@@ -60,6 +60,21 @@ final class LinkTests: XCTestCase {
         XCTAssertEqual(html, "<p><a href=\"/he_llo\">He_llo</a></p>")
     }
 
+    func testLinkWithParenthesis() {
+        let html = MarkdownParser().html(from: "[Hello](/(hello))")
+        XCTAssertEqual(html, "<p><a href=\"/(hello)\">Hello</a></p>")
+    }
+
+    func testLinkWithNestedParenthesis() {
+        let html = MarkdownParser().html(from: "[Hello](/(h(e(l(l(o()))))))")
+        XCTAssertEqual(html, "<p><a href=\"/(h(e(l(l(o())))))\">Hello</a></p>")
+    }
+
+    func testLinkWithParenthesisAndClosingParenthesisInContent() {
+        let html = MarkdownParser().html(from: "[Hello](/(hello)))")
+        XCTAssertEqual(html, "<p><a href=\"/(hello)\">Hello</a>)</p>")
+    }
+
     func testUnterminatedLink() {
         let html = MarkdownParser().html(from: "[Hello]")
         XCTAssertEqual(html, "<p>[Hello]</p>")
@@ -81,6 +96,9 @@ extension LinkTests {
             ("testBoldLinkWithInternalMarkers", testBoldLinkWithInternalMarkers),
             ("testBoldLinkWithExternalMarkers", testBoldLinkWithExternalMarkers),
             ("testLinkWithUnderscores", testLinkWithUnderscores),
+            ("testLinkWithParenthesis", testLinkWithParenthesis),
+            ("testLinkWithNestedParenthesis", testLinkWithNestedParenthesis),
+            ("testLinkWithParenthesisAndClosingParenthesisInContent", testLinkWithParenthesisAndClosingParenthesisInContent),
             ("testUnterminatedLink", testUnterminatedLink),
             ("testLinkWithEscapedSquareBrackets", testLinkWithEscapedSquareBrackets)
         ]

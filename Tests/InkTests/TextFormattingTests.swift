@@ -147,6 +147,19 @@ final class TextFormattingTests: XCTestCase {
         XCTAssertEqual(html, "<p># Not a title *Not italic*</p>")
     }
 
+
+    func testListAfterFormattedText() {
+        let html = MarkdownParser().html(from: """
+            This is a test
+            - One
+            - Two
+            """)
+
+        XCTAssertEqual(html, """
+            <p>This is a test</p><ul><li>One</li><li>Two</li></ul>
+            """)
+    }
+
     func testDoubleSpacedHardLinebreak() {
         let html = MarkdownParser().html(from: "Line 1  \nLine 2")
 
@@ -189,6 +202,7 @@ extension TextFormattingTests {
             ("testSingleLineBlockquote", testSingleLineBlockquote),
             ("testMultiLineBlockquote", testMultiLineBlockquote),
             ("testEscapingSymbolsWithBackslash", testEscapingSymbolsWithBackslash),
+            ("testListAfterFormattedText", testListAfterFormattedText),
             ("testDoubleSpacedHardLinebreak", testDoubleSpacedHardLinebreak),
             ("testEscapedHardLinebreak", testEscapedHardLinebreak)
         ]
