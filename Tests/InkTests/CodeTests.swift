@@ -9,8 +9,12 @@ import Ink
 
 final class CodeTests: XCTestCase {
     func testInlineCode() {
-        let html = MarkdownParser().html(from: "Hello `inline.code()`")
+        let markdown = "Hello `inline.code()`";
+        let html = MarkdownParser().html(from: markdown)
+        let plainText = MarkdownParser().plainText(from: markdown)
+
         XCTAssertEqual(html, "<p>Hello <code>inline.code()</code></p>")
+        XCTAssertEqual(plainText, "Hello inline.code()\n")
     }
 
     func testCodeBlockWithJustBackticks() {

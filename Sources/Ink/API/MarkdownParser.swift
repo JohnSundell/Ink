@@ -36,6 +36,10 @@ public struct MarkdownParser {
         parse(markdown).html
     }
 
+    public func plainText(from markdown: String) -> String {
+        parse(markdown).plainText
+    }
+
     /// Parse a Markdown string into a `Markdown` value, which contains
     /// both the HTML representation of the given string, and also any
     /// metadata values found within it.
@@ -103,8 +107,14 @@ public struct MarkdownParser {
             result.append(html)
         }
 
+        let plainText = fragments.reduce(into: "", { result, wrapper in
+            let plainText = wrapper.fragment.plainText()
+            result.append("\(plainText)\n")
+        })
+
         return Markdown(
             html: html,
+            plainText: plainText,
             titleHeading: titleHeading,
             metadata: metadata?.values ?? [:]
         )
