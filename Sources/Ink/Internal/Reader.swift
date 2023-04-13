@@ -7,10 +7,12 @@
 internal struct Reader {
     private let string: String
     private(set) var currentIndex: String.Index
-
-    init(string: String) {
+    let safeMode : Bool
+    
+    init(string: String, safeMode: Bool = false) {
         self.string = string
         self.currentIndex = string.startIndex
+        self.safeMode = safeMode
     }
 }
 

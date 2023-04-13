@@ -14,13 +14,21 @@
 ///
 /// To customize how this parser performs its work, attach
 /// a `Modifier` using the `addModifier` method.
+///
+/// To prevent HTML tags from passing through to HTML
+/// output for untrusted input, set safeMode:true
+/// The angle brackets will be represented as HTML
+/// character entities to prevent interpretation.
+///
 public struct MarkdownParser {
     private var modifiers: ModifierCollection
-
+    private var safeMode : Bool
+    
     /// Initialize an instance, optionally passing an array
     /// of modifiers used to customize the parsing process.
-    public init(modifiers: [Modifier] = []) {
+    public init(modifiers: [Modifier] = [], safeMode: Bool = false) {
         self.modifiers = ModifierCollection(modifiers: modifiers)
+        self.safeMode = safeMode
     }
 
     /// Add a modifier to this parser, which can be used to
@@ -40,7 +48,7 @@ public struct MarkdownParser {
     /// both the HTML representation of the given string, and also any
     /// metadata values found within it.
     public func parse(_ markdown: String) -> Markdown {
-        var reader = Reader(string: markdown)
+        var reader = Reader(string: markdown, safeMode: safeMode)
         var fragments = [ParsedFragment]()
         var urlsByName = [String : URL]()
         var titleHeading: Heading?
@@ -130,7 +138,7 @@ private extension MarkdownParser {
         switch character {
         case "#": return Heading.self
         case "!": return Image.self
-        case "<": return HTML.self
+        case "<": return safeMode ? SafedHTML.self : HTML.self
         case ">": return Blockquote.self
         case "`": return CodeBlock.self
         case "-" where character == nextCharacter,

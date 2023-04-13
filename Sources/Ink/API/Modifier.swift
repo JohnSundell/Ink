@@ -47,6 +47,7 @@ public extension Modifier {
         case headings
         case horizontalLines
         case html
+        case safedHtml
         case images
         case inlineCode
         case links
