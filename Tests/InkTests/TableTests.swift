@@ -41,6 +41,28 @@ final class TableTests: XCTestCase {
         """)
     }
 
+    func testTableWithMultipleHeaderRows() {
+        let html = MarkdownParser().html(from: """
+        | HeaderA | HeaderB | HeaderC |
+        | HeaderD | HeaderE | HeaderF |
+        | ------- | ------- | ------- |
+        | CellA1  | CellB1  | CellC1  |
+        | CellA2  | CellB2  | CellC2  |
+        """)
+
+        XCTAssertEqual(html, """
+        <table>\
+        <thead><tr><th>HeaderA</th><th>HeaderB</th><th>HeaderC</th></tr></thead>\
+        <thead><tr><th>HeaderD</th><th>HeaderE</th><th>HeaderF</th></tr></thead>\
+        <tbody>\
+        <tr><td>CellA1</td><td>CellB1</td><td>CellC1</td></tr>\
+        <tr><td>CellA2</td><td>CellB2</td><td>CellC2</td></tr>\
+        </tbody>\
+        </table>
+        """)
+    }
+
+    
     func testTableWithUnalignedColumns() {
         let html = MarkdownParser().html(from: """
         | HeaderA                        | HeaderB    | HeaderC |
@@ -210,6 +232,7 @@ extension TableTests {
         return [
             ("testTableWithoutHeader", testTableWithoutHeader),
             ("testTableWithHeader", testTableWithHeader),
+            ("testTableWithMultipleHeaderRows", testTableWithMultipleHeaderRows),
             ("testTableWithUnalignedColumns", testTableWithUnalignedColumns),
             ("testTableWithOnlyHeader", testTableWithOnlyHeader),
             ("testIncompleteTable", testIncompleteTable),

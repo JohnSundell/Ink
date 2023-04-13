@@ -9,7 +9,7 @@ import Foundation
 struct Table: Fragment {
     var modifierTarget: Modifier.Target { .tables }
 
-    private var header: Row?
+    private var headers: [Row]? // There can be multiple header rows in a table.
     private var rows = [Row]()
     private var columnCount = 0
     private var columnAlignments = [ColumnAlignment]()
@@ -37,15 +37,16 @@ struct Table: Fragment {
         var html = ""
         let render: () -> String = { "<table>\(html)</table>" }
 
-        if let header = header {
-            let rowHTML = self.html(
-                forRow: header,
-                cellElementName: "th",
-                urls: urls,
-                modifiers: modifiers
-            )
-
-            html.append("<thead>\(rowHTML)</thead>")
+        if let headers = headers {
+            for row in headers {
+                let rowHTML = self.html(
+                    forRow: row,
+                    cellElementName: "th",
+                    urls: urls,
+                    modifiers: modifiers
+                )
+                html.append("<thead>\(rowHTML)</thead>")
+            }
         }
 
         guard !rows.isEmpty else {
@@ -70,7 +71,14 @@ struct Table: Fragment {
     }
 
     func plainText() -> String {
-        var text = header.map(plainText) ?? ""
+        var text = ""
+        
+        if let headers = headers {
+            for row in headers {
+                if !text.isEmpty { text.append("\n") }
+                text.append(plainText(forRow: row))
+            }
+        }
 
         for row in rows {
             if !text.isEmpty { text.append("\n") }
@@ -107,15 +115,43 @@ private extension Table {
             }
         }
     }
+    
+    /// This method is to determine where the format row is located in the Table.
+    /// - Returns: Int? If a value is returned it should be the index for the formatting row.
+    func findHeaderAlignmentRow() -> Int? {
+        var result : Int? = nil
+        
+        let textPredicate = Self.allowedHeaderCharacters.contains
 
+        for (index, row) in rows.enumerated() {
+            if index > 0 {
+                // see if the current row is all column alignment cells
+                var goodRow = true
+                for cell in row {
+                    let text = cell.plainText()
+
+                    if !text.allSatisfy(textPredicate) {
+                        goodRow = false
+                        break
+                    }
+                }
+                if goodRow {
+                    result = index
+                }
+            }
+        }
+        return result
+    }
+    
     mutating func formHeaderAndColumnAlignmentsIfNeeded() {
         guard rows.count > 1 else { return }
-        guard rows[0].count == rows[1].count else { return }
+        
+        guard let alignmentRow = findHeaderAlignmentRow(), rows[0].count == rows[alignmentRow].count else { return }
 
         let textPredicate = Self.allowedHeaderCharacters.contains
         var alignments = [ColumnAlignment]()
 
-        for cell in rows[1] {
+        for cell in rows[alignmentRow] {
             let text = cell.plainText()
 
             guard text.allSatisfy(textPredicate) else {
@@ -124,10 +160,12 @@ private extension Table {
 
             alignments.append(parseColumnAlignment(from: text))
         }
-
-        header = rows[0]
+        
+        var headers = [Row]()
+        headers.append(contentsOf: rows[0..<alignmentRow])
+        self.headers = headers
         columnAlignments = alignments
-        rows.removeSubrange(0...1)
+        rows.removeSubrange(0...alignmentRow)
     }
 
     func parseColumnAlignment(from text: String) -> ColumnAlignment {
