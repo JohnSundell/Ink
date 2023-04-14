@@ -184,6 +184,8 @@ Ink supports the following Markdown features:
 
 Please note that, being a very young implementation, Ink does not fully support all Markdown specs, such as [CommonMark](https://commonmark.org). Ink definitely aims to cover as much ground as possible, and to include support for the most commonly used Markdown features, but if complete CommonMark compatibility is what you’re looking for — then you might want to check out tools like [CMark](https://github.com/commonmark/cmark).
 
+For information on CommonMark conformance testing, see [benchmarking.md](benchmarking.md).
+
 ## Internal architecture
 
 Ink uses a highly modular [rule-based](https://www.swiftbysundell.com/articles/rule-based-logic-in-swift) internal architecture, to enable new rules and formatting options to be added without impacting the system as a whole.
