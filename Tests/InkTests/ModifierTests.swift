@@ -10,11 +10,15 @@ import Ink
 final class ModifierTests: XCTestCase {
     func testModifierInput() {
         var allHTML = [String]()
+        var allPlainText = [String]()
         var allMarkdown = [Substring]()
 
         let parser = MarkdownParser(modifiers: [
-            Modifier(target: .paragraphs) { html, markdown in
+            Modifier(target: .paragraphs) { html, plainText, markdown in
                 allHTML.append(html)
+                if let plainText = plainText {
+                  allPlainText.append(plainText)
+                }
                 allMarkdown.append(markdown)
                 return html
             }
@@ -23,6 +27,7 @@ final class ModifierTests: XCTestCase {
         let html = parser.html(from: "One\n\nTwo\n\nThree")
         XCTAssertEqual(html, "<p>One</p><p>Two</p><p>Three</p>")
         XCTAssertEqual(allHTML, ["<p>One</p>", "<p>Two</p>", "<p>Three</p>"])
+        XCTAssertEqual(allPlainText, ["One", "Two", "Three"])
         XCTAssertEqual(allMarkdown, ["One", "Two", "Three"])
     }
 
