@@ -181,6 +181,9 @@ Ink supports the following Markdown features:
 | Row 1  | Cell 1   |
 | Row 2  | Cell 2   |
 ```
+- LaTeX like equation support. As dollar signs can be found quite commonly on articles (and the slash character is already the escape character), TeX-like equation input is not supported. Note that Ink does _not_ render math equations. You need another library for that, like [KaTeX](https://katex.org) or [MathJax](https://www.mathjax.org). There are two equation modes:
+  1. Inline mode equations: `\(x^2 + 5\)`
+  2. Display mode equations:  `\[z^2 + 5\]`
 
 Please note that, being a very young implementation, Ink does not fully support all Markdown specs, such as [CommonMark](https://commonmark.org). Ink definitely aims to cover as much ground as possible, and to include support for the most commonly used Markdown features, but if complete CommonMark compatibility is what you’re looking for — then you might want to check out tools like [CMark](https://github.com/commonmark/cmark).
 

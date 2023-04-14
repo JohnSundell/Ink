@@ -334,6 +334,11 @@ private extension FormattedText {
             case "[": return Link.self
             case "!": return Image.self
             case "<": return HTML.self
+            case "\\":
+                if ["[","("].contains(reader.nextCharacter) {
+                    return Math.self
+                }
+                fallthrough
             default: return nil
             }
         }
