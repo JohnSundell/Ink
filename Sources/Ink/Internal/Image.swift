@@ -4,14 +4,34 @@
 *  MIT license, see LICENSE file for details
 */
 
+
 internal struct Image: Fragment {
     var modifierTarget: Modifier.Target { .images }
 
     private var link: Link
+    private var caption: String?
 
     static func read(using reader: inout Reader) throws -> Image {
         try reader.read("!")
-        return try Image(link: .read(using: &reader))
+        let _link = try Link.read(using: &reader)
+        let currentIndex = reader.currentIndex
+        let white = String(reader.readUntilEndOfLine())
+        guard white.trimmingCharacters(in: .whitespacesAndNewlines) == "" else {
+            reader.moveToIndex(currentIndex)
+            return Image(link: _link, caption: nil)
+        }
+        guard !reader.didReachEnd && reader.currentCharacter == "*" else {
+            reader.moveToIndex(currentIndex)
+            return Image(link: _link, caption: nil)
+        }
+        reader.advanceIndex()
+        do {
+            let  _caption = try reader.read(until: "*")
+            return Image(link: _link,caption: String(_caption))
+        } catch {
+            reader.moveToIndex(currentIndex)
+            return Image(link: _link, caption: nil)
+        }
     }
 
     func html(usingURLs urls: NamedURLCollection,
@@ -23,6 +43,9 @@ internal struct Image: Fragment {
             alt = " alt=\"\(alt)\""
         }
 
+        if let figCaption = caption {
+            return "<figure><img src=\"\(url)\"\(alt)/> <figcaption>\(figCaption)</figcaption></figure>"
+        }
         return "<img src=\"\(url)\"\(alt)/>"
     }
 
