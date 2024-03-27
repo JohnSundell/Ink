@@ -80,7 +80,7 @@ private extension Reader {
                     return (name.dropLast(), true)
                 }
 
-                return (name, suffix.last == "/" || name == "!--")
+                return (name, suffix.last == "/" || name == "!--" || name == "br")
             }
 
             advanceIndex()
